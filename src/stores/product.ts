@@ -2,12 +2,11 @@ import { defineStore } from "pinia";
 
 type ProductState = {
    status: "" | "loading" | "more-loading" | "successful" | "error";
-   category_id: number | undefined;
+   category_id: number;
    page: number;
    products: Product[];
    count: number;
    pageSize: number;
-   variants_data: (ProductStorage & { product_name_ascii: string })[];
 };
 
 const initialProductState: ProductState = {
@@ -15,11 +14,17 @@ const initialProductState: ProductState = {
    products: [],
    count: 0,
    pageSize: 0,
-   variants_data: [],
-   category_id: undefined,
+   category_id: 0,   
    page: 1,
 };
 
-export const useAppStore = defineStore("product", () => {
-   return { initialProductState };
+export const useProductStore = defineStore("product", {
+   state: () => ({
+      ...initialProductState,
+   }),
+   actions: {
+      storingProducts(payload: Partial<ProductState>) {
+         Object.assign(this, payload);
+      },
+   },
 });

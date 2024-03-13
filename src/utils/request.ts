@@ -1,8 +1,7 @@
-import { Axios } from "axios";
+import axios from "axios";
 
-const publicRequest = new Axios({
-    baseURL: 'http://localhost:8080.api'
-})
+const publicRequest = axios.create({
+   baseURL: "http://localhost:8080/api",
+});
 
-
-export {publicRequest}
+export { publicRequest };

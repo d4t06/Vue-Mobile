@@ -107,12 +107,13 @@ interface ProductCombine {
  
  type Category = {
     id: number;
-    category_name_ascii: string;
+    category_ascii: string;
     category_name: string;
-    attribute_order: string;
+   //  attribute_order: string;
     hidden?: boolean;
-    attributes: CategoryAttribute[];
-    price_ranges: PriceRange[];
+   //  attributes: CategoryAttribute[];
+   //  price_ranges: PriceRange[];
+    brands: Brand[]
  };
  
  

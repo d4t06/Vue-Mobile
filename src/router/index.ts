@@ -8,18 +8,20 @@ const routes: Array<RouteRecordRaw> = [
       component: DefaultLayout,
       children: [
          {
-            path: '/',
-            component:Home
-         }
-      ]
-      // component: DefaultLayoutVue,
-      // children: [
-      //    {
-      //       path: "/",
-      //       name: "home",
-      //       component: () => import("../pages/Home.vue"),
-      //    },
-      // ],
+            path: "/",
+            component: Home,
+         },
+      ],
+   },
+   {
+      path: "/:category_ascii",
+      component: DefaultLayout,
+      children: [
+         {
+            path: "/:category_ascii",
+            component: import("@/pages/Product.vue"),
+         },
+      ],
    },
 ];
 
