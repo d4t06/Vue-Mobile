@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Home from "@/pages/Home.vue";
+import AuthLayout from "@/layouts/AuthLayout.vue";
+import Login from "@/pages/Login.vue";
 
 const routes: Array<RouteRecordRaw> = [
    {
@@ -10,6 +12,16 @@ const routes: Array<RouteRecordRaw> = [
          {
             path: "/",
             component: Home,
+         },
+      ],
+   },
+   {
+      path: "/login",
+      component: AuthLayout,
+      children: [
+         {
+            path: "/login",
+            component: Login,
          },
       ],
    },
