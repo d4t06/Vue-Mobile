@@ -9,10 +9,10 @@ const classes = {
 
 <template>
    <div className="relative h-screen w-screen bg-[#f0f4f9]">
-      <div class="flex w-full h-full justify-center">
+      <div class="flex h-full justify-center">
          <RouterView />
       </div>
-      <Button :className="classes.btnContainer" size="clear" variant="primary">
+      <Button someThing="some thing" href="/" :className="classes.btnContainer" variant="push" size="clear">
          <HomeIcon class="w-[24px]" />
       </Button>
    </div>

@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import Search from "@/components/Search/Search.vue";
-import { ArchiveBoxIcon, Cog6ToothIcon, ShoppingCartIcon } from "@heroicons/vue/24/outline";
+import {
+   ArchiveBoxIcon,
+   Cog6ToothIcon,
+   ShoppingCartIcon,
+   UserIcon,
+} from "@heroicons/vue/24/outline";
 import { useAppStore } from "@/stores/app";
 import { storeToRefs } from "pinia";
+import { useAuthStore } from "@/stores/auth";
 
 const appStore = useAppStore();
-const {categories, initLoading} = storeToRefs(appStore);
-
+const authStore = useAuthStore();
+const { categories, initLoading } = storeToRefs(appStore);
 </script>
 
 <template>
@@ -20,20 +26,30 @@ const {categories, initLoading} = storeToRefs(appStore);
       <div class="header-top">
          <div class="header-top-wrap">
             <div class="left w-1/4 max-[768px]:hidden">
-               <RouterLink class="text-[26px]" to="/">
+               <RouterLink class="text-[26px] font-[500]" to="/">
                   HD <span class="text-[#cd1818]">Mobile</span>
                </RouterLink>
             </div>
 
             <Search />
 
-            <div class="w-1/4 max-[768px]:hidden"></div>
+            <div class="w-1/4 max-[768px]:hidden text-right">
+               <RouterLink v-if="!authStore.user" class="inline-flex space-x-[4px] hover:text-[#cd1818]" to="/login">
+                  <UserIcon class="w-[24px]" />
+                  <span> Sign in </span>
+               </RouterLink>
+               <span v-else>{{ authStore.user.name }}</span>
+            </div>
          </div>
       </div>
       <div class="header-nav">
          <div class="header-nav-wrap">
             <ul class="nav-list">
-               <li v-if="!initLoading && !!categories.length" v-for="category in categories" className="nav-item">
+               <li
+                  v-if="!initLoading && !!categories.length"
+                  v-for="category in categories"
+                  className="nav-item"
+               >
                   <RouterLink :to="category.category_ascii">
                      <p>{{ category.category_name }}</p>
                   </RouterLink>

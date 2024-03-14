@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
 import { publicRequest } from "@/utils/request";
 import { ref, watch, watchEffect } from "vue";
 
 const count = ref(0);
 
+const authStore = useAuthStore()
+
 watchEffect(async () => {
 
-   console.log('aljekljkj');
    
    // try {
    //    console.log("run watch");
@@ -22,5 +25,5 @@ watchEffect(async () => {
 <template>
    <h1>This is home page</h1>
 
-   {{ count }}
+   {{ JSON.stringify(authStore.user) }}
 </template>

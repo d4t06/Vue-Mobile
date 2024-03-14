@@ -1,49 +1,122 @@
 <script lang="ts" setup>
+import Button from "@/components/Button.vue";
+import { useAuthStore, type Token } from "@/stores/auth";
+import { publicRequest } from "@/utils/request";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+const LOGIN_URL = "/auth/login";
 
+const isSubmit = ref(false);
+const username = ref("");
+const password = ref("");
+
+const errorMsg = ref("");
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+const handleSubmit = async (e: Event) => {
+   e.preventDefault();
+   try {
+      isSubmit.value = true;
+
+      const response = await publicRequest.post(LOGIN_URL, {
+         username: username.value,
+         password: password.value,
+      });
+
+      const { token, userInfo } = response.data.data as {
+         token: string;
+         userInfo: {
+            username: string;
+            role: Token;
+         };
+      };
+
+      authStore.setAuthenticate({
+            token,
+            name: userInfo.username || "",
+            role: userInfo.role || "",
+      });
+
+      router.push("/");
+   } catch (error: any) {
+      if (!error?.response) {
+         errorMsg.value = "No server response";
+      } else if (error?.response.status === 401) {
+         errorMsg.value = "Username or password invalid";
+      } else {
+         errorMsg.value = "Sign in fail";
+      }
+
+      console.log(">> login error", error);
+   } finally {
+      isSubmit.value = false;
+   }
+};
 
 const classes = {
-   container: 'rounded-16px flex-grow ml-0 mr-0 sm:my-auto sm:ml-[200px] mr-[200px] bg-white'
-}
+   container:
+      "rounded-[24px]  md:flex-grow ml-0 mr-0 my-auto md:ml-[200px] md:mr-[200px] bg-white p-[20px]",
+   form: "flex flex-col md:flex-row justify-between",
+   right: "space-y-[16px] mt-[20px] md:mt-0",
+   inputGroup: "flex flex-col space-y-[2px]",
+   label: "text-[#000]",
+   input: "py-[4px] rounded-[6px] border border-black/15 outline-none px-[10px]",
+   errorMessage: "bg-red-500/30 text-red-500 p-[6px] rounded-[6px] inline-block",
+};
 </script>
 
 <template>
-<div :class="classes.container">
-         <form className="form space-y-[20px]">
-            {errMsg && <h2 className="error-msg">{errMsg}</h2>}
-            <h1>Đăng nhập</h1>
-            <div className="form-group">
-               <label htmlFor="name">Tài khoản</label>
+   <div :class="classes.container">
+      <form :class="classes.form" @submit="handleSubmit">
+         <div class="left text-center md:text-left space-y-[10px]">
+            <h1 class="text-[26px] font-[500]" to="/">
+               HD <span class="text-[#cd1818]">Mobile</span>
+            </h1>
+            <h2 class="text-[22px]">Sign in</h2>
+            <p v-if="errorMsg" :class="classes.errorMessage">{{ errorMsg }}</p>
+         </div>
+         <div :class="classes.right">
+            <div :class="classes.inputGroup">
+               <label :class="classes.label" htmlFor="username">Username</label>
                <input
-                  ref={userInputRef}
+                  :class="classes.input"
+                  ref="{userInputRef}"
+                  id="username"
                   autoComplete="off"
                   type="text"
+                  placeholder="example..."
                   required
-                  value={user}
+                  v-model="username"
                />
             </div>
-            <div className="form-group">
-               <label htmlFor="image">Mật khẩu</label>
+            <div :class="classes.inputGroup">
+               <label :class="classes.label" htmlFor="password">Password</label>
                <input
-                  type="text"
+                  :class="classes.input"
+                  type="password"
+                  id="password"
                   autoComplete="off"
                   required
-                  value={password}
+                  v-model="password"
                />
             </div>
             <div className="persist-check">
-               <input type="checkbox" id="persist"/>
-               <label className="ml-[8px]" htmlFor="persist">
-                  Trust this device :v ?
-               </label>
+               <input type="checkbox" id="persist" />
+               <label className="ml-[8px]" htmlFor="persist"> Trust this device :v ? </label>
             </div>
 
-            <Button isLoading={apiLoading} primary className="leading-[30px]" type="submit">
-               Đăng nhập
+            <Button variant="push" className="leading-[30px] w-full md:w-auto" type="submit">
+               Sign in
             </Button>
-            <span className="register-text">
-               Chưa có tài khoản?
-               <Link to="/register"> Đăng ký ngay</Link>
-            </span>
-         </form>
-      </div>
+            <p className="text-[14px]">
+               Don't have an account jet ?,
+               <RouterLink class="text-[#cd1818] hover:underline ml-[4px]" to="/register">
+                  Sign up</RouterLink
+               >
+            </p>
+         </div>
+      </form>
+   </div>
 </template>

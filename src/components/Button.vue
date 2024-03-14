@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { cva, type VariantProps } from "class-variance-authority";
-import type { ButtonHTMLAttributes } from "vue";
+import { type VariantProps, cva } from "class-variance-authority";
+import { type ButtonHTMLAttributes } from "vue";
 import { RouterLink } from "vue-router";
 
 const classes = {
@@ -8,7 +8,7 @@ const classes = {
    push: 'active:translate-y-[4px] active:before:shadow-none before:z-[-1] border-b-[4px] border-transparent  before:absolute before:content-[""] before:bg-[#cd1818] before:inset-0 before:shadow-[0_4px_0_#9e010d] transition-[transform] before:transition-shadow',
 };
 
-const buttonVariant = cva(
+const ButtonVariant = cva(
    "font-[500] text-white inline-flex disabled:opacity-[.6] relative justify-center items-center z-0",
    {
       variants: {
@@ -34,23 +34,31 @@ const buttonVariant = cva(
    }
 );
 
-interface ButtonProps extends 
-/* @vue-ignore */ ButtonHTMLAttributes, /* @vue-ignore */VariantProps<typeof  buttonVariant> {
+interface ButtonProps extends /* @vue-ignore */ ButtonHTMLAttributes {
    href?: string;
    loading?: boolean;
    className?: string;
    disable?: boolean;
+   variant?: "primary" | "push" | null | undefined;
+   size?: "primary" | "full" | "clear" | null | undefined;
+   rounded?: "primary" | "lg" | null | undefined;
 }
-/* @vue-ignore */
 
-const { href, loading, className, disable, variant, size, ...props } = defineProps<ButtonProps>();
+const { href, variant, size, className, loading, disable, rounded, ...rest } =
+   defineProps<ButtonProps>();
 </script>
+
 <template>
-   <RouterLink v-if="href" :to="href" :class="buttonVariant({variant, size, className})">
+   <RouterLink
+      v-if="href"
+      v-bind="rest"
+      :to="href"
+      :class="ButtonVariant({ variant, size, className })"
+   >
       <span><slot /></span>
    </RouterLink>
 
-   <button v-else :class="buttonVariant({variant, size, className})">
+   <button v-else v-bind="rest" :class="ButtonVariant({ variant, size, className })">
       <span><slot /></span>
    </button>
 </template>

@@ -3,6 +3,7 @@ import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Home from "@/pages/Home.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/pages/Login.vue";
+import Register from "@/pages/Register.vue";
 
 const routes: Array<RouteRecordRaw> = [
    {
@@ -22,6 +23,16 @@ const routes: Array<RouteRecordRaw> = [
          {
             path: "/login",
             component: Login,
+         },
+      ],
+   },
+   {
+      path: "/register",
+      component: AuthLayout,
+      children: [
+         {
+            path: "/register",
+            component: Register,
          },
       ],
    },

@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 
+export type Token = "ADMIN" | "USER" | "";
+
 type StateType = {
    user: {
       name: string;
@@ -19,8 +21,8 @@ export const useAuthStore = defineStore("auth", {
       ...intiAuthStore,
    }),
    actions: {
-      setAuthenticate(payload: Partial<StateType>) {
-         Object.assign(this, payload);
+      setAuthenticate(payload: StateType["user"]) {
+         Object.assign(this, { user: payload });
       },
       setLoading({ loading }: { loading: boolean }) {
          this.loading = this.loading;
