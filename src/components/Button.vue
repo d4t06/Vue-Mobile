@@ -38,13 +38,13 @@ interface ButtonProps extends /* @vue-ignore */ ButtonHTMLAttributes {
    href?: string;
    loading?: boolean;
    className?: string;
-   disable?: boolean;
    variant?: "primary" | "push" | null | undefined;
    size?: "primary" | "full" | "clear" | null | undefined;
    rounded?: "primary" | "lg" | null | undefined;
+   rest?: Partial<ButtonHTMLAttributes>
 }
 
-const { href, variant, size, className, loading, disable, rounded, ...rest } =
+const { href, variant, size, className, loading, rounded, ...rest } =
    defineProps<ButtonProps>();
 </script>
 

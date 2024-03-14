@@ -34,9 +34,9 @@ const handleSubmit = async (e: Event) => {
       };
 
       authStore.setAuthenticate({
-            token,
-            name: userInfo.username || "",
-            role: userInfo.role || "",
+         token,
+         name: userInfo.username || "",
+         role: userInfo.role || "",
       });
 
       router.push("/");
@@ -69,7 +69,10 @@ const classes = {
 
 <template>
    <div :class="classes.container">
-      <form :class="classes.form" @submit="handleSubmit">
+      <form
+         :class="`${classes.form} ${isSubmit ? 'opacity-60 pointer-events-none' : ''}`"
+         @submit="handleSubmit"
+      >
          <div class="left text-center md:text-left space-y-[10px]">
             <h1 class="text-[26px] font-[500]" to="/">
                HD <span class="text-[#cd1818]">Mobile</span>
@@ -95,7 +98,7 @@ const classes = {
                <label :class="classes.label" htmlFor="password">Password</label>
                <input
                   :class="classes.input"
-                  type="password"
+                  type="text"
                   id="password"
                   autoComplete="off"
                   required
