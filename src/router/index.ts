@@ -4,49 +4,58 @@ import Home from "@/pages/Home.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/pages/Login.vue";
 import Register from "@/pages/Register.vue";
+import Product from "@/pages/Product.vue";
+import Dashboard from "@/pages/Dashboard/Dashboard.vue";
+import DashboardLayout from "@/layouts/DashboardLayout.vue";
+import DashboardProduct from "@/pages/Dashboard/DashboardProduct.vue";
 
-const routes: Array<RouteRecordRaw> = [
+const routeList = [
    {
       path: "/",
-      component: DefaultLayout,
-      children: [
-         {
-            path: "/",
-            component: Home,
-         },
-      ],
-   },
-   {
-      path: "/login",
-      component: AuthLayout,
-      children: [
-         {
-            path: "/login",
-            component: Login,
-         },
-      ],
-   },
-   {
-      path: "/register",
-      component: AuthLayout,
-      children: [
-         {
-            path: "/register",
-            component: Register,
-         },
-      ],
+      component: Home,
    },
    {
       path: "/:category_ascii",
-      component: DefaultLayout,
-      children: [
-         {
-            path: "/:category_ascii",
-            component: import("@/pages/Product.vue"),
-         },
-      ],
+      component: Product,
+   },
+   {
+      path: "/Login",
+      component: Login,
+      layout: AuthLayout,
+   },
+   {
+      path: "/register",
+      component: Register,
+      layout: AuthLayout,
+   },
+   {
+      path: "/dashboard",
+      component: Dashboard,
+      layout: DashboardLayout,
+   },
+   {
+      path: "/dashboard/product",
+      component: DashboardProduct,
+      layout: DashboardLayout,
    },
 ];
+
+const routes: Array<RouteRecordRaw> = [];
+
+routeList.map((r) => {
+   const routeItem = {
+      path: r.path,
+      component: r.layout ?? DefaultLayout,
+      children: [
+         {
+            path: r.path,
+            component: r.component,
+         },
+      ],
+   };
+
+   routes.push(routeItem);
+});
 
 const router = createRouter({
    history: createWebHistory(import.meta.env.BASE_URL),

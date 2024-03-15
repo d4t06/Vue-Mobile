@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import usePrivateRequest from "@/composables/usePrivateRequest";
-import { useAppStore } from "@/stores/app";
 import { useAuthStore } from "@/stores/auth";
-import { publicRequest } from "@/utils/request";
 import { ref, watch, watchEffect } from "vue";
+import Slider from "@/components/Slider.vue";
 
 const authStore = useAuthStore();
 
@@ -19,7 +17,7 @@ watchEffect(async () => {
 </script>
 
 <template>
-   <h1>This is home page</h1>
-
-   {{ JSON.stringify(authStore.user) }}
+   <div class="mt-[30px]">
+      <Slider />
+   </div>
 </template>

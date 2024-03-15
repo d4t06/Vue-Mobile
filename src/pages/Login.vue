@@ -57,7 +57,7 @@ const handleSubmit = async (e: Event) => {
 
 const classes = {
    container:
-      "rounded-[24px]  md:flex-grow ml-0 mr-0 my-auto md:ml-[200px] md:mr-[200px] bg-white p-[20px]",
+      "rounded-[24px] w-[90vw] md:flex-grow md:w-auto mx-auto my-auto md:mx-[200px] bg-white p-[20px] md:px-[30px]",
    form: "flex flex-col md:flex-row justify-between",
    right: "space-y-[16px] mt-[20px] md:mt-0",
    inputGroup: "flex flex-col space-y-[2px]",
@@ -110,15 +110,22 @@ const classes = {
                <label className="ml-[8px]" htmlFor="persist"> Trust this device :v ? </label>
             </div>
 
-            <Button variant="push" className="leading-[30px] w-full md:w-auto" type="submit">
-               Sign in
-            </Button>
-            <p className="text-[14px]">
-               Don't have an account jet ?,
-               <RouterLink class="text-[#cd1818] hover:underline ml-[4px]" to="/register">
-                  Sign up</RouterLink
+            <div class="md:text-right space-y-[10px]">
+               <Button
+                  rounded="max"
+                  variant="push"
+                  className="leading-[26px] w-full md:w-auto"
+                  type="submit"
                >
-            </p>
+                  Sign in
+               </Button>
+               <p className="text-[14px]">
+                  Don't have an account jet ?,
+                  <RouterLink class="text-[#cd1818] hover:underline ml-[4px]" to="/register">
+                     Sign up</RouterLink
+                  >
+               </p>
+            </div>
          </div>
       </form>
    </div>

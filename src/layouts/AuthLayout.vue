@@ -9,7 +9,7 @@ const classes = {
 
 <template>
    <div className="relative h-screen w-screen bg-[#f0f4f9]">
-      <div class="flex h-full justify-center">
+      <div class="flex h-full">
          <RouterView />
       </div>
       <Button someThing="some thing" href="/" :className="classes.btnContainer" variant="push" size="clear">

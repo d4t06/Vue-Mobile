@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import Search from "@/components/Search/Search.vue";
-import {
-   ArchiveBoxIcon,
-   Cog6ToothIcon,
-   ShoppingCartIcon,
-   UserIcon,
-} from "@heroicons/vue/24/outline";
+import { ArchiveBoxIcon, Cog6ToothIcon, UserIcon } from "@heroicons/vue/24/outline";
 import { useAppStore } from "@/stores/app";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
@@ -34,7 +29,11 @@ const { categories, initLoading } = storeToRefs(appStore);
             <Search />
 
             <div class="w-1/4 max-[768px]:hidden text-right">
-               <RouterLink v-if="!authStore.user" class="inline-flex space-x-[4px] hover:text-[#cd1818]" to="/login">
+               <RouterLink
+                  v-if="!authStore.user"
+                  class="inline-flex space-x-[4px] hover:text-[#cd1818]"
+                  to="/login"
+               >
                   <UserIcon class="w-[24px]" />
                   <span> Sign in </span>
                </RouterLink>
@@ -55,22 +54,9 @@ const { categories, initLoading } = storeToRefs(appStore);
                   </RouterLink>
                </li>
             </ul>
+
             <ul class="nav-list">
-               <li class="nav-item">
-                  <RouterLink to="">
-                     <span class="nav-text">Cart</span>
-                     <ShoppingCartIcon class="w-[24px]" />
-                  </RouterLink>
-               </li>
-
-               <li class="nav-item">
-                  <RouterLink to="">
-                     <span class="nav-text">Order</span>
-                     <ArchiveBoxIcon class="w-[24px]" />
-                  </RouterLink>
-               </li>
-
-               <li class="nav-item">
+               <li v-if="authStore.user?.role == 'ADMIN'" class="nav-item">
                   <RouterLink to="">
                      <span class="nav-text">Dashboard</span>
                      <Cog6ToothIcon class="w-[24px]" />

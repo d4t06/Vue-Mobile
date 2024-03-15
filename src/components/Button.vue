@@ -6,6 +6,7 @@ import { RouterLink } from "vue-router";
 const classes = {
    primary: "rounded-[6px]  hover:brightness-90 text-[14px] bg-[#cd1818]",
    push: 'active:translate-y-[4px] active:before:shadow-none before:z-[-1] border-b-[4px] border-transparent  before:absolute before:content-[""] before:bg-[#cd1818] before:inset-0 before:shadow-[0_4px_0_#9e010d] transition-[transform] before:transition-shadow',
+   clear: "",
 };
 
 const ButtonVariant = cva(
@@ -15,6 +16,7 @@ const ButtonVariant = cva(
          variant: {
             primary: classes.primary,
             push: classes.push,
+            clear: classes.clear,
          },
          size: {
             primary: "px-[20px] py-[4px]",
@@ -24,6 +26,7 @@ const ButtonVariant = cva(
          rounded: {
             primary: "before:rounded-[8px] rounded-[8px]",
             lg: "before:rounded-[12px] rounded-[12px]",
+            max: "before:rounded-[99px] rounded-[99px]",
          },
       },
       defaultVariants: {
@@ -38,14 +41,13 @@ interface ButtonProps extends /* @vue-ignore */ ButtonHTMLAttributes {
    href?: string;
    loading?: boolean;
    className?: string;
-   variant?: "primary" | "push" | null | undefined;
+   variant?: "primary" | "push" | "clear" | null | undefined;
    size?: "primary" | "full" | "clear" | null | undefined;
-   rounded?: "primary" | "lg" | null | undefined;
-   rest?: Partial<ButtonHTMLAttributes>
+   rounded?: "primary" | "lg" | "max" | null | undefined;
+   rest?: Partial<ButtonHTMLAttributes>;
 }
 
-const { href, variant, size, className, loading, rounded, ...rest } =
-   defineProps<ButtonProps>();
+const { href, variant, size, className, loading, rounded, ...rest } = defineProps<ButtonProps>();
 </script>
 
 <template>
@@ -53,12 +55,12 @@ const { href, variant, size, className, loading, rounded, ...rest } =
       v-if="href"
       v-bind="rest"
       :to="href"
-      :class="ButtonVariant({ variant, size, className })"
+      :class="ButtonVariant({ variant, size, rounded, className })"
    >
       <span><slot /></span>
    </RouterLink>
 
-   <button v-else v-bind="rest" :class="ButtonVariant({ variant, size, className })">
+   <button v-else v-bind="rest" :class="ButtonVariant({ variant, size, rounded, className })">
       <span><slot /></span>
    </button>
 </template>
