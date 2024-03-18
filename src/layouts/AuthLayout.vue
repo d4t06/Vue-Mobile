@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Button from "@/components/Button.vue";
+import Button from "@/components/ui/Button.vue";
 import { HomeIcon } from "@heroicons/vue/24/outline";
 
 const classes = {

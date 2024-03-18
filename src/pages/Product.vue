@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import useProduct from "@/composables/useProducts";
 import { useAppStore } from "@/stores/app";
 import { useProductStore } from "@/stores/product";
 import { storeToRefs } from "pinia";
@@ -12,18 +13,23 @@ const curCategory = ref<Category>();
 const route = useRoute();
 const appStore = useAppStore();
 const productStore = useProductStore();
+const { getProduct } = useProduct();
 const { categories, initLoading } = storeToRefs(appStore);
 const { status } = storeToRefs(productStore);
 
 watch(
-   route,
-   () => {
+   [route, initLoading],
+   async () => {
       if (!initLoading) return;
+
+      console.log("asldjfdsa");
+
       const founded = categories.value.find(
          (cat) => cat.category_ascii === route.params.category_ascii
       );
 
       if (founded) {
+         await getProduct(1, founded.id);
       } else {
          productStore.storingProducts({ status: "error" });
       }
@@ -33,9 +39,7 @@ watch(
    }
 );
 
-console.log('check status', productStore.status);
-
-
+console.log("check status", productStore.status);
 </script>
 
 <template>

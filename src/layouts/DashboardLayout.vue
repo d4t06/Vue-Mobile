@@ -7,7 +7,6 @@ import Sidebar from "./_components/Sidebar/Sidebar.vue";
 
 <template>
    <PersistLogin>
-      <RequireAuth>
       <div class="flex h-screen overflow-hidden">
          <Sidebar />
          <div class="bg-[#f1f1f1] relative w-full">
@@ -17,6 +16,5 @@ import Sidebar from "./_components/Sidebar/Sidebar.vue";
             </div>
          </div>
       </div>
-   </RequireAuth>
    </PersistLogin>
 </template>

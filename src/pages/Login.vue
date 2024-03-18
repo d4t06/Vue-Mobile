@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import Button from "@/components/Button.vue";
-import { useAuthStore, type Token } from "@/stores/auth";
-import { publicRequest } from "@/utils/request";
-import { ref } from "vue";
+import Button from "@/components/ui/Button.vue";
+import { useAuthStore, type AuthResponse } from "@/stores/auth";
+import { privateRequest, publicRequest } from "@/utils/request";
+import { onBeforeMount, onUnmounted, ref, watch, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 const LOGIN_URL = "/auth/login";
+
+const usernameRef = ref<HTMLInputElement | null>(null);
 
 const isSubmit = ref(false);
 const username = ref("");
@@ -20,23 +22,16 @@ const handleSubmit = async (e: Event) => {
    try {
       isSubmit.value = true;
 
-      const response = await publicRequest.post(LOGIN_URL, {
+      const response = await privateRequest.post(LOGIN_URL, {
          username: username.value,
          password: password.value,
       });
 
-      const { token, userInfo } = response.data.data as {
-         token: string;
-         userInfo: {
-            username: string;
-            role: Token;
-         };
-      };
+      const { token, userInfo } = response.data.data as AuthResponse;
 
       authStore.setAuthenticate({
-         token,
-         name: userInfo.username || "",
-         role: userInfo.role || "",
+         user: { ...userInfo, token },
+         loading: false,
       });
 
       router.push("/");
@@ -49,11 +44,17 @@ const handleSubmit = async (e: Event) => {
          errorMsg.value = "Sign in fail";
       }
 
-      console.log(">> login error", error);
+      console.log({ message: error });
    } finally {
       isSubmit.value = false;
    }
 };
+
+watchEffect(() => {
+   if (usernameRef.value) {
+      usernameRef.value.focus();
+   }
+});
 
 const classes = {
    container:
@@ -84,12 +85,10 @@ const classes = {
             <div :class="classes.inputGroup">
                <label :class="classes.label" htmlFor="username">Username</label>
                <input
+                  ref="usernameRef"
                   :class="classes.input"
-                  ref="{userInputRef}"
                   id="username"
-                  autoComplete="off"
                   type="text"
-                  placeholder="example..."
                   required
                   v-model="username"
                />

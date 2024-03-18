@@ -1,0 +1,33 @@
+.table {
+   width: 100%;
+   border-collapse: collapse;
+   border: 1px solid #ccc;
+   background-color: #fff;
+   tr {
+      border-bottom: 1px solid #ccc;
+      &:last-child {
+         border-radius: 0 0 8px 8px;
+      }
+      &:nth-child(even) {
+         // background-color: #e1e1e1/;
+      }
+   }
+   th,
+   td {
+      padding: 8px 12px;
+      text-align: left;
+   }
+   th {
+      background-color: #cd1818;
+      color: #fff;
+      text-transform: uppercase;
+      font-weight: 500;
+   }
+   .product-image {
+      width: 90px;
+      img {
+         width: 100%;
+         border-radius: 5px;
+      }
+   }
+}

@@ -1,11 +1,19 @@
 import { defineStore } from "pinia";
 
-export type Token = "ADMIN" | "USER" | "";
+export type Role = "ADMIN" | "USER" | "";
+
+export type AuthResponse = {
+   token: string;
+   userInfo: {
+      username: string;
+      role: Role;
+   };
+};
 
 type StateType = {
    user: {
-      name: string;
-      role: "ADMIN" | "USER" | "";
+      username: string;
+      role: Role;
       token: string;
    } | null;
    loading: boolean;
@@ -21,8 +29,8 @@ export const useAuthStore = defineStore("auth", {
       ...intiAuthStore,
    }),
    actions: {
-      setAuthenticate(payload: StateType["user"]) {
-         Object.assign(this, { user: payload });
+      setAuthenticate(payload: Partial<StateType>) {
+         Object.assign(this, payload);
       },
       setLoading({ loading }: { loading: boolean }) {
          this.loading = this.loading;

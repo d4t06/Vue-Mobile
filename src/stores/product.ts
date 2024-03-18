@@ -1,3 +1,4 @@
+import type { Product } from "@/types";
 import { defineStore } from "pinia";
 
 type ProductState = {

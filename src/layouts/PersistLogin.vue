@@ -1,27 +1,16 @@
 <script lang="ts" setup>
-import { useAuthStore } from "@/stores/auth";
-import { watchEffect } from "vue";
-import { useRouter } from "vue-router";
+import useRefreshToken from "@/composables/useRefreshToken";
+import { ref, watch, watchEffect } from "vue";
 
-const router = useRouter();
-const authStore = useAuthStore();
+const refresh = useRefreshToken();
+const runEffect = ref(false);
 
 watchEffect(() => {
-   setTimeout(() => {
-
-      console.log('>>> run set auth');
-      
-      authStore.setAuthenticate({
-         user: {
-            token: "",
-            name: "",
-            role: "",
-         },
-         loading: false,
-      });
-   }, 3000);
-}, {});
-
+   if (!runEffect.value) {
+      runEffect.value = true;
+      refresh();
+   }
+});
 </script>
 <template>
    <slot />

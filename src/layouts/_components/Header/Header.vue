@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import Search from "@/components/Search/Search.vue";
-import { ArchiveBoxIcon, Cog6ToothIcon, UserIcon } from "@heroicons/vue/24/outline";
+import { Cog6ToothIcon, UserIcon } from "@heroicons/vue/24/outline";
 import { useAppStore } from "@/stores/app";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
 
 const appStore = useAppStore();
 const authStore = useAuthStore();
-const { categories, initLoading } = storeToRefs(appStore);
+const { categories, status } = storeToRefs(appStore);
+
+// console.log(">>> check authstore", authStore.user);
 </script>
 
 <template>
@@ -29,15 +31,25 @@ const { categories, initLoading } = storeToRefs(appStore);
             <Search />
 
             <div class="w-1/4 max-[768px]:hidden text-right">
-               <RouterLink
-                  v-if="!authStore.user"
-                  class="inline-flex space-x-[4px] hover:text-[#cd1818]"
-                  to="/login"
-               >
-                  <UserIcon class="w-[24px]" />
-                  <span> Sign in </span>
-               </RouterLink>
-               <span v-else>{{ authStore.user.name }}</span>
+               <template v-if="!authStore.loading">
+                  <RouterLink
+                     v-if="!authStore.user"
+                     class="inline-flex space-x-[4px] hover:text-[#cd1818]"
+                     to="/login"
+                  >
+                     <UserIcon class="w-[24px]" />
+                     <span> Sign in </span>
+                  </RouterLink>
+
+                  <RouterLink
+                     v-else
+                     class="inline-flex space-x-[4px] hover:text-[#cd1818]"
+                     to="/account"
+                  >
+                     <UserIcon class="w-[24px]" />
+                     <span>{{ authStore.user.username }}</span>
+                  </RouterLink>
+               </template>
             </div>
          </div>
       </div>
@@ -45,7 +57,7 @@ const { categories, initLoading } = storeToRefs(appStore);
          <div class="header-nav-wrap">
             <ul class="nav-list">
                <li
-                  v-if="!initLoading && !!categories.length"
+                  v-if="status === 'successful' && !!categories.length"
                   v-for="category in categories"
                   className="nav-item"
                >
@@ -56,8 +68,8 @@ const { categories, initLoading } = storeToRefs(appStore);
             </ul>
 
             <ul class="nav-list">
-               <li v-if="authStore.user?.role == 'ADMIN'" class="nav-item">
-                  <RouterLink to="">
+               <li v-if="authStore.user?.role.includes('ADMIN')" class="nav-item">
+                  <RouterLink to="/dashboard">
                      <span class="nav-text">Dashboard</span>
                      <Cog6ToothIcon class="w-[24px]" />
                   </RouterLink>

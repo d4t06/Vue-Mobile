@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import Button from "@/components/Button.vue";
+import Button from "@/components/ui/Button.vue";
 import {
+   BookmarkSquareIcon,
    BuildingStorefrontIcon,
    ChevronLeftIcon,
    ChevronRightIcon,
@@ -9,7 +10,9 @@ import {
 } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import logo from '@/assets/logo.png'
+import logo from "@/assets/logo.png";
+
+const BASE_URL = "/dashboard";
 
 const expand = ref(false);
 
@@ -20,8 +23,6 @@ const handleExpand = () => {
 };
 
 console.log("check path", route.path);
-
-
 </script>
 
 <template>
@@ -32,16 +33,27 @@ console.log("check path", route.path);
          <img v-else class="logo-image" :src="logo" />
       </div>
       <div>
-         <RouterLink to="/dashboard" :class="`${route.path === '/dashboard' ? 'active' : ''} sidebar__item`">
+         <RouterLink
+            to="/dashboard"
+            :class="`${route.path === BASE_URL ? 'active' : ''} sidebar__item`"
+         >
             <ComputerDesktopIcon class="w-[24px]" />
             <slot v-if="expand">Dashboard</slot>
          </RouterLink>
          <RouterLink
-            to="/dashboard/product"
-            :class="`${route.path === '/dashboard/product'} sidebar__item`"
+            :to="BASE_URL + '/product'"
+            :class="`${route.path === BASE_URL + '/product' ? 'active' : ''} sidebar__item`"
          >
             <DevicePhoneMobileIcon class="w-[24px]" />
             <slot v-if="expand">Product</slot>
+         </RouterLink>
+
+         <RouterLink
+            :to="BASE_URL + '/category'"
+            :class="`${route.path === BASE_URL + '/category' ? 'active' : ''} sidebar__item`"
+         >
+            <BookmarkSquareIcon class="w-[24px]" />
+            <slot v-if="expand">Category</slot>
          </RouterLink>
 
          <RouterLink target="blank" :class="`sidebar__item`" to="/">

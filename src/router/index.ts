@@ -4,15 +4,22 @@ import Home from "@/pages/Home.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import Login from "@/pages/Login.vue";
 import Register from "@/pages/Register.vue";
+import Forbidden from "@/pages/Forbidden.vue";
 import Product from "@/pages/Product.vue";
+import Account from "@/pages/Account.vue";
 import Dashboard from "@/pages/Dashboard/Dashboard.vue";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import DashboardProduct from "@/pages/Dashboard/DashboardProduct.vue";
+import Category from "@/pages/Dashboard/Category/Category.vue";
 
 const routeList = [
    {
       path: "/",
       component: Home,
+   },
+   {
+      path: "/account",
+      component: Account,
    },
    {
       path: "/:category_ascii",
@@ -29,6 +36,11 @@ const routeList = [
       layout: AuthLayout,
    },
    {
+      path: "/forbidden",
+      component: Forbidden,
+      layout: AuthLayout,
+   },
+   {
       path: "/dashboard",
       component: Dashboard,
       layout: DashboardLayout,
@@ -38,20 +50,20 @@ const routeList = [
       component: DashboardProduct,
       layout: DashboardLayout,
    },
+   {
+      path: "/dashboard/category",
+      component: Category,
+      layout: DashboardLayout,
+   },
 ];
 
 const routes: Array<RouteRecordRaw> = [];
 
 routeList.map((r) => {
-   const routeItem = {
+   const routeItem: RouteRecordRaw = {
       path: r.path,
       component: r.layout ?? DefaultLayout,
-      children: [
-         {
-            path: r.path,
-            component: r.component,
-         },
-      ],
+      children: [{ path: "", component: r.component }],
    };
 
    routes.push(routeItem);

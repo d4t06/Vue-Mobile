@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Button from "@/components/Button.vue";
+import Button from "@/components/ui/Button.vue";
 import { useAuthStore } from "@/stores/auth";
 import { publicRequest } from "@/utils/request";
 import { CheckIcon, XMarkIcon } from "@heroicons/vue/16/solid";

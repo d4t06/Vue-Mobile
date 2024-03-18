@@ -1,16 +1,17 @@
 <script lang="ts" setup>
+import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 import { type VariantProps, cva } from "class-variance-authority";
 import { type ButtonHTMLAttributes } from "vue";
 import { RouterLink } from "vue-router";
 
 const classes = {
-   primary: "rounded-[6px]  hover:brightness-90 text-[14px] bg-[#cd1818]",
-   push: 'active:translate-y-[4px] active:before:shadow-none before:z-[-1] border-b-[4px] border-transparent  before:absolute before:content-[""] before:bg-[#cd1818] before:inset-0 before:shadow-[0_4px_0_#9e010d] transition-[transform] before:transition-shadow',
+   primary: "text-white rounded-[6px]  hover:brightness-90 text-[14px] bg-[#cd1818]",
+   push: 'text-white active:translate-y-[4px] active:before:shadow-none before:z-[-1] border-b-[4px] border-transparent  before:absolute before:content-[""] before:bg-[#cd1818] before:inset-0 before:shadow-[0_4px_0_#9e010d] transition-[transform] before:transition-shadow',
    clear: "",
 };
 
 const ButtonVariant = cva(
-   "font-[500] text-white inline-flex disabled:opacity-[.6] relative justify-center items-center z-0",
+   "font-[500] inline-flex justify-center items-center disabled:opacity-[.6] relative  z-0",
    {
       variants: {
          variant: {
@@ -57,10 +58,17 @@ const { href, variant, size, className, loading, rounded, ...rest } = defineProp
       :to="href"
       :class="ButtonVariant({ variant, size, rounded, className })"
    >
-      <span><slot /></span>
+      <slot />
    </RouterLink>
 
-   <button v-else v-bind="rest" :class="ButtonVariant({ variant, size, rounded, className })">
-      <span><slot /></span>
-   </button>
+   <template v-else>
+      <button v-bind="rest" :class="ButtonVariant({ variant, size, rounded, className })">
+         <template v-if="loading">
+            <ArrowPathIcon class="w-[24px] animate-spin" />
+         </template>
+         <template v-else>
+            <slot />
+         </template>
+      </button>
+   </template>
 </template>

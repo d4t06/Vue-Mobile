@@ -1,5 +1,5 @@
-import { useAuthStore, type Token } from "@/stores/auth";
-import { publicRequest } from "@/utils/request";
+import { useAuthStore, type AuthResponse } from "@/stores/auth";
+import { privateRequest, publicRequest } from "@/utils/request";
 
 const REFRESH_URL = "/auth/refresh";
 
@@ -7,26 +7,27 @@ export default function useRefreshToken() {
    const authStore = useAuthStore();
 
    const refresh = async () => {
-      try {
-         const res = await publicRequest.get(REFRESH_URL);
+      console.log("run refresh");
 
-         const { token, userInfo } = res.data.data as {
-            token: string;
-            userInfo: {
-               username: string;
-               role: Token;
-            };
-         };
+      try {
+         if (authStore.user) return;
+
+         const res = await privateRequest.get(REFRESH_URL);
+
+         const { token, userInfo } = res.data.data as AuthResponse;
 
          authStore.setAuthenticate({
-            token,
-            name: userInfo.username || "",
-            role: userInfo.role || "",
+            user: {
+               ...userInfo,
+               token,
+            },
+            loading: false,
          });
 
          return token;
       } catch (error) {
-         throw new Error();
+         authStore.setAuthenticate({ loading: false });
+         console.log({ message: error });
       }
    };
 
