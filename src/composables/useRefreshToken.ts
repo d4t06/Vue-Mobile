@@ -1,5 +1,5 @@
 import { useAuthStore, type AuthResponse } from "@/stores/auth";
-import { privateRequest, publicRequest } from "@/utils/request";
+import { privateRequest } from "@/utils/request";
 
 const REFRESH_URL = "/auth/refresh";
 
@@ -7,12 +7,17 @@ export default function useRefreshToken() {
    const authStore = useAuthStore();
 
    const refresh = async () => {
-      console.log("run refresh");
-
       try {
-         if (authStore.user) return;
-
-         const res = await privateRequest.get(REFRESH_URL);
+         /**
+          * Must to delete header.authorization in spring boot
+          * for skip jwt authentication
+          */
+         const res = await privateRequest.get(REFRESH_URL, {
+            transformRequest: (data, headers) => {
+               delete headers.Authorization;
+               return data;
+            },
+         });
 
          const { token, userInfo } = res.data.data as AuthResponse;
 
@@ -21,12 +26,10 @@ export default function useRefreshToken() {
                ...userInfo,
                token,
             },
-            loading: false,
          });
 
          return token;
       } catch (error) {
-         authStore.setAuthenticate({ loading: false });
          console.log({ message: error });
       }
    };

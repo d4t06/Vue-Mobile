@@ -1,4 +1,5 @@
 import { useProductStore } from "@/stores/product";
+import type { Product } from "@/types";
 import { publicRequest } from "@/utils/request";
 import { ref } from "vue";
 
@@ -9,19 +10,24 @@ export default function useProduct() {
 
    const productStore = useProductStore();
 
-   const getProduct = async (page: number, categoryID: number) => {
+   const getProduct = async (page: number, categoryID: number, option: { replace?: boolean }) => {
       try {
          productStore.storingProducts({ status: "loading" });
 
          const res = await publicRequest.get(PRODUCT_URL);
 
          const products = res.data.data as Product[];
-         productStore.storingProducts({ products, category_id: categoryID, page });
+         productStore.storingProducts({
+            products,
+            category_id: categoryID,
+            page,
+            replace: option.replace,
+         });
       } catch (error) {
          productStore.storingProducts({ status: "error" });
          console.log({ message: error });
       }
    };
 
-   return { getProduct };
+   return { getProduct, isFetching };
 }

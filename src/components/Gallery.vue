@@ -79,7 +79,7 @@ const classes = {
    <div :class="classes.container">
       <div :class="classes.galleryTop">
          <div :class="'flex items-center'">
-            <h1 class="text-[22px] font-[500]">Gallery ({count})</h1>
+            <h1 class="text-[22px] font-[500]">Gallery</h1>
             <Button class="ml-[10px] !p-0">
                <label
                   :class="`px-[20px] py-[4px] cursor-pointer inline-block ${

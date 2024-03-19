@@ -3,7 +3,7 @@ import Button from "@/components/ui/Button.vue";
 import { useAuthStore, type AuthResponse } from "@/stores/auth";
 import { privateRequest, publicRequest } from "@/utils/request";
 import { onBeforeMount, onUnmounted, ref, watch, watchEffect } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 const LOGIN_URL = "/auth/login";
 
 const usernameRef = ref<HTMLInputElement | null>(null);
@@ -15,6 +15,7 @@ const password = ref("");
 const errorMsg = ref("");
 
 const authStore = useAuthStore();
+const route = useRoute();
 const router = useRouter();
 
 const handleSubmit = async (e: Event) => {
@@ -34,7 +35,9 @@ const handleSubmit = async (e: Event) => {
          loading: false,
       });
 
-      router.push("/");
+      console.log("check from", route.redirectedFrom);
+
+      router.push(route.redirectedFrom || "/");
    } catch (error: any) {
       if (!error?.response) {
          errorMsg.value = "No server response";

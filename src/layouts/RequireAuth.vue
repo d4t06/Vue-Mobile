@@ -17,7 +17,7 @@ const isMatchedRole = computed(() => {
    // loop all allow role check if user meet
    return allowRoles.some((role) => {
       if (!user.value) return false;
-      if (!user.value.role.includes(role)) return true;
+      if (user.value.role.includes(role)) return true;
    });
 });
 </script>
@@ -35,5 +35,5 @@ const isMatchedRole = computed(() => {
    </template>
 
    <!-- if user not login -->
-   <template v-else>{{ router.push("/login") }}</template>
+   <template v-else>{{ router.replace("/login") }}</template>
 </template>

@@ -15,7 +15,7 @@ const initialProductState: ProductState = {
    products: [],
    count: 0,
    pageSize: 0,
-   category_id: 0,   
+   category_id: 0,
    page: 1,
 };
 
@@ -24,7 +24,9 @@ export const useProductStore = defineStore("product", {
       ...initialProductState,
    }),
    actions: {
-      storingProducts(payload: Partial<ProductState>) {
+      storingProducts(payload: Partial<ProductState> & { replace?: boolean }) {
+         if (payload.replace) Object.assign(this, payload);
+         else payload.products = [...this.products, ...(payload.products || [])];
          Object.assign(this, payload);
       },
    },

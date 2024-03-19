@@ -21,7 +21,7 @@ const curBrand = computed(() =>
    curBrandIndex.value == undefined ? undefined : brandsByCategory.value[curBrandIndex.value]
 );
 
-const { addOrEditBrand, categories, deleteBrand, isFetching } = useBrandAction({
+const { brandActions, categories, isFetching } = useBrandAction({
    curCategoryIndex: curCategoryIndex,
    isOpenModal: isOpenModal,
 });
@@ -63,11 +63,11 @@ const handleAddBrand = async (value: string, type: "add" | "edit") => {
 
    switch (type) {
       case "add":
-         await addOrEditBrand({ type: "add", brand: newBrand });
+         await brandActions({ type: "add", brand: newBrand });
          break;
 
       case "edit":
-         await addOrEditBrand({
+         await brandActions({
             type: "edit",
             brand: newBrand,
             currentIndex: curCategoryIndex.value,
@@ -78,7 +78,7 @@ const handleAddBrand = async (value: string, type: "add" | "edit") => {
 };
 
 const handleDeleteBrand = async () => {
-   await deleteBrand(curBrandIndex.value);
+   await brandActions({ type: "delete", curBrandIndex: curBrandIndex.value });
 };
 
 const classes = {
@@ -91,7 +91,7 @@ const classes = {
 <template>
    <h1 :class="classes.title">Brands</h1>
    <div v-if="!!categories.length" class="bg-[#fff] rounded-[8px] p-[20px]">
-      <div class="mb-[15px] flex items-center"> 
+      <div class="mb-[15px] flex items-center">
          <p class="mr-[10px]">Category:</p>
          <div class="bg-[#ccc] rounded-[12px]">
             <select

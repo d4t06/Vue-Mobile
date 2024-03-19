@@ -103,7 +103,7 @@ export default function useCategory() {
          if (!curCategory) throw new Error("Category not found");
          isFetching.value = true;
 
-         await publicRequest.delete(`${CATEGORY_URL}/${curCategory.id}`);
+         await privateRequest.delete(`${CATEGORY_URL}/${curCategory.id}`);
 
          const newCategories = categories.value.filter((c) => c.id !== curCategory.id);
          appStore.storingCategory({ categories: newCategories });

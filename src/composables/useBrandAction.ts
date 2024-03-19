@@ -38,7 +38,12 @@ export default function useBrandAction({ isOpenModal, curCategoryIndex }: Props)
       currentIndex: number | undefined;
    };
 
-   type AddOrEditBrand = AddBrand | EditBrand;
+   type DeleteBrand = {
+      type: "delete";
+      curBrandIndex: number | undefined;
+   };
+
+   type Params = AddBrand | EditBrand | DeleteBrand;
 
    const updateCategory = (currentCategory: Category) => {
       if (curCategoryIndex.value === undefined) return;
@@ -47,7 +52,7 @@ export default function useBrandAction({ isOpenModal, curCategoryIndex }: Props)
       appStore.storingCategory({ categories: newCategories, status: "successful" });
    };
 
-   const addOrEditBrand = async ({ ...props }: AddOrEditBrand) => {
+   const brandActions = async ({ ...props }: Params) => {
       try {
          switch (props.type) {
             case "add":
@@ -59,18 +64,9 @@ export default function useBrandAction({ isOpenModal, curCategoryIndex }: Props)
 
                const newBrandData = brandRes.data.data as Brand;
 
-            //    const newCurrentCategory = { ...currentCategory.value };
-            //    newCurrentCategory.brands.push(newBrandData);
-            //    newCurrentCategory.brands.push(newBrandData);
-            //    newCurrentCategory.brands.push(newBrandData);
-            //    newCurrentCategory.brands.push(newBrandData);
-            
-            if (import.meta.env.DEV) await sleep(2000);
-            
-               console.log("update");
-            currentCategory.value.brands.push(newBrandData);
+               if (import.meta.env.DEV) await sleep(2000);
 
-            //    updateCategory(newCurrentCategory);
+               currentCategory.value.brands.push(newBrandData);
 
                break;
 
@@ -84,18 +80,34 @@ export default function useBrandAction({ isOpenModal, curCategoryIndex }: Props)
 
                if (currentIndex === undefined || !oldBrand)
                   throw new Error("Missing current index");
+               
                isFetching.value = true;
 
+               // api
                await privateRequest.put(`${BRAND_URL}/${oldBrand.id}`, updateBrand);
 
-               const _newCurrentCategory = { ...currentCategory.value };
-               Object.assign(_newCurrentCategory.brands[currentIndex], updateBrand);
-
                if (import.meta.env.DEV) await sleep(2000);
+               Object.assign(currentCategory.value.brands[currentIndex], updateBrand);
 
-               console.log("update");
+               break;
 
-               updateCategory(_newCurrentCategory);
+            case "delete":
+               const { curBrandIndex } = props;
+               if (curBrandIndex === undefined || !currentCategory.value)
+                  throw new Error("Current category not found");
+
+               isFetching.value = true;
+
+               // get delete brand
+               const targetBrand = currentCategory.value.brands[curBrandIndex];
+               // api
+               await privateRequest.delete(`${BRAND_URL}/${targetBrand.id}`);
+               // local update
+               if (import.meta.env.DEV) await sleep(2000);
+               const newBrands = currentCategory.value.brands.filter(
+                  (b) => b.id !== targetBrand.id
+               );
+               currentCategory.value.brands = newBrands;
          }
          toastStore.setSuccessToast(`${props.type} brand successful`);
       } catch (error) {
@@ -107,33 +119,33 @@ export default function useBrandAction({ isOpenModal, curCategoryIndex }: Props)
       }
    };
 
-   const deleteBrand = async (curBrandIndex: number | undefined) => {
-      try {
-         if (curBrandIndex === undefined || !currentCategory.value)
-            throw new Error("Current category not found");
+   // const deleteBrand = async (curBrandIndex: number | undefined) => {
+   //    try {
+   //       if (curBrandIndex === undefined || !currentCategory.value)
+   //          throw new Error("Current category not found");
 
-        isFetching.value = true;
+   //       isFetching.value = true;
 
-         // get delete brand
-         const targetBrand = currentCategory.value.brands[curBrandIndex];
-        // api
-         await privateRequest.delete(`${BRAND_URL}/${targetBrand.id}`);
-        // local update
-         const newBrands = currentCategory.value.brands.filter((b) => b.id !== targetBrand.id);
-         const newCategory = { ...currentCategory.value, brands: newBrands } as Category;
+   //       // get delete brand
+   //       const targetBrand = currentCategory.value.brands[curBrandIndex];
+   //       // api
+   //       await privateRequest.delete(`${BRAND_URL}/${targetBrand.id}`);
+   //       // local update
+   //       const newBrands = currentCategory.value.brands.filter((b) => b.id !== targetBrand.id);
+   //       const newCategory = { ...currentCategory.value, brands: newBrands } as Category;
 
-         if (import.meta.env.DEV) await sleep(2000);
-         updateCategory(newCategory);
+   //       if (import.meta.env.DEV) await sleep(2000);
+   //       updateCategory(newCategory);
 
-         toastStore.setSuccessToast(`Delete brand '${targetBrand.brand_name}' successful`);
-      } catch (error) {
-         console.log({ message: error });
-         toastStore.setErrorToast(`Delete brand fail`);
-      } finally {
-         isFetching.value = false;
-         isOpenModal.value = "close";
-      }
-   };
+   //       toastStore.setSuccessToast(`Delete brand '${targetBrand.brand_name}' successful`);
+   //    } catch (error) {
+   //       console.log({ message: error });
+   //       toastStore.setErrorToast(`Delete brand fail`);
+   //    } finally {
+   //       isFetching.value = false;
+   //       isOpenModal.value = "close";
+   //    }
+   // };
 
-   return { categories, isFetching, addOrEditBrand, deleteBrand };
+   return { categories, isFetching, brandActions };
 }

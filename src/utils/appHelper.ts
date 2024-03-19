@@ -6,6 +6,12 @@ export const inputClasses = {
 
 export const sleep = (time: number) => new Promise<void>((rs) => setTimeout(() => rs(), time));
 
+export const moneyFormat = (money: string | number) => {
+   const formatter = new Intl.NumberFormat("en-US");
+   if (!money) return "";
+   return formatter.format(+money);
+};
+
 export const generateId = (name: string): string => {
    const convertToEn = (str: string) => {
       const newString = str
