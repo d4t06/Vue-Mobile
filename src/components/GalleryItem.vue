@@ -16,12 +16,12 @@ const classes = {
 
 <template>
    <div class="px-[4px] relative w-1/6 mt-[8px]">
-      <div class="{classes.imageContainer}">
+      <div :class="classes.imageContainer">
          <div
             :onClick="onClick && onClick"
             :class="`${classes.imageFrame} ${active ? 'border-[#cd1818]' : ''}`"
          >
-            <img class="w-full h-auto" :src="imageUrl" alt="img" />
+            <img :class="`w-full h-auto ${imageUrl.includes('blob') ? 'opacity-[.6]' : ''}`" :src="imageUrl" alt="img" />
             <slot />
          </div>
       </div>

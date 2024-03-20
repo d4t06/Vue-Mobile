@@ -8,12 +8,12 @@ import ToastPortal from "@/components/ToastPortal.vue";
 
 const appStore = useAppStore();
 
-// watchEffect(async () => {
-//    try {
-//       const res = await publicRequest.get("/categories");
-//       appStore.storingCategory({ categories: res.data.data, status: "successful" });
-//    } catch (err) {}
-// });
+watchEffect(async () => {
+   try {
+      const res = await publicRequest.get("/categories");
+      appStore.storingCategory({ categories: res.data.data, status: "successful" });
+   } catch (err) {}
+});
 </script>
 
 <template>

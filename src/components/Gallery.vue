@@ -1,64 +1,46 @@
 <script lang="ts" setup>
-import { useImageStore } from "@/stores/image";
-import { storeToRefs } from "pinia";
-import { computed, ref, watchEffect } from "vue";
+import { ref, watch, type Prop, computed } from "vue";
 import Button from "./ui/Button.vue";
 import GallerySkeleton from "./Skeleton/GallerySkeleton.vue";
 import type { ImageType } from "@/types";
 import { formatSize } from "@/utils/appHelper";
-import { publicRequest } from "@/utils/request";
+
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 import GalleryItem from "./GalleryItem.vue";
+import useImageAction from "@/composables/useUploadImage";
+import Skeleton from "./Skeleton/Skeleton.vue";
 
-const IMAGE_URL = "/images";
-
-type Status = "loading" | "error" | "success";
-type getImagesRes = {
-   page: number;
-   images: ImageType[];
-   pageSize: number;
-   count: number;
+type Props = {
+   handleChose: (image_url: string) => void;
+   close: () => void;
 };
 
-const status = ref<Status>("loading");
-const isFetching = ref(false);
+const { close, handleChose } = defineProps<Props>();
+
 const chosenImage = ref<ImageType>();
 
-const imageStore = useImageStore();
-const { count, images, page, pageSize, tempImages } = storeToRefs(imageStore);
+const { getImages, isRemaining, images, tempImages, status, isFetching, deleteImage } = useImageAction();
 
-const isRemaining = computed(() => count.value - page.value * pageSize.value > 0);
-const ableToChosenImage = status.value === "success" && chosenImage.value;
+const ableToChosenImage = computed(() => status.value === "success" && chosenImage.value);
 
-const handleSubmit = async () => {};
-
-const getImages = async (page: number = 1) => {
-   try {
-      const res = await publicRequest.get(`${IMAGE_URL}?page=${page}`);
-      const data = res.data as getImagesRes;
-
-      const newImages = [...images.value, ...data.images];
-      imageStore.storeImages({
-         count: data.count,
-         pageSize: data.pageSize,
-         page: data.page,
-         images: newImages,
-      });
-   } catch (error) {
-      console.log({ message: error });
-   }
+const handleSubmit = async () => {
+   if (!chosenImage.value) return;
+   handleChose(chosenImage.value.image_url);
+   close();
 };
 
-const handleDeleteImage = async () => {};
+const handleDeleteImage = async () => {
+   if (!chosenImage.value) return;
+   await deleteImage(chosenImage.value.public_id);
+};
 
-watchEffect(
+watch(
+   getImages,
    () => {
-      if (!images.value.length) {
-         getImages(1);
-      }
+      getImages(1);
    },
    {
-      flush: "post",
+      immediate: true,
    }
 );
 
@@ -85,7 +67,7 @@ const classes = {
                   :class="`px-[20px] py-[4px] cursor-pointer inline-block ${
                      status === 'loading' ? 'opacity-60 pointer-events-none' : ''
                   }`"
-                  htmlFor="image_upload"
+                  htmlFor="image-upload"
                >
                   Upload
                </label>
@@ -93,43 +75,38 @@ const classes = {
          </div>
 
          <Button :disabled="!ableToChosenImage" :onClick="handleSubmit" variant="primary">
-            Chọn
+            Select
          </Button>
       </div>
       <div :class="classes.galleryBody">
          <div :class="classes.bodyLeft">
-            <div class="flex flex-wrap mt-[-8px]">
-               <p v-if="status === 'error'">Some thing went wrong</p>
-
-               <tempImages v-else>
+            <p v-if="status === 'error'">Some thing went wrong</p>
+            <template v-else>
+               <div class="flex flex-wrap mt-[-8px]">
                   <!-- render temporary image -->
-                  <GalleryItem v-for="tempImage in tempImages" :imageUrl="tempImage.image_url">
-                     <ArrowPathIcon
-                        class="animate-spin absolute duration-1000 text-[#000] w-[30px]"
-                     />
-                  </GalleryItem>
+                  <template v-for="tempImage in tempImages">
+                     <GalleryItem :imageUrl="tempImage.image_url">
+                        <ArrowPathIcon
+                           class="animate-spin absolute z-10 duration-1000 text-[#000] w-[30px]"
+                        />
+                     </GalleryItem>
+                  </template>
                   <!-- render current images -->
-                  <GalleryItem
-                     v-for="image in images"
-                     :imageUrl="image.image_url"
-                     :onClick="() => (chosenImage = image)"
-                     :active="chosenImage?.id === image.id"
-                  />
-                  <!-- <div v-for="image in images" class="px-[4px] relative w-1/6 mt-[8px]">
-                     <div class="{classes.imageContainer}">
-                        <div
-                           :onClick="() => (chosenImage = image)"
-                           :class="`${classes.imageFrame}
-                        ${chosenImage?.id === image.id ? 'border-[#cd1818]' : '''}`"
-                        >
-                           <img class="w-full h-auto" :src="image.image_url" alt="img" />
-                        </div>
-                     </div>
-                  </div> -->
-               </tempImages>
+                  <template v-for="image in images">
+                     <GalleryItem
+                        :imageUrl="image.image_url"
+                        :onClick="() => (chosenImage = image)"
+                        :active="chosenImage?.id === image.id"
+                     />
+                  </template>
 
-               <GallerySkeleton v-if="status == 'loading'" />
-            </div>
+                  <template v-if="status == 'loading'">
+                     <div v-for="key in [...Array(18).keys()]" class="w-1/6 px-[4px] mt-[8px]">
+                        <Skeleton className="pt-[100%]" />
+                     </div>
+                  </template>
+               </div>
+            </template>
 
             <div v-if="images.length && isRemaining" class="text-center mt-[14px]">
                <Button :onClick="() => {}" variant="push"> More </Button>
@@ -137,22 +114,30 @@ const classes = {
          </div>
          <div :class="classes.bodyRight">
             <template v-if="chosenImage">
-               <h2 class="break-words">{active.name}</h2>
-               <ul>
+               <ul class="space-y-[14px]">
                   <li>
-                     <h4 class="font-semibold">Image path:</h4>
+                     <h2 class="break-words">{{ chosenImage.name }}</h2>
+                  </li>
+                  <li>
+                     <span class="font-[500] mr-[10px]">Image path:</span>
 
-                     <a class="hover:underline" target="blank" href="{active.image_url}">
+                     <a
+                        class="hover:underline text-[14px]"
+                        target="blank"
+                        :href="chosenImage.image_url"
+                     >
                         {{ chosenImage.image_url }}
                      </a>
                   </li>
                   <li>
-                     <h4 class="font-semibold">Size:</h4>
-                     {{ formatSize(chosenImage.size) }}
+                     <span class="font-[500] mr-[10px]">Size:</span>
+                     <span class="text-[14px]">
+                        {{ formatSize(chosenImage.size) }}
+                     </span>
                   </li>
                </ul>
                <Button variant="push" :loading="isFetching" :onClick="handleDeleteImage">
-                  Xóa
+                  Delete
                </Button>
             </template>
          </div>

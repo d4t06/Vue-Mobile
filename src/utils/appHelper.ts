@@ -2,6 +2,7 @@ import type { Category, ImageType } from "@/types";
 
 export const inputClasses = {
    input: "p-[6px] pl-[12px] font-[500] bg-[#f1f1f1] w-full h-full rounded-[8px] placeholder:text-[#808080] outline-none text-[#333] border border-black/10 text-[16px] translate-y-[0] h-[calc(100%-4px)]",
+   overlayButton: "p-[4px] transition-transform text-[#333] bg-[#e1e1e1] hover:scale-[1.05] hover:bg-[#cd1818] hover:text-white",
 };
 
 export const sleep = (time: number) => new Promise<void>((rs) => setTimeout(() => rs(), time));

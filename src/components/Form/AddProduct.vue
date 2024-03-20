@@ -101,6 +101,8 @@ const handleOpenModal = ({ ...props }: OpenOtherModal | OpenDeleteModal) => {
    isOpenModal.value = props.modal;
 };
 
+const handleCloseModal = () => (isOpenModal.value = "close");
+
 const handleSubmit = async () => {
    switch (props.type) {
       case "add":
@@ -127,19 +129,22 @@ const handleDeleteProduct = async (id: number) => {
    </div>
    <div class="flex mx-[-8px] mt-[14px]">
       <div class="w-1/3 px-[8px]">
-         <Box
-            v-if="!productData.image_url"
-            :onClick="() => handleOpenModal({ modal: 'gallery' })"
-         />
+         <template v-if="!productData.image_url">
+            <Box :onClick="() => handleOpenModal({ modal: 'gallery' })" />
+         </template>
 
-         <Box v-else>
-            <img :src="productData.image_url" alt="asd" />
-            <OverlayCta>
-               <Button :onClick="() => handleOpenModal({ modal: 'gallery' })">
-                  <ArrowPathIcon class="w-[24px]" />
-               </Button>
-            </OverlayCta>
-         </Box>
+         <template v-else>
+            <Box>
+               <template v-slot:children>
+                  <img :src="productData.image_url" alt="asd" />
+                  <OverlayCta>
+                     <Button variant="clear" size="clear" :class="inputClasses.overlayButton" :onClick="() => handleOpenModal({ modal: 'gallery' })">
+                        <ArrowPathIcon class="w-[24px]" />
+                     </Button>
+                  </OverlayCta>
+               </template>
+            </Box>
+         </template>
       </div>
 
       <div class="flex-1">
@@ -223,7 +228,10 @@ const handleDeleteProduct = async (id: number) => {
       </div>
    </template> -->
 
-   <Modal v-if="isOpenModal !== 'close'" :close="() => (isOpenModal = 'close')">
-      <Gallery />
+   <Modal v-if="isOpenModal !== 'close'" :close="handleCloseModal">
+      <Gallery
+         :close="handleCloseModal"
+         :handleChose="(value) => handleInput('image_url', value)"
+      />
    </Modal>
 </template>

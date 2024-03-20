@@ -2,6 +2,7 @@
 import useProduct from "@/composables/useProducts";
 import { useAppStore } from "@/stores/app";
 import { useProductStore } from "@/stores/product";
+import type { Category } from "@/types";
 import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -13,40 +14,36 @@ const curCategory = ref<Category>();
 const route = useRoute();
 const appStore = useAppStore();
 const productStore = useProductStore();
-const { getProduct } = useProduct();
-const { categories, initLoading } = storeToRefs(appStore);
+
+const { categories, status: appStatus } = storeToRefs(appStore);
 const { status } = storeToRefs(productStore);
 
+const { getProduct } = useProduct();
+
 watch(
-   [route, initLoading],
-   async () => {
-      if (!initLoading) return;
+   [route, appStatus],
+   () => {
+      if (appStatus.value == "loading") return;
 
-      console.log("asldjfdsa");
+      // const founded = categories.value.find(
+      //    (cat) => cat.category_ascii === route.params.category_ascii
+      // );
 
-      const founded = categories.value.find(
-         (cat) => cat.category_ascii === route.params.category_ascii
-      );
-
-      if (founded) {
-         await getProduct(1, founded.id);
-      } else {
-         productStore.storingProducts({ status: "error" });
-      }
+      // if (founded) {
+      // }
+      getProduct(1, 1, { replace: true });
    },
    {
       immediate: true,
    }
 );
-
-console.log("check status", productStore.status);
 </script>
 
 <template>
    <p v-if="status === 'error'">Some thing went wrong</p>
    <div v-else>
       <div class="" v-if="status === 'loading'">Loading</div>
-      <div class="" v-if="status === 'successful'">product</div>
+      <div class="" v-if="status === 'successful'">{{ JSON.stringify(productStore.products) }}</div>
    </div>
 
    {{ JSON.stringify(curCategory || {}) }}
