@@ -3,6 +3,7 @@ import AddProduct from "@/components/Form/AddProduct.vue";
 import Button from "@/components/ui/Button.vue";
 import MyInput from "@/components/ui/MyInput.vue";
 import Table from "@/components/ui/Table/Table.vue";
+import useCategory from "@/composables/useCategory";
 import useProductAction from "@/composables/useProductAction";
 import useProduct from "@/composables/useProducts";
 import { useProductStore } from "@/stores/product";
@@ -25,6 +26,7 @@ const productStore = useProductStore();
 const { products } = storeToRefs(productStore);
 
 const { getProduct, isFetching } = useProduct();
+const { categories, status } = useCategory();
 
 watch(
    curCategory,
@@ -41,6 +43,8 @@ const classes = {
    hide: "hidden",
    productButton:
       "p-[4px] transition-transform text-[#333] bg-[#e1e1e1] hover:scale-[1.05] hover:bg-[#cd1818] hover:text-white",
+   tab: "border-b-[4px] py-[3px] px-[12px] hover:brightness-100 flex-shrink-0",
+   activeTab: "border-[#cd1818] text-[20px]",
 };
 </script>
 
@@ -64,10 +68,29 @@ const classes = {
       </Button>
 
       <Button v-else :onClick="() => (currentTab = 'all')" variant="push" class="ml-auto">
-         Cancel
+         Close
       </Button>
    </div>
    <div :class="`${currentTab != 'all' ? classes.hide : ''}`">
+      <div class="flex mt-[20px]">
+         <button
+            :onClick="() => (curCategory = undefined)"
+            :class="`${classes.tab} ${curCategory === undefined ? classes.activeTab : ''}`"
+         >
+            All
+         </button>
+
+         <!-- <template > -->
+         <button
+            v-for="category in categories"
+            :class="`${classes.tab} ${curCategory?.category_ascii === category.category_ascii ? classes.activeTab : ''}`"
+            :onClick="() => (curCategory = category)"
+         >
+            {{ category.category_name }}
+         </button>
+         <!-- </template> -->
+      </div>
+
       <div class="mt-[30px]">
          <Table :colList="['Name', 'Giá', '']">
             <template v-for="product in products">

@@ -20,7 +20,7 @@ watchEffect(async () => {
    <PersistLogin>
       <div className="app">
          <Header />
-         <div className="container mx-auto">
+         <div className="container mx-auto py-[30px]">
             <RouterView />
          </div>
          <!-- <ScrollTop /> -->

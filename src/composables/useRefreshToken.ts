@@ -1,22 +1,26 @@
 import { useAuthStore, type AuthResponse } from "@/stores/auth";
-import { privateRequest } from "@/utils/request";
+import axios from "axios";
 
-const REFRESH_URL = "/auth/refresh";
+const REFRESH_URL = "http://localhost:8080/api/auth/refresh";
+
+// const privateRequest = axios.create({
+//    baseURL: BASE_URL,
+//    withCredentials: true,
+// });
 
 export default function useRefreshToken() {
    const authStore = useAuthStore();
 
    const refresh = async () => {
+      console.log("run refresh");
       try {
          /**
-          * Must to delete header.authorization in spring boot
+          * Not use privateRequest instance
+          * because is cause infinite loop
           * for skip jwt authentication
           */
-         const res = await privateRequest.get(REFRESH_URL, {
-            transformRequest: (data, headers) => {
-               delete headers.Authorization;
-               return data;
-            },
+         const res = await axios.get(REFRESH_URL, {
+            withCredentials: true,
          });
 
          const { token, userInfo } = res.data.data as AuthResponse;

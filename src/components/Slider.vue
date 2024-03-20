@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/vue/24/outline";
-import Button from "./Button.vue";
+import Button from "./ui/Button.vue";
 
 type Props = {
    className?: string;

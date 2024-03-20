@@ -17,11 +17,13 @@ type StateType = {
       token: string;
    } | null;
    loading: boolean;
+   prevPath: string | null
 };
 
 const intiAuthStore: StateType = {
    user: null,
    loading: true,
+   prevPath: null
 };
 
 export const useAuthStore = defineStore("auth", {

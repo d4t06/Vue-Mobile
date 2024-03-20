@@ -64,7 +64,7 @@ export default function useImageAction() {
          isFetching.value = true;
          const controller = new AbortController();
 
-         await privateRequest.delete(`${IMAGE_URL}/${encodeURIComponent(publicID)}`);
+         await privateRequest.delete(`${IMAGE_URL}?publicID=${encodeURIComponent(publicID)}`);
 
          const newImages = images.value.filter((image) => image.public_id !== publicID);
 

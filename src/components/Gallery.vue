@@ -35,7 +35,7 @@ const handleDeleteImage = async () => {
 };
 
 watch(
-   getImages,
+   () => 0,
    () => {
       getImages(1);
    },

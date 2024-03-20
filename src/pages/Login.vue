@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import Button from "@/components/ui/Button.vue";
 import { useAuthStore, type AuthResponse } from "@/stores/auth";
-import { privateRequest, publicRequest } from "@/utils/request";
-import { onBeforeMount, onUnmounted, ref, watch, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
-const LOGIN_URL = "/auth/login";
+import axios from "axios";
+import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
+const LOGIN_URL = "http://localhost:8080/api/auth/login";
 
 const usernameRef = ref<HTMLInputElement | null>(null);
 
@@ -15,18 +15,32 @@ const password = ref("");
 const errorMsg = ref("");
 
 const authStore = useAuthStore();
-const route = useRoute();
 const router = useRouter();
+
+router.beforeEach((to, from) => {
+   console.log("from", from.path, "to", to.path);
+
+   if (from.path) {
+      authStore.setAuthenticate({ prevPath: from.path });
+   }
+});
 
 const handleSubmit = async (e: Event) => {
    e.preventDefault();
+
    try {
       isSubmit.value = true;
 
-      const response = await privateRequest.post(LOGIN_URL, {
-         username: username.value,
-         password: password.value,
-      });
+      const response = await axios.post(
+         LOGIN_URL,
+         {
+            username: username.value,
+            password: password.value,
+         },
+         {
+            withCredentials: true,
+         }
+      );
 
       const { token, userInfo } = response.data.data as AuthResponse;
 
@@ -35,9 +49,10 @@ const handleSubmit = async (e: Event) => {
          loading: false,
       });
 
-      console.log("check from", route.redirectedFrom);
+      console.log("login check", authStore.prevPath);
 
-      router.push(route.redirectedFrom || "/");
+      router.push(authStore.prevPath || "/");
+      authStore.setAuthenticate({ prevPath: null });
    } catch (error: any) {
       if (!error?.response) {
          errorMsg.value = "No server response";
@@ -53,11 +68,23 @@ const handleSubmit = async (e: Event) => {
    }
 };
 
-watchEffect(() => {
-   if (usernameRef.value) {
-      usernameRef.value.focus();
+watch(
+   usernameRef,
+   () => {
+      usernameRef.value?.focus();
+   },
+   { flush: "post" }
+);
+
+watch(
+   () => 0,
+   () => {
+      if (authStore.user) return router.push("");
+   },
+   {
+      immediate: true,
    }
-});
+);
 
 const classes = {
    container:
@@ -72,6 +99,7 @@ const classes = {
 </script>
 
 <template>
+   {{ console.log("render check from.path", authStore.prevPath) }}
    <div :class="classes.container">
       <form
          :class="`${classes.form} ${isSubmit ? 'opacity-60 pointer-events-none' : ''}`"
@@ -92,7 +120,6 @@ const classes = {
                   :class="classes.input"
                   id="username"
                   type="text"
-                  required
                   v-model="username"
                />
             </div>

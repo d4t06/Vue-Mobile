@@ -2,10 +2,13 @@ import { useAuthStore } from "@/stores/auth";
 import { privateRequest } from "@/utils/request";
 import { computed, watch } from "vue";
 import useRefreshToken from "./useRefreshToken";
+import { useRouter } from "vue-router";
 
 export default function usePrivateRequest() {
    const authStore = useAuthStore();
    const refresh = useRefreshToken();
+
+   const router = useRouter();
 
    const token = computed(() => authStore.user?.token);
 
@@ -28,22 +31,22 @@ export default function usePrivateRequest() {
 
          const responseIntercept = privateRequest.interceptors.response.use(
             (response) => response, // Do something with response data
-
             async (err) => {
                // Do something with response error
                const prevRequest = err?.config;
 
-               console.log("check response code", err.response?.status);
+               if (!prevRequest["sent"]) {
+                  prevRequest["sent"] = true;
 
-               if (err?.response?.status === 401 && !prevRequest?.sent) {
-                  // console.log("handle response err");
-                  prevRequest.sent = true;
-                  prevRequest.headers["Authorization"] = "";
-                  const newToken = await refresh();
-                  prevRequest.headers["Authorization"] = `Bearer ${newToken}`;
+                  if (err?.response?.status === 401) {
+                     const newToken = await refresh();
+                     prevRequest.headers["Authorization"] = `Bearer ${newToken}`;
 
-                  return privateRequest(prevRequest);
+                     return privateRequest(prevRequest);
+                  }
                }
+
+               router.push({ path: "/login" });
                return Promise.reject(err);
             }
          );
