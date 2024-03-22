@@ -1,5 +1,6 @@
 import type { Product } from "@/types";
 import { defineStore } from "pinia";
+import type { SortStoreType } from "./sort";
 
 type ProductState = {
    status: "" | "loading" | "more-loading" | "successful" | "error";
@@ -9,6 +10,10 @@ type ProductState = {
    count: number;
    pageSize: number;
    isLast: boolean;
+   brandID: number[] | null;
+   column: SortStoreType["column"] | null;
+   type: SortStoreType["type"] | null;
+   price: number[] | null;
 };
 
 const initialProductState: ProductState = {
@@ -19,6 +24,10 @@ const initialProductState: ProductState = {
    pageSize: 6,
    categoryID: null,
    isLast: false,
+   brandID: null,
+   column: null,
+   type: null,
+   price: null,
 };
 
 export const useProductStore = defineStore("product", {

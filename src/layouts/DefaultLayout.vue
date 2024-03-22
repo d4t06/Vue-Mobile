@@ -30,7 +30,7 @@ watch(
          <Footer />
 
          <div class="container mx-auto">
-            <p class="py-[10px] text-[14px] text-[#333] font-[500]">
+            <p class="py-[10px] text-[14px] text-[#333]">
                Make with ❤️ by d4t06 <br />
                © All rights no reserved ¯\_(ツ)_/¯
             </p>

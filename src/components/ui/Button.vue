@@ -31,7 +31,7 @@ const ButtonVariant = cva(
          },
          colors: {
             primary:
-               "before:bg-[#cd1818] before:border-[#951010] text-[#fff] before:shadow-[0_2px_0_#951010]",
+               "before:bg-[#cd1818] before:border-[#a40000] text-[#fff] before:shadow-[0_2px_0_#a40000]",
             secondary:
                "before:bg-[#f6f6f6] before:border-[#ccc] text-[#000] before:shadow-[0_2px_0_#ccc]",
             clear: "",

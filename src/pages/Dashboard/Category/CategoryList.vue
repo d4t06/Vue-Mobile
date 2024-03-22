@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { useAppStore } from "@/stores/app";
-import { storeToRefs } from "pinia";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { generateId } from "@/utils/appHelper";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import type { CategorySchema } from "@/types";
 import { Button, Box, OverlayCta } from "@/components/ui";
 import { AddItem, ConfirmModal, Modal } from "@/components/Modal";
@@ -14,9 +12,7 @@ type Modal = "close" | "edit" | "add" | "delete";
 const isOpenModal = ref<Modal>("close");
 const curCategoryIndex = ref<number>();
 
-const appStore = useAppStore();
-const { categories } = storeToRefs(appStore);
-const { addOrEditCategory, deleteCategory, isFetching } = useCategory();
+const { addOrEditCategory, categories, deleteCategory, isFetching, getCategories } = useCategory();
 
 const curCategory = computed(() =>
    curCategoryIndex.value === undefined ? undefined : categories.value[curCategoryIndex.value]

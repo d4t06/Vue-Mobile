@@ -7,6 +7,7 @@ type StateType = {
    page: number;
    count: number;
    pageSize: number;
+   isLast: boolean;
 };
 
 const initImageStore: StateType = {
@@ -15,6 +16,7 @@ const initImageStore: StateType = {
    tempImages: [],
    page: 0,
    pageSize: 0,
+   isLast: false,
 };
 
 export const useImageStore = defineStore("image", {

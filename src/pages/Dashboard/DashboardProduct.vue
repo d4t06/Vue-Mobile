@@ -4,10 +4,8 @@ import Button from "@/components/ui/Button.vue";
 import MyInput from "@/components/ui/MyInput.vue";
 import Table from "@/components/ui/Table/Table.vue";
 import useCategory from "@/composables/useCategory";
-import useProductAction from "@/composables/useProductAction";
-import useProduct from "@/composables/useProducts";
+import useGetProduct from "@/composables/useGetProduct";
 import { useProductStore } from "@/stores/product";
-import { useToastStore } from "@/stores/toast";
 import type { Category } from "@/types";
 import { moneyFormat } from "@/utils/appHelper";
 import { PlusIcon } from "@heroicons/vue/16/solid";
@@ -18,20 +16,29 @@ import { ref, watch } from "vue";
 type Tab = "all" | "add" | "edit";
 
 const currentTab = ref<Tab>("all");
-const currentProductIndex = ref<number>();
+// const currentProductIndex = ref<number>();
 const curCategory = ref<Category>();
 
-const toastStore = useToastStore();
 const productStore = useProductStore();
 const { products } = storeToRefs(productStore);
 
-const { getProduct, isFetching } = useProduct();
-const { categories, status } = useCategory();
+const { getProduct } = useGetProduct();
+const { categories, getCategories } = useCategory();
+
+watch(
+   () => 0,
+   () => {
+      getCategories();
+   },
+   {
+      immediate: true,
+   }
+);
 
 watch(
    curCategory,
    () => {
-      getProduct(1, 1, { replace: true });
+      getProduct({}, { replace: true });
    },
    {
       immediate: true,
@@ -83,7 +90,9 @@ const classes = {
          <!-- <template > -->
          <button
             v-for="category in categories"
-            :class="`${classes.tab} ${curCategory?.category_ascii === category.category_ascii ? classes.activeTab : ''}`"
+            :class="`${classes.tab} ${
+               curCategory?.category_ascii === category.category_ascii ? classes.activeTab : ''
+            }`"
             :onClick="() => (curCategory = category)"
          >
             {{ category.category_name }}

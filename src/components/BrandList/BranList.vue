@@ -6,25 +6,15 @@ import BrandItem from "./BrandItem.vue";
 import SelectedItem from "./SelectedItem.vue";
 import useFilterAction from "@/composables/useFilterAction";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import useProduct from "@/composables/useProducts";
 import BrandSkeleton from "../Skeleton/BrandSkeleton.vue";
+import useCurrentCategory from "@/composables/useCurrentCategory";
 
-const { categories, status } = useCategory();
+const { getBrandsByCategory, status } = useCurrentCategory();
 const { handleToggle, brands, price, isFetching } = useFilterAction();
-
-const route = useRoute();
 
 const isFilter = computed(() => !!brands.value.length || !!price.value);
 
-const brandsByCategory = computed(() => {
-   if (status.value !== "successful") return [];
-
-   const categoryAscii = route.params.categoryAscii;
-   if (!categoryAscii) return [];
-
-   const curCategory = categories.value.find((c) => c.category_ascii === categoryAscii);
-   return curCategory ? curCategory.brands : [];
-});
+const brandsByCategory = computed(() => getBrandsByCategory());
 </script>
 
 <template>

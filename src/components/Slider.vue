@@ -17,7 +17,7 @@ console.log(">>> check props", props.className);
 const classes = {
    container: "absolute inset-0 rounded-[24px] bg-[#f1f1f1]",
    button:
-      "!absolute top-[50%] translate-y-[-50%] bg-white text-[#999]  z-10 transition-transform hover:scale-[1.05] h-[40px] w-[40px] hover:shadow-lg",
+      "!absolute top-[50%] translate-y-[-50%] bg-white text-[#333]  z-10 transition-transform hover:scale-[1.05] h-[40px] w-[40px] hover:shadow-lg",
    leftArrow: "left-[16px]",
    rightArrow: "right-[16px]",
 };
@@ -33,6 +33,7 @@ const classes = {
          rounded="max"
          variant="clear"
          size="clear"
+         colors="clear"
       >
          <ArrowLeftIcon class="w-[20px]" />
       </Button>
@@ -40,6 +41,7 @@ const classes = {
          :class="`${classes.button} ${classes.rightArrow}`"
          rounded="max"
          variant="clear"
+         colors="clear"
          size="clear"
       >
          <ArrowRightIcon class="w-[20px]" />

@@ -7,32 +7,37 @@ import ProductSkeleton from "@/components/Skeleton/ProductSkeleton.vue";
 import Skeleton from "@/components/Skeleton/Skeleton.vue";
 import Slider from "@/components/Slider.vue";
 import Sort from "@/components/Sort.vue";
+import Button from "@/components/ui/Button.vue";
 import useCategory from "@/composables/useCategory";
+import useGetProduct from "@/composables/useGetProduct";
 import useProduct from "@/composables/useProducts";
+import useCurrentCategory from "@/composables/useCurrentCategory";
 import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 
 // hooks
 const route = useRoute();
 
-const { getCurCategory, status: appStatus } = useCategory();
-const { getProduct, status: productStatus, count, products } = useProduct();
+const { status: appStatus } = useCategory();
+const { status: productStatus, count, products, isLast, isFetching, page } = useProduct();
+const { getProduct } = useGetProduct();
+const { getCurCategory } = useCurrentCategory();
 
-const curCategory = computed(() => getCurCategory());
-
-const isLoading = computed(
-   () => appStatus.value === "loading" || productStatus.value === "loading"
+const isReplaceLoading = computed(
+   () => appStatus.value === "loading" || productStatus.value == "loading"
 );
+
+const isGetMoreLoading = computed(() => productStatus.value == "more-loading");
+
+const handleGetMore = () => {
+   getProduct({ page: page.value + 1 }, { more: true });
+};
 
 watch(
    [route, appStatus],
    () => {
       if (appStatus.value == "loading") return;
-      if (!curCategory.value) {
-         productStatus.value == "error";
-         return;
-      }
-      getProduct({ page: 0, categoryID: curCategory.value.id }, { replace: true });
+      getProduct({}, { replace: true });
    },
    {
       immediate: true,
@@ -51,22 +56,32 @@ watch(
             </template>
             <template v-else>
                <h2 class="mb-[6px] text-[18px]">
-                  {{ curCategory?.category_name }} ( {{ count }} ) products
+                  {{ getCurCategory()?.category_name }} (
+                  <span class="text-[#cd1818] font-[500]">{{ count }}</span>
+                  ) products
                </h2>
             </template>
+
             <BranList />
             <Sort />
-            <div class="flex flex-wrap mt-[8px] mx-[-8px]">
-               <template v-if="isLoading">
-                  <ProductSkeleton />
-               </template>
-               <template v-else>
+            <div class="flex flex-wrap mt-[12px] mx-[-8px]">
+               <NotFoundProduct v-if="productStatus === 'successful' && !products.length" />
+
+               <template v-if="!isReplaceLoading">
                   <div v-for="product in products" class="w-1/3 px-[4px] mt-[8px]">
                      <ProductItem :product="product" />
                   </div>
-
-                  <NotFoundProduct v-if="productStatus === 'successful' && !products.length" />
                </template>
+
+               <ProductSkeleton v-if="isReplaceLoading || isGetMoreLoading" />
+            </div>
+            <div class="my-[30px] text-center">
+               <Button
+                  :onClick="handleGetMore"
+                  :class="`${isLast || isFetching ? 'disable' : ''}`"
+                  variant="push"
+                  >Show more</Button
+               >
             </div>
          </div>
          <div class="w-1/3 pl-[12px]">

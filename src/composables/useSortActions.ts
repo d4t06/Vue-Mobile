@@ -2,10 +2,12 @@ import { useSortStore } from "@/stores/sort";
 import { storeToRefs } from "pinia";
 import useProduct from "./useProducts";
 import { generateId } from "@/utils/appHelper";
+import useGetProduct from "./useGetProduct";
 
 export default function useSortActions() {
    const sortStore = useSortStore();
-   const { categoryID, getProduct } = useProduct();
+   const { categoryID } = useProduct();
+   const { getProduct } = useGetProduct();
    const { column, enable, type, nameAscii } = storeToRefs(sortStore);
 
    type SortType = {
@@ -29,14 +31,14 @@ export default function useSortActions() {
             if (sortStore.column === column && sortStore.type === type) return;
 
             sortStore.$patch({ column, type, nameAscii: generateId(name), enable: true });
-            getProduct({ categoryID: categoryID.value, column, type }, { replace: true });
+            getProduct({}, { replace: true });
             break;
 
          case "clear":
             if (!sortStore.enable) return;
 
             sortStore.$patch({ column: null, type: null, nameAscii: null, enable: false });
-            getProduct({ categoryID: categoryID.value }, { replace: true });
+            getProduct({}, { replace: true });
             break;
       }
    };

@@ -11,7 +11,7 @@ type Status = "loading" | "error" | "success" | "uploading";
 
 export default function useImageAction() {
    const imageStore = useImageStore();
-   const { tempImages, images, count, page, pageSize } = storeToRefs(imageStore);
+   const { tempImages, images, count, page, pageSize, isLast } = storeToRefs(imageStore);
    const toastStore = useToastStore();
 
    const isFetching = ref(false);
@@ -28,6 +28,7 @@ export default function useImageAction() {
       images: ImageType[];
       pageSize: number;
       count: number;
+      isLast: boolean;
    };
 
    const getImages = async (page: number = 1) => {
@@ -51,6 +52,7 @@ export default function useImageAction() {
             pageSize: data.pageSize,
             page: data.page,
             images: newImages,
+            isLast: data.isLast,
          });
 
          status.value = "success";
@@ -163,6 +165,8 @@ export default function useImageAction() {
       isFetching,
       status,
       images,
+      page,
+      isLast,
       tempImages,
       inputChangeHandler,
       getImages,

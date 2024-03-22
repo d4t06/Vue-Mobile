@@ -28,6 +28,8 @@ export default function useCategory() {
 
    const getCategories = async () => {
       try {
+         if (appStore.categories.length) return;
+         
          console.log(">>> api get categories");
          const res = await publicRequest.get("/categories");
          appStore.storingCategory({ categories: res.data.data, status: "successful" });
@@ -35,21 +37,6 @@ export default function useCategory() {
          console.log({ message: err });
          appStore.storingCategory({ status: "error" });
       }
-   };
-
-   const getCurCategory = () => {
-      if (status.value !== "successful") return undefined;
-
-      const categoryAscii = route.params.categoryAscii;
-      if (!categoryAscii) return undefined;
-
-      return categories.value.find((c) => c.category_ascii === categoryAscii);
-   };
-
-   const getBrandsByCategory = () => {
-      const curCategory = getCurCategory();
-      if (!curCategory) return [];
-      return curCategory.brands;
    };
 
    type AddCategory = {
@@ -151,8 +138,6 @@ export default function useCategory() {
       categories,
       status,
       getCategories,
-      getCurCategory,
-      getBrandsByCategory,
       addOrEditCategory,
       deleteCategory,
       isFetching,

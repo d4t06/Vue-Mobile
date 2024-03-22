@@ -6,9 +6,10 @@ import useProduct from "@/composables/useProducts";
 import BrandFilterSkeleton from "../Skeleton/BrandFilterSkeleton.vue";
 import useFilterAction from "@/composables/useFilterAction";
 import BrandItem from "./BrandItem.vue";
+import useCurrentCategory from "@/composables/useCurrentCategory";
 
-const { getBrandsByCategory, status: appStatus } = useCategory();
 const { isFetching } = useProduct();
+const {getBrandsByCategory, status} = useCurrentCategory()
 
 const { handleToggle } = useFilterAction();
 
@@ -20,7 +21,7 @@ const brandsByCategory = computed(() => getBrandsByCategory());
       <h4 class="filter-title">Brand</h4>
 
       <div :class="`filter-list ${isFetching ? 'disable' : ''}`">
-         <template v-if="appStatus == 'loading'">
+         <template v-if="status == 'loading'">
             <BrandFilterSkeleton v-for="key in [...Array(5).keys()]" />
          </template>
          <template v-else>

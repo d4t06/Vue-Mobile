@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { MapPinIcon, PhoneIcon } from "@heroicons/vue/24/outline";
+import { DevicePhoneMobileIcon, MapPinIcon, PhoneIcon } from "@heroicons/vue/24/outline";
 </script>
 <template>
    <div class="container mx-auto footer">
@@ -14,7 +14,7 @@ import { MapPinIcon, PhoneIcon } from "@heroicons/vue/24/outline";
             <div class="flex mt-[30px] md:mt-0 w-full sm:w-1/2">
                <div class="w-1/2 md:w-1/3">
                   <h5>
-                     <PhoneIcon class="w-[22px]" />
+                     <DevicePhoneMobileIcon class="w-[22px]" />
                      <span> Hotline </span>
                   </h5>
 

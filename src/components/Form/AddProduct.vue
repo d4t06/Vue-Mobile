@@ -4,7 +4,7 @@ import Box from "@/components/ui/Box.vue";
 import MyInput from "@/components/ui/MyInput.vue";
 import OverlayCta from "@/components/ui/OverlayCta.vue";
 import { useAppStore } from "@/stores/app";
-import type { Category, Product, ProductSchema } from "@/types";
+import type { Category, ProductSchema } from "@/types";
 import { generateId, inputClasses } from "@/utils/appHelper";
 import { ArrowPathIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { ref, watch, type Prop, computed } from "vue";
+import { ref, watch, computed } from "vue";
 import Button from "./ui/Button.vue";
-import GallerySkeleton from "./Skeleton/GallerySkeleton.vue";
 import type { ImageType } from "@/types";
 import { formatSize } from "@/utils/appHelper";
 
@@ -19,7 +18,17 @@ const { close, handleChose } = defineProps<Props>();
 
 const chosenImage = ref<ImageType>();
 
-const { getImages, isRemaining, images, tempImages, status, isFetching, deleteImage } = useImageAction();
+const {
+   getImages,
+   isRemaining,
+   isLast,
+   page,
+   images,
+   tempImages,
+   status,
+   isFetching,
+   deleteImage,
+} = useImageAction();
 
 const ableToChosenImage = computed(() => status.value === "success" && chosenImage.value);
 
@@ -34,15 +43,21 @@ const handleDeleteImage = async () => {
    await deleteImage(chosenImage.value.public_id);
 };
 
+const handleGetMore = () => {
+   getImages(page.value + 1);
+};
+
 watch(
    () => 0,
    () => {
-      getImages(1);
+      getImages(0);
    },
    {
       immediate: true,
    }
 );
+
+console.log("chekc is lsat", isLast.value);
 
 const classes = {
    container: "w-[90vw] bg-white h-[80vh] overflow-hidden",
@@ -109,7 +124,7 @@ const classes = {
             </template>
 
             <div v-if="images.length && isRemaining" class="text-center mt-[14px]">
-               <Button :onClick="() => {}" variant="push"> More </Button>
+               <Button :disabled="isLast" :onClick="handleGetMore" variant="push"> More </Button>
             </div>
          </div>
          <div :class="classes.bodyRight">

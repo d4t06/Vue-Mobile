@@ -2,10 +2,12 @@ import { useFiltersStore } from "@/stores/filter";
 import type { Brand, PriceRange } from "@/types";
 import { storeToRefs } from "pinia";
 import useProduct from "./useProducts";
+import useGetProduct from "./useGetProduct";
 
 export default function useFilterAction() {
    const filterStore = useFiltersStore();
-   const { getProduct, categoryID, isFetching } = useProduct();
+   const { categoryID, isFetching } = useProduct();
+   const { getProduct } = useGetProduct();
    const { brands, price } = storeToRefs(filterStore);
 
    type BrandToggle = {
@@ -47,8 +49,7 @@ export default function useFilterAction() {
             filterStore.price = null;
       }
 
-      const brandID = brands.value.map((b) => b.id);
-      getProduct({ page: 0, brandID, categoryID: categoryID.value }, { replace: true });
+      getProduct({}, { replace: true });
    };
 
    return { handleToggle, brands, price, isFetching };
