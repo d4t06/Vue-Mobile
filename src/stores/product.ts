@@ -3,20 +3,22 @@ import { defineStore } from "pinia";
 
 type ProductState = {
    status: "" | "loading" | "more-loading" | "successful" | "error";
-   category_id: number;
+   categoryID: number | null;
    page: number;
    products: Product[];
    count: number;
    pageSize: number;
+   isLast: boolean;
 };
 
 const initialProductState: ProductState = {
    status: "loading",
    products: [],
    count: 0,
-   pageSize: 0,
-   category_id: 0,
-   page: 1,
+   page: 0,
+   pageSize: 6,
+   categoryID: null,
+   isLast: false,
 };
 
 export const useProductStore = defineStore("product", {

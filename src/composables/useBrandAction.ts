@@ -75,14 +75,12 @@ export default function useBrandAction({ isOpenModal, curCategoryIndex }: Props)
                   throw new Error("Current not found");
 
                const { brand: updateBrand, currentIndex } = props;
+               if (currentIndex === undefined) throw new Error("Missing current index");
 
-               const oldBrand = currentCategory.value.brands[curCategoryIndex.value];
+               const oldBrand = currentCategory.value.brands[currentIndex];
+               if (oldBrand === undefined) throw new Error("Brand not found ");
 
-               if (currentIndex === undefined || !oldBrand)
-                  throw new Error("Missing current index");
-               
                isFetching.value = true;
-
                // api
                await privateRequest.put(`${BRAND_URL}/${oldBrand.id}`, updateBrand);
 

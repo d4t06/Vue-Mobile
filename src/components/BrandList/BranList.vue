@@ -3,18 +3,18 @@ import useCategory from "@/composables/useCategory";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BrandItem from "./BrandItem.vue";
-import { useFiltersStore } from "@/stores/filter";
-import { storeToRefs } from "pinia";
 import SelectedItem from "./SelectedItem.vue";
+import useFilterAction from "@/composables/useFilterAction";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
+import useProduct from "@/composables/useProducts";
+import BrandSkeleton from "../Skeleton/BrandSkeleton.vue";
 
 const { categories, status } = useCategory();
-const filterStore = useFiltersStore();
-
-const { filters, sort } = storeToRefs(filterStore);
+const { handleToggle, brands, price, isFetching } = useFilterAction();
 
 const route = useRoute();
 
-const isFilter = computed(() => !!filters.value.brands.length && !!filters.value.price);
+const isFilter = computed(() => !!brands.value.length || !!price.value);
 
 const brandsByCategory = computed(() => {
    if (status.value !== "successful") return [];
@@ -29,12 +29,29 @@ const brandsByCategory = computed(() => {
 
 <template>
    <div class="container">
-      <div class="brand-list">
+      <div :class="`brand-list ${isFetching ? 'disable' : ''}`">
          <template v-if="isFilter">
-            <SelectedItem v-for="brand in filters.brands" :brand="brand" />
+            <SelectedItem
+               v-for="brand in brands"
+               :onClick="() => handleToggle({ variant: 'brand', value: brand })"
+               :brand="brand"
+            />
+
+            <button
+               :onClick="() => handleToggle({ variant: 'clear' })"
+               class="hover:text-[#cd1818]"
+            >
+               <XMarkIcon class="w-[24px]" />
+            </button>
          </template>
          <template v-else>
-            <BrandItem v-for="brand in brandsByCategory" :brand="brand" />
+            <BrandSkeleton v-if="status === 'loading'" />
+            <BrandItem
+               v-else
+               v-for="brand in brandsByCategory"
+               :onClick="() => handleToggle({ variant: 'brand', value: brand })"
+               :brand="brand"
+            />
          </template>
       </div>
    </div>

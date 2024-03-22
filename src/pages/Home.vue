@@ -27,9 +27,7 @@ watch(
 </script>
 
 <template>
-   <div class="mt-[30px]">
-      <Slider />
-   </div>
+   <Slider />
    <div class="mt-[30px] flex">
       <div class="w-[2/3]">
          <BranList />

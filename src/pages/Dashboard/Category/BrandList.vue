@@ -51,6 +51,14 @@ const handleOpenModal = ({ ...props }: OpenAddModal | OpenEditOrDeleteModal) => 
 
 const closeModal = () => (isOpenModal.value = "close");
 
+type AddBrand = {
+   type: "add";
+};
+
+type EditBrand = {
+   type: "edit";
+};
+
 const handleAddBrand = async (value: string, type: "add" | "edit") => {
    if (!value.trim() || !curCategory.value) return;
 
@@ -70,7 +78,7 @@ const handleAddBrand = async (value: string, type: "add" | "edit") => {
          await brandActions({
             type: "edit",
             brand: newBrand,
-            currentIndex: curCategoryIndex.value,
+            currentIndex: curBrandIndex.value,
          });
 
          break;

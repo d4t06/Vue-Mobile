@@ -6,6 +6,7 @@ import { storeToRefs } from "pinia";
 import { ref, watch, type Ref } from "vue";
 import usePrivateRequest from "./usePrivateRequest";
 import { sleep } from "@/utils/appHelper";
+import { useRoute } from "vue-router";
 
 export type CategoryOpenModal = "close" | "edit" | "add" | "delete";
 
@@ -23,6 +24,7 @@ export default function useCategory() {
    const { status, categories } = storeToRefs(appStore);
 
    const privateRequest = usePrivateRequest();
+   const route = useRoute();
 
    const getCategories = async () => {
       try {
@@ -33,6 +35,21 @@ export default function useCategory() {
          console.log({ message: err });
          appStore.storingCategory({ status: "error" });
       }
+   };
+
+   const getCurCategory = () => {
+      if (status.value !== "successful") return undefined;
+
+      const categoryAscii = route.params.categoryAscii;
+      if (!categoryAscii) return undefined;
+
+      return categories.value.find((c) => c.category_ascii === categoryAscii);
+   };
+
+   const getBrandsByCategory = () => {
+      const curCategory = getCurCategory();
+      if (!curCategory) return [];
+      return curCategory.brands;
    };
 
    type AddCategory = {
@@ -118,17 +135,26 @@ export default function useCategory() {
       }
    };
 
-   watch(
-      appStore,
-      async () => {
-         if (!categories.value.length) getCategories();
-      },
-      {
-         immediate: true,
-         flush: "post",
-         once: true,
-      }
-   );
+   // watch(
+   //    appStore,
+   //    async () => {
+   //       if (!categories.value.length) getCategories();
+   //    },
+   //    {
+   //       immediate: true,
+   //       flush: "post",
+   //       once: true,
+   //    }
+   // );
 
-   return { categories, status, addOrEditCategory, deleteCategory, isFetching };
+   return {
+      categories,
+      status,
+      getCategories,
+      getCurCategory,
+      getBrandsByCategory,
+      addOrEditCategory,
+      deleteCategory,
+      isFetching,
+   };
 }

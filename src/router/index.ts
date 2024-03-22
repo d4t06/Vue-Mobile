@@ -22,7 +22,7 @@ const routeList = [
       component: Account,
    },
    {
-      path: "/:category_ascii",
+      path: "/:categoryAscii",
       component: Product,
    },
    {
