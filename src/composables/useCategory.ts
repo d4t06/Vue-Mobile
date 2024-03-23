@@ -12,11 +12,11 @@ export type CategoryOpenModal = "close" | "edit" | "add" | "delete";
 
 const CATEGORY_URL = "/categories";
 
-// type Props = {
-//    isOpenModal: Ref<CategoryOpenModal>;
-// };
+type Props = {
+   autoGetCategories?: boolean;
+};
 
-export default function useCategory() {
+export default function useCategory(props?: Props) {
    const isFetching = ref(false);
 
    const appStore = useAppStore();
@@ -29,7 +29,7 @@ export default function useCategory() {
    const getCategories = async () => {
       try {
          if (appStore.categories.length) return;
-         
+
          console.log(">>> api get categories");
          const res = await publicRequest.get("/categories");
          appStore.storingCategory({ categories: res.data.data, status: "successful" });
@@ -122,17 +122,17 @@ export default function useCategory() {
       }
    };
 
-   // watch(
-   //    appStore,
-   //    async () => {
-   //       if (!categories.value.length) getCategories();
-   //    },
-   //    {
-   //       immediate: true,
-   //       flush: "post",
-   //       once: true,
-   //    }
-   // );
+   watch(
+      () => 0,
+      () => {
+         if (props?.autoGetCategories) {
+            if (!categories.value.length) getCategories();
+         }
+      },
+      {
+         immediate: true,
+      }
+   );
 
    return {
       categories,

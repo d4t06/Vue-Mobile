@@ -33,11 +33,13 @@ const handleGetMore = () => {
    getProduct({ page: page.value + 1 }, { more: true });
 };
 
+const curCategory = computed(() => getCurCategory());
+
 watch(
    [route, appStatus],
    () => {
       if (appStatus.value == "loading") return;
-      getProduct({}, { replace: true });
+      getProduct({ categoryID: curCategory.value?.id }, { replace: true });
    },
    {
       immediate: true,
@@ -55,10 +57,9 @@ watch(
                <Skeleton className="w-[180px] h-[24px] rounded-[4px] mb-[6px]" />
             </template>
             <template v-else>
-               <h2 class="mb-[6px] text-[18px]">
-                  {{ getCurCategory()?.category_name }} (
-                  <span class="text-[#cd1818] font-[500]">{{ count }}</span>
-                  ) products
+               <h2 class="mb-[6px] text-[22px] font-[500]">
+                  {{ getCurCategory()?.category_name }}
+                  <span class="text-[#333] text-[18px]"> ({{ count }} products)</span>
                </h2>
             </template>
 
@@ -73,7 +74,10 @@ watch(
                   </div>
                </template>
 
-               <ProductSkeleton v-if="isReplaceLoading || isGetMoreLoading" />
+               <ProductSkeleton
+                  :className="`${isGetMoreLoading ? 'h-[100%]' : ''}`"
+                  v-if="isReplaceLoading || isGetMoreLoading"
+               />
             </div>
             <div class="my-[30px] text-center">
                <Button

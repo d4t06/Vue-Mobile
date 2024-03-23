@@ -24,7 +24,7 @@ const continents: Continent[] = [
    },
    {
       name: "Best seller",
-      column: "seller",
+      column: "price",
       type: "desc",
    },
 ];
@@ -39,7 +39,7 @@ const classes = {
 </script>
 <template>
    <div :class="`flex items-center  mt-[20px]`">
-      <p class="text-[18px]">Sort</p>
+      <h5 class="text-[16px] font-[500] translate-y-[1px]">Sort</h5>
       <div :class="`ml-[14px] flex space-x-[10px] ${isFetching ? 'disable' : ''}`">
          <Button
             :class="classes.btn"

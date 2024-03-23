@@ -11,8 +11,6 @@ export default function useGetProduct() {
    const filterStore = useFiltersStore();
    const sortStore = useSortStore();
 
-   const { getCurCategory } = useCurrentCategory();
-
    const PRODUCT_URL = "/products";
 
    type ProductResponse = {
@@ -40,7 +38,7 @@ export default function useGetProduct() {
 
          const getProductParams: Params = {
             brandID: filterStore.brands.map((b) => b.id),
-            categoryID: productStore.categoryID,
+            categoryID: params.categoryID || productStore.categoryID || null,
             page: params.page || 0,
             pageSize: 1,
             price: filterStore.price ? [filterStore.price.from, filterStore.price.to] : null,
@@ -62,7 +60,7 @@ export default function useGetProduct() {
             status: "successful",
             replace: option?.replace ?? false,
             products: data.products,
-            categoryID: getCurCategory()?.id ?? null,
+            categoryID: params.categoryID || productStore.categoryID || null,
             page: data.page,
             count: data.count,
             isLast: data.isLast,

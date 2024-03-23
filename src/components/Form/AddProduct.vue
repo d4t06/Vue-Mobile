@@ -4,26 +4,29 @@ import Box from "@/components/ui/Box.vue";
 import MyInput from "@/components/ui/MyInput.vue";
 import OverlayCta from "@/components/ui/OverlayCta.vue";
 import { useAppStore } from "@/stores/app";
-import type { Category, ProductSchema } from "@/types";
+import type { Category, Product, ProductSchema } from "@/types";
 import { generateId, inputClasses } from "@/utils/appHelper";
 import { ArrowPathIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import Gallery from "../Gallery.vue";
 import Button from "@/components/ui/Button.vue";
 import useProductAction, { type ProductModal } from "@/composables/useProductAction";
+import { useProductStore } from "@/stores/product";
 
 type AddProduct = {
    type: "add";
+   count: number;
 };
 
-// type EditProduct = {
-//    type: "edit";
-//    product: Product;
-//    currentIndex: number;
-// };
+type EditProduct = {
+   type: "edit";
+   product?: Product;
+   currentIndex?: number;
+   count: number;
+};
 
-type Props = AddProduct;
+type Props = AddProduct | EditProduct;
 
 const initProduct = {
    category_id: 0,
@@ -39,12 +42,25 @@ const handleInitProduct = (props: Props) => {
    switch (props.type) {
       case "add":
          return initProduct;
-      // case "edit":
-      //    return props.product;
+      case "edit":
+         if (props.product) {
+            const { product } = props;
+            return {
+               brand_id: product.brand_id,
+               category_id: product.category_id,
+               image_url: product.image_url,
+               installment: product.installment,
+               price: product.price,
+               product_ascii: product.product_ascii,
+               product_name: product.product_name,
+            } as ProductSchema;
+         } else return initProduct;
    }
 };
 
 const { ...props } = defineProps<Props>();
+
+console.log("check props", props);
 
 const productData = reactive<ProductSchema>(handleInitProduct(props));
 const isOpenModal = ref<ProductModal>("close");
@@ -52,6 +68,7 @@ const curCategory = ref<Category>();
 const curProductID = ref<number>();
 
 const appStore = useAppStore();
+const productStore = useProductStore();
 const { categories } = storeToRefs(appStore);
 const { isFetching, productActions } = useProductAction({ isOpenModal });
 
@@ -120,9 +137,22 @@ const handleSubmit = async () => {
 const handleDeleteProduct = async (id: number) => {
    await productActions({ type: "delete", productID: id });
 };
+
+console.log("body render", props.count);
+
+watch(
+   () => 0,
+   () => {
+      console.log("add form check props", props);
+   },
+   {
+      immediate: true,
+   }
+);
 </script>
 
 <template>
+   {{ console.log("template render", count) }}
    <div class="flex items-center space-x-[8px]">
       <PencilSquareIcon class="w-[24px]" />
       <h1 class="text-[26px] font-[500]">Add new product</h1>
@@ -138,7 +168,12 @@ const handleDeleteProduct = async (id: number) => {
                <template v-slot:children>
                   <img :src="productData.image_url" alt="asd" />
                   <OverlayCta>
-                     <Button variant="clear" size="clear" :class="inputClasses.overlayButton" :onClick="() => handleOpenModal({ modal: 'gallery' })">
+                     <Button
+                        variant="clear"
+                        size="clear"
+                        :class="inputClasses.overlayButton"
+                        :onClick="() => handleOpenModal({ modal: 'gallery' })"
+                     >
                         <ArrowPathIcon class="w-[24px]" />
                      </Button>
                   </OverlayCta>

@@ -3,18 +3,8 @@ import useCategory from "@/composables/useCategory";
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 import CategoryList from "./CategoryList.vue";
 import BrandList from "./BrandList.vue";
-import { watch } from "vue";
 
-const { status, getCategories } = useCategory();
-watch(
-   () => 0,
-   () => {
-      getCategories();
-   },
-   {
-      immediate: true,
-   }
-);
+const { status } = useCategory({ autoGetCategories: true });
 </script>
 
 <template>

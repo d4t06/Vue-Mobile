@@ -3,10 +3,11 @@ import { storeToRefs } from "pinia";
 import useProduct from "./useProducts";
 import { generateId } from "@/utils/appHelper";
 import useGetProduct from "./useGetProduct";
+import { useProductStore } from "@/stores/product";
 
 export default function useSortActions() {
    const sortStore = useSortStore();
-   const { categoryID } = useProduct();
+   const productStore = useProductStore()
    const { getProduct } = useGetProduct();
    const { column, enable, type, nameAscii } = storeToRefs(sortStore);
 
@@ -23,7 +24,10 @@ export default function useSortActions() {
    type HandleSort = SortType | Clear;
 
    const handleSort = (props: HandleSort) => {
-      if (!categoryID.value) return;
+
+      console.log('check product Store', productStore.categoryID);
+      
+      if (!productStore.categoryID) return;
 
       switch (props.action) {
          case "sort":

@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import useCategory from "@/composables/useCategory";
 import { computed } from "vue";
-import { Button } from "@/components/ui";
 import useProduct from "@/composables/useProducts";
 import BrandFilterSkeleton from "../Skeleton/BrandFilterSkeleton.vue";
 import useFilterAction from "@/composables/useFilterAction";
@@ -18,7 +16,7 @@ const brandsByCategory = computed(() => getBrandsByCategory());
 
 <template>
    <div class="filter-section">
-      <h4 class="filter-title">Brand</h4>
+      <h5 class="filter-title">Brand</h5>
 
       <div :class="`filter-list ${isFetching ? 'disable' : ''}`">
          <template v-if="status == 'loading'">

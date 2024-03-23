@@ -6,44 +6,49 @@ import Table from "@/components/ui/Table/Table.vue";
 import useCategory from "@/composables/useCategory";
 import useGetProduct from "@/composables/useGetProduct";
 import { useProductStore } from "@/stores/product";
-import type { Category } from "@/types";
+import type { Category, Product } from "@/types";
 import { moneyFormat } from "@/utils/appHelper";
 import { PlusIcon } from "@heroicons/vue/16/solid";
 import { MagnifyingGlassIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
-import { ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 
 type Tab = "all" | "add" | "edit";
 
+const test = ref(0)
+
 const currentTab = ref<Tab>("all");
-// const currentProductIndex = ref<number>();
+const currentProduct = reactive<{ product: Product | null; index: number | null }>({
+   product: null,
+   index: null,
+});
 const curCategory = ref<Category>();
 
 const productStore = useProductStore();
 const { products } = storeToRefs(productStore);
 
 const { getProduct } = useGetProduct();
-const { categories, getCategories } = useCategory();
+const { categories } = useCategory({ autoGetCategories: true });
 
-watch(
-   () => 0,
-   () => {
-      getCategories();
-   },
-   {
-      immediate: true,
-   }
-);
+const handleOpenEdit = (index: number) => {
+   currentProduct.index = index;
+   currentProduct.product = products.value[index];
+   currentTab.value = "edit";
+};
 
 watch(
    curCategory,
    () => {
-      getProduct({}, { replace: true });
+      getProduct({ categoryID: curCategory.value?.id || null }, { replace: true });
    },
    {
       immediate: true,
    }
 );
+
+watch(currentProduct, () => {
+   console.log(">>> check current product", currentProduct);
+});
 
 const classes = {
    searchBtn: "w-[]",
@@ -53,6 +58,11 @@ const classes = {
    tab: "border-b-[4px] py-[3px] px-[12px] hover:brightness-100 flex-shrink-0",
    activeTab: "border-[#cd1818] text-[20px]",
 };
+
+
+console.log('check count', test.value);
+
+
 </script>
 
 <template>
@@ -64,9 +74,11 @@ const classes = {
          </Button>
       </div>
 
+      {{test}}
+
       <Button
          v-if="currentTab === 'all'"
-         :onClick="() => (currentTab = 'add')"
+         :onClick="() => test += 1"
          variant="push"
          class="ml-auto"
       >
@@ -87,7 +99,6 @@ const classes = {
             All
          </button>
 
-         <!-- <template > -->
          <button
             v-for="category in categories"
             :class="`${classes.tab} ${
@@ -97,17 +108,21 @@ const classes = {
          >
             {{ category.category_name }}
          </button>
-         <!-- </template> -->
       </div>
 
       <div class="mt-[30px]">
          <Table :colList="['Name', 'Giá', '']">
-            <template v-for="product in products">
+            <template v-for="(product, index) in products">
                <tr>
                   <td>{{ product.product_name }}</td>
                   <td>{{ moneyFormat(product.price) }}</td>
                   <td class="!text-right">
-                     <Button :class="classes.productButton" variant="clear" size="clear">
+                     <Button
+                        :onClick="() => handleOpenEdit(index)"
+                        :class="classes.productButton"
+                        variant="clear"
+                        size="clear"
+                     >
                         <PencilSquareIcon class="w-[24px]" />
                      </Button>
                   </td>
@@ -118,10 +133,15 @@ const classes = {
    </div>
 
    <div :class="`${currentTab != 'add' ? classes.hide : ''}`">
-      <AddProduct type="add" />
-      <!-- <p>Add tab</p> -->
+      <AddProduct type="add" :count="1" />
    </div>
    <div :class="`${currentTab != 'edit' ? classes.hide : ''}`">
-      <p>Delete tab</p>
+      <AddProduct
+         v-if="currentProduct.index != null"
+         type="edit"
+         :count="test"
+         :currentIndex="currentProduct.index"
+         :product="currentProduct.product"
+      />
    </div>
 </template>
