@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { XMarkIcon } from "@heroicons/vue/24/outline";
+import Button from "../ui/Button.vue";
 
 type Props = {
    title: string;
@@ -10,10 +11,10 @@ const { close, title } = defineProps<Props>();
 </script>
 
 <template>
-   <div className="flex justify-between mb-[15px]">
-      <h1 className="text-[26px] text-[#333] font-[500] mr-[10px] line-clamp-1">{{ title }}</h1>
-      <button :onClick="close">
-         <XMarkIcon className="w-[30px]" />
-      </button>
+   <div className="flex justify-between items-start mb-[15px]">
+      <h2 className="text-[20px] text-[#333] font-[500] mr-[30px]">{{ title }}</h2>
+      <Button size="clear" colors="secondary" variant="push" class="p-[4px]" :onClick="close">
+         <XMarkIcon class="w-[20px]" />
+      </Button>
    </div>
 </template>

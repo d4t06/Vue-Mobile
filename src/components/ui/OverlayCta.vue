@@ -1,16 +1,4 @@
 <script lang="ts" setup>
-import Button from "./Button.vue";
-
-// type Props = {
-//    data: {
-//       cb: () => void;
-//       icon: Object;
-//       className?: string;
-//    }[];
-// };
-
-// const { data } = defineProps<Props>();
-
 const classes = {
    container:
       "transition-[opacity,transform] flex absolute bottom-0 w-full h-[40%] items-center justify-center gap-[12px]",

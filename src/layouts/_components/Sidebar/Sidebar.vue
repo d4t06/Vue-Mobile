@@ -3,14 +3,13 @@ import Button from "@/components/ui/Button.vue";
 import {
    BookmarkSquareIcon,
    BuildingStorefrontIcon,
-   ChevronLeftIcon,
-   ChevronRightIcon,
    ComputerDesktopIcon,
    DevicePhoneMobileIcon,
 } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import logo from "@/assets/logo.png";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/16/solid";
 
 const BASE_URL = "/dashboard";
 
@@ -64,9 +63,10 @@ console.log("check path", route.path);
 
       <Button
          :onClick="handleExpand"
-         className="!absolute bottom-[20px] right-0 translate-x-[50%] z-[10]"
-         class="!p-[4px]"
+         size="clear"
          variant="push"
+         colors="secondary"
+         class="p-[4px] !absolute bottom-[20px] right-0 translate-x-[50%] z-[10]"
       >
          <slot v-if="expand"><ChevronLeftIcon class="w-[24px]" /></slot>
          <slot v-else><ChevronRightIcon class="w-[24px]" /></slot>

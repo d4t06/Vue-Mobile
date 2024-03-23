@@ -12,18 +12,18 @@ import { computed, reactive, ref, watch } from "vue";
 import Gallery from "../Gallery.vue";
 import Button from "@/components/ui/Button.vue";
 import useProductAction, { type ProductModal } from "@/composables/useProductAction";
-import { useProductStore } from "@/stores/product";
+import { useToastStore } from "@/stores/toast";
+import ConfirmModal from "../Modal/ConfirmModal.vue";
 
 type AddProduct = {
    type: "add";
-   count: number;
 };
 
 type EditProduct = {
    type: "edit";
    product?: Product;
    currentIndex?: number;
-   count: number;
+   cbAfterDelete?: () => void;
 };
 
 type Props = AddProduct | EditProduct;
@@ -38,37 +38,15 @@ const initProduct = {
    price: 0,
 } as ProductSchema;
 
-const handleInitProduct = (props: Props) => {
-   switch (props.type) {
-      case "add":
-         return initProduct;
-      case "edit":
-         if (props.product) {
-            const { product } = props;
-            return {
-               brand_id: product.brand_id,
-               category_id: product.category_id,
-               image_url: product.image_url,
-               installment: product.installment,
-               price: product.price,
-               product_ascii: product.product_ascii,
-               product_name: product.product_name,
-            } as ProductSchema;
-         } else return initProduct;
-   }
-};
+const props = defineProps<Props>();
 
-const { ...props } = defineProps<Props>();
-
-console.log("check props", props);
-
-const productData = reactive<ProductSchema>(handleInitProduct(props));
+const productData = reactive<ProductSchema>(initProduct);
 const isOpenModal = ref<ProductModal>("close");
 const curCategory = ref<Category>();
-const curProductID = ref<number>();
+
+const isChange = ref(false);
 
 const appStore = useAppStore();
-const productStore = useProductStore();
 const { categories } = storeToRefs(appStore);
 const { isFetching, productActions } = useProductAction({ isOpenModal });
 
@@ -91,6 +69,7 @@ const handleInput = (field: keyof typeof productData, value: any) => {
       curCategory.value = founded;
    }
 
+   isChange.value = true;
    Object.assign(productData, { ...productData, [field]: value });
 };
 
@@ -103,16 +82,13 @@ interface OpenOtherModal extends OpenModal {
 }
 interface OpenDeleteModal extends OpenModal {
    modal: "delete";
-   id: number;
 }
 
 const handleOpenModal = ({ ...props }: OpenOtherModal | OpenDeleteModal) => {
    switch (props.modal) {
       case "gallery":
-         break;
-
       case "delete":
-         curProductID.value = props.id;
+         break;
    }
 
    isOpenModal.value = props.modal;
@@ -127,35 +103,51 @@ const handleSubmit = async () => {
          Object.assign(productData, initProduct);
          break;
 
-      // case "edit":
-      //    const { currentIndex } = props;
-      //    await productActions({ type: "edit", product: productData, currentIndex });
-      //    break;
+      case "edit":
+         await productActions({
+            type: "edit",
+            product: productData,
+            currentIndex: props.currentIndex,
+         });
+         break;
    }
 };
 
-const handleDeleteProduct = async (id: number) => {
-   await productActions({ type: "delete", productID: id });
-};
+const handleDeleteProduct = async () => {
+   if (props.type === "edit" && props.product) {
+      await productActions({ type: "delete", productID: props.product.id });
+      Object.assign(productData, initProduct);
 
-console.log("body render", props.count);
+      props.cbAfterDelete && props.cbAfterDelete();
+   }
+};
 
 watch(
-   () => 0,
+   props,
    () => {
-      console.log("add form check props", props);
+      const handleInitProduct = () => {
+         if (props.type === "edit") {
+            const { product } = props;
+            if (product) {
+               const category = categories.value.find((c) => c.id === product.category_id);
+               if (category) {
+                  curCategory.value = category;
+                  Object.assign(productData, props.product);
+               }
+            }
+         }
+      };
+
+      handleInitProduct();
    },
-   {
-      immediate: true,
-   }
+   { immediate: true }
 );
 </script>
 
 <template>
-   {{ console.log("template render", count) }}
    <div class="flex items-center space-x-[8px]">
       <PencilSquareIcon class="w-[24px]" />
-      <h1 class="text-[26px] font-[500]">Add new product</h1>
+      <h1 class="text-[24px] font-[500]">{{ props.type === 'add' ? 'Add new product' : 'Edit product' }}</h1>
    </div>
    <div class="flex mx-[-8px] mt-[14px]">
       <div class="w-1/3 px-[8px]">
@@ -171,6 +163,7 @@ watch(
                      <Button
                         variant="clear"
                         size="clear"
+                        colors="clear"
                         :class="inputClasses.overlayButton"
                         :onClick="() => handleOpenModal({ modal: 'gallery' })"
                      >
@@ -185,21 +178,20 @@ watch(
       <div class="flex-1">
          <div class="space-y-[14px] px-[8px]">
             <div class="space-y-[4px]">
-               <label htmlFor=""> Product name </label>
+               <label htmlFor="name"> Product name</label>
                <MyInput
-                  name="name"
-                  :value="productData.product_name"
-                  :onChange="(e: any) => handleInput('product_name', e.target.value)"
+                  @input="(e) => handleInput('product_name', e.target.value)"
+                  :attrs="{ value: productData.product_name }"
                />
             </div>
 
             <div class="space-y-[4px]">
-               <label htmlFor="">Category</label>
+               <label htmlFor="category">Category</label>
                <select
-                  name="category"
+                  @input="(e: any) => handleInput('category_id', +e.target.value)"
                   :value="productData.category_id"
-                  :onChange="(e: any) => handleInput('category_id', +e.target.value)"
                   :class="inputClasses.input"
+                  name="category"
                >
                   <option :value="undefined">- - -</option>
                   <option v-for="cat in categories" :value="cat.id">
@@ -209,12 +201,12 @@ watch(
             </div>
 
             <div class="space-y-[4px]">
-               <label htmlFor="">Brand</label>
+               <label htmlFor="brand">Brand</label>
                <select
-                  name="brand"
+                  @input="(e: any) => handleInput('brand_id', +e.target.value)"
                   :value="productData.brand_id"
-                  :onChange="(e: any) => handleInput('brand_id', +e.target.value)"
                   :class="inputClasses.input"
+                  name="brand"
                >
                   <option :value="undefined">- - -</option>
                   <option v-for="brand in brandsByCategory" :value="brand.id">
@@ -227,9 +219,8 @@ watch(
                <label htmlFor="">Price</label>
                <MyInput
                   name="price"
-                  :value="productData.price"
-                  :onChange="(e: any) => handleInput('price', e.target.value)"
-                  placeholder=""
+                  :attrs="{ value: productData.price || '' }"
+                  @input="(e: any) => handleInput('price', e.target.value)"
                />
             </div>
          </div>
@@ -241,32 +232,37 @@ watch(
          class="mt-[30px]"
          variant="push"
          :onClick="handleSubmit"
-         :loading="isFetching"
-         :disabled="false"
+         :loading="isFetching === 'add' || isFetching === 'edit'"
+         :disabled="!isChange"
       >
-         Save
+         {{ props.type === "add" ? "Save" : "Save change" }}
       </Button>
    </div>
 
-   <!-- <template v-if="props.type == 'edit'">
+   <template v-if="props.type == 'edit'">
       <h5 class="text-red-500 mt-[30px] ${classes.label} font-semibold">DANGER ZONE</h5>
       <div class="border-red-500 border rounded-[16px] p-[14px]">
          <Button
-            :onClick="
-               () =>
-                  props.type === 'edit' &&
-                  handleOpenModal({ modal: 'delete', id: props.product.id })
-            "
+            variant="push"
+            :onClick="() => props.type === 'edit' && handleOpenModal({ modal: 'delete' })"
          >
             Delete Product
          </Button>
       </div>
-   </template> -->
+   </template>
 
    <Modal v-if="isOpenModal !== 'close'" :close="handleCloseModal">
       <Gallery
+         v-if="isOpenModal === 'gallery'"
          :close="handleCloseModal"
          :handleChose="(value) => handleInput('image_url', value)"
+      />
+      <ConfirmModal
+         v-if="isOpenModal === 'delete' && props.type === 'edit' && props.product"
+         :close="handleCloseModal"
+         :callback="handleDeleteProduct"
+         :loading="isFetching === 'delete'"
+         :title="`Delete product ' ${props.product.product_name} ' :v`"
       />
    </Modal>
 </template>

@@ -5,6 +5,6 @@ const { inputChangeHandler } = useImageAction();
 
 <template>
    <Teleport to="#portal">
-      <input class="hidden" :onChange="inputChangeHandler" type="file" id="image-upload" />
+      <input class="hidden" :onChange="inputChangeHandler" type="file" multiple accept="image/*" id="image-upload" />
    </Teleport>
 </template>

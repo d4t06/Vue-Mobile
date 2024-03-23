@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
-import { generateId } from "@/utils/appHelper";
+import { generateId, inputClasses } from "@/utils/appHelper";
 import { computed, ref, watch } from "vue";
 import type { CategorySchema } from "@/types";
 import { Button, Box, OverlayCta } from "@/components/ui";
@@ -75,11 +75,6 @@ const handleOpenModal = ({ ...props }: OpenAddModal | OpenEditOrDeleteModal) => 
 
    isOpenModal.value = props.modal;
 };
-
-const classes = {
-   button:
-      "text-[#333] rounded-[50%] bg-[#ccc] p-[4px] hover:text-white hover:bg-[#cd1818] hover:scale-[1.1] transition-transform",
-};
 </script>
 <template>
    <h1 class="text-[26px] font-[500] mb-[16px]">All Category</h1>
@@ -93,16 +88,18 @@ const classes = {
                   <OverlayCta>
                      <Button
                         :onClick="() => handleOpenModal({ currentIndex: index, modal: 'edit' })"
-                        :className="classes.button"
+                        :class="inputClasses.overlayButton"
                         variant="clear"
                         size="clear"
+                        colors="clear"
                      >
                         <PencilSquareIcon class="w-[22px]" />
                      </Button>
                      <Button
                         :onClick="() => handleOpenModal({ currentIndex: index, modal: 'delete' })"
-                        :className="classes.button"
+                        :class="inputClasses.overlayButton"
                         variant="clear"
+                        colors="clear"
                         size="clear"
                      >
                         <TrashIcon class="w-[22px]" />

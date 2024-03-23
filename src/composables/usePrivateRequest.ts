@@ -46,7 +46,6 @@ export default function usePrivateRequest() {
                   }
                }
 
-               router.push({ path: "/login" });
                return Promise.reject(err);
             }
          );

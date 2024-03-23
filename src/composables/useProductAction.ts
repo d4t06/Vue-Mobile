@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function useProductAction({ isOpenModal }: Props) {
-   const isFetching = ref(false);
+   const isFetching = ref<"add" | "edit" | "delete" | "">("");
 
    const productStore = useProductStore();
    const toastStore = useToastStore();
@@ -46,7 +46,7 @@ export default function useProductAction({ isOpenModal }: Props) {
       try {
          switch (props.type) {
             case "add":
-               isFetching.value = true;
+               isFetching.value = "add";
 
                const res = await privateRequest.post(`${PRODUCT_URL}`, props.product);
 
@@ -65,7 +65,7 @@ export default function useProductAction({ isOpenModal }: Props) {
 
                const oldProduct = products.value[currentIndex];
 
-               isFetching.value = true;
+               isFetching.value = "delete";
 
                // api
                await privateRequest.put(`${PRODUCT_URL}/${oldProduct.id}`, updateProduct);
@@ -78,7 +78,7 @@ export default function useProductAction({ isOpenModal }: Props) {
             case "delete":
                const { productID } = props;
 
-               isFetching.value = true;
+               isFetching.value = "delete";
 
                // api
                await privateRequest.delete(`${PRODUCT_URL}/${productID}`);
@@ -93,7 +93,7 @@ export default function useProductAction({ isOpenModal }: Props) {
          console.log({ message: error });
          toastStore.setErrorToast(`${props.type} product fail`);
       } finally {
-         isFetching.value = false;
+         isFetching.value = "";
          isOpenModal ? (isOpenModal.value = "close") : {};
       }
    };

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 import { type ButtonHTMLAttributes } from "vue";
 import { RouterLink } from "vue-router";
 
@@ -11,7 +11,7 @@ const classes = {
 };
 
 const ButtonVariant = cva(
-   "inline-flex justify-center items-center disabled:opacity-[.6] relative  z-0",
+   "inline-flex justify-center items-center disabled:opacity-[.6] disabled:pointer-events-none relative  z-0",
    {
       variants: {
          variant: {
@@ -28,12 +28,13 @@ const ButtonVariant = cva(
             primary: "before:rounded-[8px] rounded-[8px]",
             lg: "before:rounded-[12px] rounded-[12px]",
             max: "before:rounded-[99px] rounded-[99px]",
+            clear: "",
          },
          colors: {
             primary:
                "before:bg-[#cd1818] before:border-[#a40000] text-[#fff] before:shadow-[0_2px_0_#a40000]",
             secondary:
-               "before:bg-[#f6f6f6] before:border-[#ccc] text-[#000] before:shadow-[0_2px_0_#ccc]",
+               "before:bg-[#f6f6f6] before:border-[#ccc] text-[#333] before:shadow-[0_2px_0_#ccc]",
             clear: "",
          },
       },
@@ -55,12 +56,13 @@ interface ButtonProps extends /* @vue-ignore */ ButtonHTMLAttributes {
    className?: string;
    variant?: "primary" | "push" | "clear" | null | undefined;
    size?: "primary" | "full" | "clear" | null | undefined;
-   rounded?: "primary" | "lg" | "max" | null | undefined;
+   rounded?: "primary" | "lg" | "max" | "clear" | null | undefined;
    colors?: "primary" | "clear" | "secondary" | null | undefined;
    rest?: Partial<ButtonHTMLAttributes>;
 }
 
-const { href, variant, colors, className, loading, rounded, ...rest } = defineProps<ButtonProps>();
+const { href, variant, colors, size, className, loading, rounded, ...rest } =
+   defineProps<ButtonProps>();
 </script>
 
 <template>
@@ -76,7 +78,9 @@ const { href, variant, colors, className, loading, rounded, ...rest } = definePr
    <template v-else>
       <button
          v-bind="rest"
-         :class="`${ButtonVariant({ variant, size, rounded, colors, className })} ${active ? classes.active + ' ' + active : ''}`"
+         :class="`${ButtonVariant({ variant, size, rounded, colors, className })} ${
+            active ? classes.active + ' ' + active : ''
+         }`"
       >
          <template v-if="loading">
             <ArrowPathIcon class="w-[24px] animate-spin" />

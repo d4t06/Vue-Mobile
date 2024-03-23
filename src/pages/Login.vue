@@ -17,13 +17,13 @@ const errorMsg = ref("");
 const authStore = useAuthStore();
 const router = useRouter();
 
-router.beforeEach((to, from) => {
-   console.log("from", from.path, "to", to.path);
+// router.beforeEach((to, from) => {
+//    console.log("from", from.path, "to", to.path);
 
-   if (from.path) {
-      authStore.setAuthenticate({ prevPath: from.path });
-   }
-});
+//    if (from.path) {
+//       authStore.setAuthenticate({ prevPath: from.path });
+//    }
+// });
 
 const handleSubmit = async (e: Event) => {
    e.preventDefault();
@@ -49,9 +49,7 @@ const handleSubmit = async (e: Event) => {
          loading: false,
       });
 
-      console.log("login check", authStore.prevPath);
-
-      router.push(authStore.prevPath || "/");
+      router.push("/");
       authStore.setAuthenticate({ prevPath: null });
    } catch (error: any) {
       if (!error?.response) {
@@ -79,7 +77,7 @@ watch(
 watch(
    () => 0,
    () => {
-      if (authStore.user) return router.push("");
+      if (authStore.user) return router.push("/");
    },
    {
       immediate: true,

@@ -1,10 +1,13 @@
 <script setup lang="ts">
-const { count } = defineProps<{ count: number }>();
-
-console.log("render in script", count);
+const props = defineProps<{
+   count: number;
+   product: {
+      product: { count: number };
+      count: number;
+   };
+}>();
 </script>
 
 <template>
-   {{ console.log("render in template") }}
-   <p>child {{ count }}</p>
+   {{ console.log("render in template", props.product.count) }}
 </template>

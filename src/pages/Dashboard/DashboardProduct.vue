@@ -7,7 +7,7 @@ import useCategory from "@/composables/useCategory";
 import useGetProduct from "@/composables/useGetProduct";
 import { useProductStore } from "@/stores/product";
 import type { Category, Product } from "@/types";
-import { moneyFormat } from "@/utils/appHelper";
+import { inputClasses, moneyFormat } from "@/utils/appHelper";
 import { PlusIcon } from "@heroicons/vue/16/solid";
 import { MagnifyingGlassIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
@@ -15,13 +15,10 @@ import { reactive, ref, watch } from "vue";
 
 type Tab = "all" | "add" | "edit";
 
-const test = ref(0)
-
 const currentTab = ref<Tab>("all");
-const currentProduct = reactive<{ product: Product | null; index: number | null }>({
-   product: null,
-   index: null,
-});
+const currentProduct = ref<Product>();
+const currentProductIndex = ref<number>();
+
 const curCategory = ref<Category>();
 
 const productStore = useProductStore();
@@ -31,38 +28,33 @@ const { getProduct } = useGetProduct();
 const { categories } = useCategory({ autoGetCategories: true });
 
 const handleOpenEdit = (index: number) => {
-   currentProduct.index = index;
-   currentProduct.product = products.value[index];
+   currentProductIndex.value = index;
+   currentProduct.value = products.value[index];
    currentTab.value = "edit";
+};
+
+const handleAfterDeleteProduct = () => {
+   currentTab.value == "all";
+
+   currentProductIndex.value = undefined;
+   currentProduct.value = undefined;
 };
 
 watch(
    curCategory,
    () => {
-      getProduct({ categoryID: curCategory.value?.id || null }, { replace: true });
+      getProduct({ categoryID: curCategory.value?.id || null, pageSize: 2 }, { replace: true });
    },
    {
       immediate: true,
    }
 );
 
-watch(currentProduct, () => {
-   console.log(">>> check current product", currentProduct);
-});
-
 const classes = {
-   searchBtn: "w-[]",
    hide: "hidden",
-   productButton:
-      "p-[4px] transition-transform text-[#333] bg-[#e1e1e1] hover:scale-[1.05] hover:bg-[#cd1818] hover:text-white",
    tab: "border-b-[4px] py-[3px] px-[12px] hover:brightness-100 flex-shrink-0",
    activeTab: "border-[#cd1818] text-[20px]",
 };
-
-
-console.log('check count', test.value);
-
-
 </script>
 
 <template>
@@ -74,11 +66,9 @@ console.log('check count', test.value);
          </Button>
       </div>
 
-      {{test}}
-
       <Button
          v-if="currentTab === 'all'"
-         :onClick="() => test += 1"
+         :onClick="() => (currentTab = 'add')"
          variant="push"
          class="ml-auto"
       >
@@ -119,9 +109,10 @@ console.log('check count', test.value);
                   <td class="!text-right">
                      <Button
                         :onClick="() => handleOpenEdit(index)"
-                        :class="classes.productButton"
+                        :class="inputClasses.overlayButton"
                         variant="clear"
                         size="clear"
+                        colors="clear"
                      >
                         <PencilSquareIcon class="w-[24px]" />
                      </Button>
@@ -132,16 +123,16 @@ console.log('check count', test.value);
       </div>
    </div>
 
-   <div :class="`${currentTab != 'add' ? classes.hide : ''}`">
-      <AddProduct type="add" :count="1" />
+   <div :class="`${currentTab === 'add' ? '' : classes.hide}`">
+      <AddProduct type="add" />
    </div>
-   <div :class="`${currentTab != 'edit' ? classes.hide : ''}`">
+   <div :class="`${currentTab == 'edit' ? '' : classes.hide}`">
       <AddProduct
-         v-if="currentProduct.index != null"
+         v-if="currentProduct != null"
          type="edit"
-         :count="test"
-         :currentIndex="currentProduct.index"
-         :product="currentProduct.product"
+         :currentIndex="currentProductIndex"
+         :product="currentProduct"
+         :cbAfterDelete="handleAfterDeleteProduct"
       />
    </div>
 </template>
