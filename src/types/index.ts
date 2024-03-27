@@ -45,10 +45,11 @@ export type Category = {
    category_name: string;
    is_show: 0 | 1;
    brands: Brand[];
+   price_ranges: PriceRange[];
    category_slider: CategorySlider;
 };
 
-export type CategorySchema = Omit<Category, "id" | "brands" | "category_slider">;
+export type CategorySchema = Omit<Category, "id" | "brands" | "category_slider" | "price_ranges">;
 
 export type Brand = {
    id: number;
@@ -74,10 +75,12 @@ export type ImageSchema = Omit<ImageType, "id" | "public_id">;
 export type PriceRange = {
    id: number;
    category_id: number;
-   from: number;
-   to: number;
+   from_price: number;
+   to_price: number;
    label: string;
 };
+
+export type PriceRangeSchema = Omit<PriceRange, "id">;
 
 export type Toast = {
    title?: "success" | "error" | "warning";

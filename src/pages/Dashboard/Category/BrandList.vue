@@ -111,7 +111,7 @@ const classes = {
                <option :value="undefined">---</option>
 
                <template v-for="(category, index) in categories">
-                  <option :value="index">
+                  <option v-if="category.is_show" :value="index">
                      {{ category.category_name }}
                   </option>
                </template>

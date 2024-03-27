@@ -23,6 +23,13 @@ export default function useCurrentCategory() {
       return curCategory.brands;
    };
 
+   const getPricesByCategory = () => {
+      const curCategory = getCurCategory();
+      if (!curCategory) return [];
+      return curCategory.price_ranges;
+   };
+
+
    const getHomeSliderImages = () => {
 
       console.log('check categries',appStore.categories);
@@ -38,5 +45,6 @@ export default function useCurrentCategory() {
       getCurCategory,
       getBrandsByCategory,
       getHomeSliderImages,
+      getPricesByCategory
    };
 }

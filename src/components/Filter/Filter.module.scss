@@ -12,6 +12,11 @@
     flex-wrap: wrap;
     column-gap: 14px;
     row-gap: 10px;
+    &.price {
+      flex-direction: column;
+      align-items: start;
+      row-gap: 14px;
+    }
     .filter-item {
        button {
           font-size: 1.4rem;

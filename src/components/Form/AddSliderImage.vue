@@ -136,7 +136,7 @@ const titleMaps = {
       </div>
    </div>
 
-   <Modal v-if="isOpenModal" :close="closeModalSelf">
+   <Modal zIndex="z-[199]" v-if="isOpenModal" :close="closeModalSelf">
       <Gallery :handleChose="(value) => handleChoseImage(value)" :close="closeModalSelf" />
    </Modal>
 </template>

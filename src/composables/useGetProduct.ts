@@ -41,7 +41,7 @@ export default function useGetProduct() {
             categoryID: params.categoryID || productStore.categoryID || null,
             page: params.page || 0,
             pageSize: 1,
-            price: filterStore.price ? [filterStore.price.from, filterStore.price.to] : null,
+            price: filterStore.price ? [filterStore.price.from_price, filterStore.price.to_price] : null,
             column: sortStore.column,
             type: sortStore.type,
             ...params,

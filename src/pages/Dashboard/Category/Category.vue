@@ -3,6 +3,7 @@ import useCategory from "@/composables/useCategory";
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 import CategoryList from "./CategoryList.vue";
 import BrandList from "./BrandList.vue";
+import PriceRangeList from "./PriceRangeList.vue";
 
 const { status } = useCategory({ autoGetCategories: true });
 </script>
@@ -14,9 +15,10 @@ const { status } = useCategory({ autoGetCategories: true });
    <template v-else>
       <p v-if="status === 'error'">Some thing went wrong</p>
       <template v-else>
-         <CategoryList />
-         <div class="mt-[30px]">
+         <div class="space-y-[30px]">
+            <CategoryList />
             <BrandList />
+            <PriceRangeList />
          </div>
       </template>
    </template>

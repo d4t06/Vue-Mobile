@@ -5,13 +5,16 @@ import BrandFilterSkeleton from "../Skeleton/BrandFilterSkeleton.vue";
 import useFilterAction from "@/composables/useFilterAction";
 import BrandItem from "./BrandItem.vue";
 import useCurrentCategory from "@/composables/useCurrentCategory";
+import PriceFilterSkeleton from "../Skeleton/PriceFilterSkeleton.vue";
+import PriceItem from "./PriceItem.vue";
 
 const { isFetching } = useProduct();
-const {getBrandsByCategory, status} = useCurrentCategory()
+const { getBrandsByCategory, getPricesByCategory, status } = useCurrentCategory();
 
 const { handleToggle } = useFilterAction();
 
 const brandsByCategory = computed(() => getBrandsByCategory());
+const pricesByCategory = computed(() => getPricesByCategory());
 </script>
 
 <template>
@@ -36,33 +39,23 @@ const brandsByCategory = computed(() => getBrandsByCategory());
    </div>
 
    <div class="filter-section">
-      <!-- <h4 class="filter-title">Prices</h4> -->
+      <h4 class="filter-title">Prices</h4>
 
-      <!-- <div class="filter-list">
-         <template v-if="isFetching">
-            <BrandFilterSkeleton v-for="key in [...Array(5).keys()]" />
+      <div :class="`filter-list price ${isFetching ? 'disable' : ''}`">
+         <template v-if="status == 'loading'">
+            <PriceFilterSkeleton v-for="key in [...Array(5).keys()]" />
          </template>
          <template v-else>
-            <Button
-               size="clear"
-               active="text-[#cd1818] font-[500]"
-               class="py-[2px] px-[10px]"
-               variant="push"
-               colors="secondary"
-               >All
-            </Button>
+            <PriceItem :toggle="() => handleToggle({ variant: 'price', value: 'clear' })" />
 
-            <Button
-               size="clear"
-               active=""
-               class="py-[2px] px-[10px]"
-               variant="push"
-               colors="secondary"
-               v-for="brand in brandsByCategory"
-               >{{ brand.brand_name }}
-            </Button>
+            <template v-for="price in pricesByCategory">
+               <PriceItem
+                  :toggle="() => handleToggle({ variant: 'price', value: price })"
+                  :priceRange="price"
+               />
+            </template>
          </template>
-      </div> -->
+      </div>
    </div>
 </template>
 

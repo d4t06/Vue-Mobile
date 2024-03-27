@@ -4,7 +4,7 @@ import Button from "./ui/Button.vue";
 import type { ImageType } from "@/types";
 import { formatSize } from "@/utils/appHelper";
 
-import { ArrowPathIcon } from "@heroicons/vue/24/outline";
+import { ArrowPathIcon, ArrowUpTrayIcon } from "@heroicons/vue/24/outline";
 import GalleryItem from "./GalleryItem.vue";
 import useImageAction from "@/composables/useUploadImage";
 import Skeleton from "./Skeleton/Skeleton.vue";
@@ -65,9 +65,10 @@ const classes = {
    imageFrame:
       "absolute flex  w-full items-center justify-center bg-[#f1f1f1] inset-0 rounded-[8px] border-[2px] border-[#ccc] hover:border-[#cd1818] overflow-hidden",
    galleryTop:
-      "h-[40px] flex justify-between items-center border-b border-[#ccc] mb-[10px] pb-[10px]",
+      "h-[40px] pt-[2px] flex justify-between items-center border-b border-[#ccc] mb-[10px] pb-[10px]",
    galleryBody: "flex mx-[-10px]",
-   bodyLeft: "h-[calc(80vh-60px)] w-2/3 no-scrollbar px-[10px] overflow-x-hidden overflow-y-auto",
+   bodyLeft:
+      "h-[calc(80vh-60px-2px)] w-2/3 no-scrollbar px-[10px] overflow-x-hidden overflow-y-auto",
    bodyRight: "px-[10px] w-1/3 overflow-hidden border-l-[2px] space-y-[14px]",
 };
 </script>
@@ -77,19 +78,18 @@ const classes = {
       <div :class="classes.galleryTop">
          <div :class="'flex items-center'">
             <h1 class="text-[22px] font-[500]">Gallery</h1>
-            <Button class="ml-[10px] !p-0">
-               <label
-                  :class="`px-[20px] py-[4px] cursor-pointer inline-block ${
-                     status === 'loading' ? 'opacity-60 pointer-events-none' : ''
-                  }`"
-                  htmlFor="image-upload"
-               >
+            <Button
+               variant="push"
+               :class="`ml-[10px]  ${status === 'loading' ? 'opacity-60 pointer-events-none' : ''}`"
+            >
+               <label :class="`flex  cursor-pointer`" htmlFor="image-upload">
+                  <ArrowUpTrayIcon class="w-[22px] mr-[4px]" />
                   Upload
                </label>
             </Button>
          </div>
 
-         <Button :disabled="!ableToChosenImage" :onClick="handleSubmit" variant="primary">
+         <Button variant="push" :disabled="!ableToChosenImage" :onClick="handleSubmit">
             Select
          </Button>
       </div>
