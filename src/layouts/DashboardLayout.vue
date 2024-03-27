@@ -14,7 +14,7 @@ import UploadImagePortal from "@/components/UploadImagePortal.vue";
             <Sidebar />
             <div class="bg-[#fff] relative w-full">
                <DashboardHeader />
-               <div class="h-[calc(100vh-60px)] p-[30px] mt-[60px] overflow-auto w-full">
+               <div class="h-[calc(100vh-60px)] bg-[#f1f1f1] p-[30px] mt-[60px] overflow-auto w-full">
                   <RouterView />
                </div>
             </div>

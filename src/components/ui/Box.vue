@@ -1,16 +1,17 @@
 <script lang="ts" setup>
 import { PlusIcon } from "@heroicons/vue/24/outline";
-import { useSlots } from "vue";
 
 type Props = {
    onClick?: () => void;
    className?: string;
 };
 
-const { className, onClick } = defineProps<Props>();
+const { className, onClick } = withDefaults(defineProps<Props>(), {
+   className: 'pt-[100%]'
+})
 
 const classes = {
-   container: `group relative pt-[100%] rounded-[12px] border border-[#ccc] overflow-hidden bg-[#f1f1f1]`,
+   container: `group relative rounded-[12px] border border-[#ccc] overflow-hidden bg-[#f1f1f1]`,
    font: "absolute border-[2px] overflow-hidden border-b-[6px] active:border-b-[2px]  transition-[border] border-[#ccc] inset-0 flex rounded-[12px] items-center justify-center",
 };
 </script>

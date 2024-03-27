@@ -28,7 +28,7 @@ const handleAddCategory = async (value: string, type: "Add" | "Edit") => {
    const newCategory: CategorySchema = {
       category_name: value,
       category_ascii: generateId(value),
-      hidden: false,
+      is_show: 1,
    };
 
    switch (type) {
@@ -81,7 +81,7 @@ const handleOpenModal = ({ ...props }: OpenAddModal | OpenEditOrDeleteModal) => 
 
    <div class="flex flex-wrap -mx-[8px] -mt-[8px]">
       <template v-for="(category, index) in categories">
-         <div class="w-1/6 px-[8px] mt-[8px]">
+         <div v-if="!!category.is_show" class="w-1/6 px-[8px] mt-[8px]">
             <Box>
                <template v-slot:children>
                   {{ category.category_name }}

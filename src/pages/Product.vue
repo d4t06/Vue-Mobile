@@ -50,7 +50,12 @@ watch(
 <template>
    <p v-if="appStatus === 'error'">Some thing went wrong</p>
    <template v-else>
-      <Slider />
+      <Skeleton v-if="appStatus === 'loading'" className="pt-[25%] !rounded-[16px]" />
+      <Slider
+         v-else-if="curCategory"
+         :sliderImages="curCategory.category_slider.slider.slider_images"
+         :key="curCategory.category_ascii"
+      />
       <div class="mt-[30px] flex">
          <div class="w-2/3">
             <template v-if="appStatus == 'loading'">

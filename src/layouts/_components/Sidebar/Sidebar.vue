@@ -5,6 +5,7 @@ import {
    BuildingStorefrontIcon,
    ComputerDesktopIcon,
    DevicePhoneMobileIcon,
+PhotoIcon,
 } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
@@ -53,6 +54,14 @@ console.log("check path", route.path);
          >
             <BookmarkSquareIcon class="w-[24px]" />
             <slot v-if="expand">Category</slot>
+         </RouterLink>
+
+         <RouterLink
+            :to="BASE_URL + '/banner'"
+            :class="`${route.path === BASE_URL + '/banner' ? 'active' : ''} sidebar__item`"
+         >
+            <PhotoIcon class="w-[24px]" />
+            <slot v-if="expand">Banner</slot>
          </RouterLink>
 
          <RouterLink target="blank" :class="`sidebar__item`" to="/">

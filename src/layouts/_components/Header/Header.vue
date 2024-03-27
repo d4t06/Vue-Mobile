@@ -8,8 +8,6 @@ import { useAuthStore } from "@/stores/auth";
 const appStore = useAppStore();
 const authStore = useAuthStore();
 const { categories, status } = storeToRefs(appStore);
-
-// console.log(">>> check authstore", authStore.user);
 </script>
 
 <template>
@@ -56,15 +54,13 @@ const { categories, status } = storeToRefs(appStore);
       <div class="header-nav">
          <div class="header-nav-wrap">
             <ul class="nav-list">
-               <li
-                  v-if="status === 'successful' && !!categories.length"
-                  v-for="category in categories"
-                  className="nav-item"
-               >
-                  <RouterLink :to="category.category_ascii">
-                     <p>{{ category.category_name }}</p>
-                  </RouterLink>
-               </li>
+               <template v-for="category in categories">
+                  <li v-if="status === 'successful' && !!categories.length && !!category.is_show" className="nav-item">
+                     <RouterLink :to="category.category_ascii">
+                        <p>{{ category.category_name }}</p>
+                     </RouterLink>
+                  </li>
+               </template>
             </ul>
 
             <ul class="nav-list">

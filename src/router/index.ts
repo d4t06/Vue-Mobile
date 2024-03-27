@@ -11,6 +11,7 @@ import Dashboard from "@/pages/Dashboard/Dashboard.vue";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import DashboardProduct from "@/pages/Dashboard/DashboardProduct.vue";
 import Category from "@/pages/Dashboard/Category/Category.vue";
+import Banner from "@/pages/Dashboard/Banner.vue";
 
 const routeList = [
    {
@@ -53,6 +54,11 @@ const routeList = [
    {
       path: "/dashboard/category",
       component: Category,
+      layout: DashboardLayout,
+   },
+   {
+      path: "/dashboard/banner",
+      component: Banner,
       layout: DashboardLayout,
    },
 ];

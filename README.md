@@ -4,6 +4,8 @@
 -  Can not define many component in one file
 -  Can not decision rendering
 -  Can not assign template in to variable
+-  Child component props will remind in init render and don't change, so use :key to make
+   Vue track the change of the key, when the key change, the props will pass to child component
 
 #### Listening Event
 

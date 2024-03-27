@@ -23,9 +23,20 @@ export default function useCurrentCategory() {
       return curCategory.brands;
    };
 
+   const getHomeSliderImages = () => {
+
+      console.log('check categries',appStore.categories);
+      
+      return (
+         appStore.categories.find((c) => c.category_ascii === "home")?.category_slider.slider
+            .slider_images || []
+      );
+   };
+
    return {
       status: status,
       getCurCategory,
       getBrandsByCategory,
+      getHomeSliderImages,
    };
 }

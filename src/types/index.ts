@@ -1,9 +1,3 @@
-export type SliderImage = {
-   image_url: string;
-   link_to: string;
-   id?: number;
-};
-
 export type Product = {
    id: number;
    product_name: string;
@@ -22,15 +16,39 @@ export type Product = {
 
 export type ProductSchema = Omit<Product, "brand" | "category" | "id">;
 
+export type SliderImage = {
+   id: number;
+   link_to: string;
+   image: ImageType;
+   image_id: number;
+   slider_id: number;
+};
+
+export type SliderImageSchema = Omit<SliderImage, "id" | "image">;
+
+export type Slider = {
+   id: number;
+   name: string;
+   slider_images: SliderImage[];
+};
+
+export type CategorySlider = {
+   id: number;
+   category_id: number;
+   slider_id: number;
+   slider: Slider;
+};
+
 export type Category = {
    id: number;
    category_ascii: string;
    category_name: string;
-   hidden?: boolean;
+   is_show: 0 | 1;
    brands: Brand[];
+   category_slider: CategorySlider;
 };
 
-export type CategorySchema = Omit<Category, "id" | "brands">;
+export type CategorySchema = Omit<Category, "id" | "brands" | "category_slider">;
 
 export type Brand = {
    id: number;
@@ -43,7 +61,7 @@ export type Brand = {
 export type BrandSchema = Omit<Brand, "id">;
 
 export type ImageType = {
-   id?: number;
+   id: number;
    image_url: string;
    public_id: string;
    name: string;

@@ -1,35 +1,50 @@
 <script lang="ts" setup>
-import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/vue/24/outline";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/vue/16/solid";
 import Button from "./ui/Button.vue";
+import type { SliderImage } from "@/types";
+import useSlider from "@/composables/useSlider";
 
 type Props = {
    className?: string;
-   autoSlider?: boolean;
+   autoSlide?: number;
+   sliderImages: SliderImage[];
 };
 
-const props = withDefaults(defineProps<Props>(), {
+const { autoSlide, className, sliderImages } = withDefaults(defineProps<Props>(), {
    className: "pt-[25%]",
-   autoSlider: true,
 });
 
-console.log(">>> check props", props.className);
+const { curIndex, next, previous, sliderRef } = useSlider({ sliderImages, autoSlide });
 
 const classes = {
-   container: "absolute inset-0 rounded-[24px] bg-[#f1f1f1]",
+   container:
+      "absolute inset-0 rounded-[14px] whitespace-nowrap overflow-hidden shadow-[2px_4px_16px_rgba(0,0,0,.15)]",
    button:
-      "!absolute top-[50%] translate-y-[-50%] bg-white text-[#333]  z-10 transition-transform hover:scale-[1.05] h-[40px] w-[40px] hover:shadow-lg",
+      "!absolute top-[50%] translate-y-[-50%] bg-white shadow-[1px_2px_8px_rgba(0,0,0,.15)] text-[#999]  z-10 transition-transform hover:scale-[1.05] hover:text-[#333] h-[40px] w-[40px]",
    leftArrow: "left-[16px]",
    rightArrow: "right-[16px]",
+   sliderItem: "inline-block h-full w-full",
+   sliderIndex:
+      "absolute space-x-[2px] text-[12px] text-white bottom-[8px] left-[16px] flex px-[10px] rounded-[99px] bg-black/60",
 };
 </script>
 
 <template>
-   <div :class="`${props.className} relative`">
-      <div :class="classes.container">
-         <!-- loop here -->
+   <div :class="`${className} relative`">
+      <div :class="classes.container" ref="sliderRef">
+         <template v-for="sliderImage in sliderImages">
+            <div :class="classes.sliderItem">
+               <img
+                  :src="sliderImage.image.image_url"
+                  alt=""
+                  class="w-full object-cover object-center"
+               />
+            </div>
+         </template>
       </div>
       <Button
          :class="`${classes.button} ${classes.leftArrow}`"
+         :onClick="previous"
          rounded="max"
          variant="clear"
          size="clear"
@@ -39,6 +54,7 @@ const classes = {
       </Button>
       <Button
          :class="`${classes.button} ${classes.rightArrow}`"
+         :onClick="next"
          rounded="max"
          variant="clear"
          colors="clear"
@@ -46,5 +62,11 @@ const classes = {
       >
          <ArrowRightIcon class="w-[20px]" />
       </Button>
+
+      <div :class="classes.sliderIndex">
+         <span>{{ curIndex }}</span>
+         <span> / </span>
+         <span>{{ sliderImages?.length || 1 }}</span>
+      </div>
    </div>
 </template>
