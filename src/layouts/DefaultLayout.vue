@@ -1,26 +1,42 @@
 <script setup lang="ts">
-import { watchEffect } from "vue";
-import { useAppStore } from "@/stores/app";
-import { publicRequest } from "@/utils/request";
+import { watch } from "vue";
 import Header from "./_components/Header/Header.vue";
+import PersistLogin from "./PersistLogin.vue";
+import ToastPortal from "@/components/ToastPortal.vue";
+import Footer from "./_components/Footer/Footer.vue";
+import useCategory from "@/composables/useCategory";
 
-const appStore = useAppStore();
+const { getCategories } = useCategory();
 
-watchEffect(async () => {
-   try {
-      const res = await publicRequest.get("/categories");
-      appStore.storingCategory({ categories: res.data.data, initLoading: false });
-   } catch (err) {}
-});
+watch(
+   () => 0,
+   async () => {
+      getCategories();
+   },
+   {
+      immediate: true,
+   }
+);
 </script>
 
 <template>
-   <div className="app">
-      <Header />
-      <div className="container mx-auto">
-         <RouterView />
+   <PersistLogin>
+      <div class="app">
+         <Header />
+         <div class="container mx-auto py-[30px]">
+            <RouterView />
+         </div>
+         <!-- <ScrollTop /> -->
+         <Footer />
+
+         <div class="container mx-auto">
+            <p class="py-[10px] text-[14px] text-[#333]">
+               Make with ❤️ by d4t06 <br />
+               © All rights no reserved ¯\_(ツ)_/¯
+            </p>
+         </div>
+
+         <ToastPortal />
       </div>
-      <!-- <ScrollTop /> -->
-      <!-- <Footer /> -->
-   </div>
+   </PersistLogin>
 </template>

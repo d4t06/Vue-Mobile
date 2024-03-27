@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import Button from "@/components/Button.vue";
+import Button from "@/components/ui/Button.vue";
 import { useAuthStore } from "@/stores/auth";
 import { publicRequest } from "@/utils/request";
 import { CheckIcon, XMarkIcon } from "@heroicons/vue/16/solid";
@@ -31,7 +31,10 @@ const handleSubmit = async (e: Event) => {
    try {
       isSubmit.value = true;
 
-      const res = await publicRequest.post(REGISTER_URL, { username: username.value, password: password.value });
+      const res = await publicRequest.post(REGISTER_URL, {
+         username: username.value,
+         password: password.value,
+      });
 
       router.push("/login");
    } catch (error: any) {
@@ -75,13 +78,15 @@ const classes = {
    checkIcon: "text-emerald-500 w-[24px]",
    xIcon: "text-red-500 w-[24px]",
    errorMessage: "bg-red-500/30 text-red-500 p-[6px] rounded-[6px] inline-block",
-
 };
 </script>
 
 <template>
    <div :class="classes.container">
-      <form :class="classes.form, isSubmit ? ' opacity-60 pointer-events-none' : ''" @submit="handleSubmit">
+      <form
+         :class="`${classes.form} ${isSubmit ? ' opacity-60 pointer-events-none' : ''}`"
+         @submit="handleSubmit"
+      >
          <div class="left text-center md:text-left space-y-[10px]">
             <h1 class="text-[26px] font-[500]" to="/">
                HD <span class="text-[#cd1818]">Mobile</span>
@@ -131,7 +136,10 @@ const classes = {
                <div :class="classes.labelGroup">
                   <label :class="classes.label" htmlFor="confirm">Confirm password</label>
                   <span v-if="confirmPassword">
-                     <CheckIcon v-if="validConfirmPassword && validPassword" :class="classes.checkIcon" />
+                     <CheckIcon
+                        v-if="validConfirmPassword && validPassword"
+                        :class="classes.checkIcon"
+                     />
                      <XMarkIcon v-else :class="classes.xIcon" />
                   </span>
                </div>
@@ -144,7 +152,15 @@ const classes = {
                   v-model="confirmPassword"
                />
             </div>
-            <Button variant="push" className="leading-[30px] w-full md:w-auto" type="submit">
+
+
+            <div class="md:text-right space-y-[10px]">
+            <Button
+               rounded="max"
+               variant="push"
+               className="leading-[26px] w-full md:w-auto"
+               type="submit"
+            >
                Sign up
             </Button>
             <p className="text-[14px]">
@@ -153,6 +169,8 @@ const classes = {
                   Sign in</RouterLink
                >
             </p>
+         </div>
+
          </div>
       </form>
    </div>

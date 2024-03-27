@@ -1,25 +1,71 @@
 <script setup lang="ts">
-import usePrivateRequest from "@/composables/usePrivateRequest";
+import { ref, watch, reactive, computed } from "vue";
+import Slider from "@/components/Slider.vue";
+import { useProductStore } from "@/stores/product";
+import { storeToRefs } from "pinia";
+import ProductItem from "@/components/ProductItem/ProductItem.vue";
+import ProductSkeleton from "@/components/Skeleton/ProductSkeleton.vue";
 import { useAppStore } from "@/stores/app";
-import { useAuthStore } from "@/stores/auth";
-import { publicRequest } from "@/utils/request";
-import { ref, watch, watchEffect } from "vue";
+import NotFoundProduct from "@/components/ProductItem/NotFoundProduct.vue";
+import type { SliderImage } from "@/types";
+import Skeleton from "@/components/Skeleton/Skeleton.vue";
+import useGetProduct from "@/composables/useGetProduct";
 
-const authStore = useAuthStore();
+const productStore = useProductStore();
+const appStore = useAppStore();
+const { products, status } = storeToRefs(productStore);
 
-watchEffect(async () => {
-   // try {
-   //    console.log("run watch");
-   //    const res = await publicRequest.get("/products");
-   //    console.log(res.data);
-   // } catch (error) {
-   //    console.log("check error");
-   // }
-}, {});
+const { getProduct } = useGetProduct();
+
+const sliderImages = ref<SliderImage[]>([]);
+
+const getHomeSliderImages = () => {
+   return (
+      appStore.categories.find((c) => c.category_ascii === "home")?.category_slider.slider
+         .slider_images || []
+   );
+};
+
+watch(
+   appStore,
+   () => {
+      if (appStore.status === "loading") return;
+      const homeSliderImages = getHomeSliderImages();
+      sliderImages.value = homeSliderImages;
+   },
+   {
+      immediate: true,
+   }
+);
+
+watch(
+   appStore,
+   () => {
+      if (appStore.status === "loading") return;
+      getProduct({}, {replace: true})
+   },
+   {
+      immediate: true,
+   }
+);
+
 </script>
 
 <template>
-   <h1>This is home page</h1>
+   <Skeleton v-if="appStore.status === 'loading'" className="pt-[25%] !rounded-[16px]" />
+   <Slider v-else :sliderImages="sliderImages" :key="sliderImages.length" />
+   <div class="mt-[30px]">
+      <h2 class="text-[22px] font-[500]">New Products</h2>
 
-   {{ JSON.stringify(authStore.user) }}
+      <div class="flex flex-wrap mt-[12px] mx-[-8px]">
+         <ProductSkeleton v-if="status === 'loading'" />
+
+         <template v-if="!!products.length">
+            <div v-for="product in products" class="w-1/4 px-[8px] mt-[8px]">
+               <ProductItem :product="product" />
+            </div>
+         </template>
+         <NotFoundProduct v-else />
+      </div>
+   </div>
 </template>

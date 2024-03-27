@@ -1,19 +1,14 @@
+import type { Category } from "@/types";
 import { defineStore } from "pinia";
 
 type AppState = {
    categories: Category[];
-   // brands: Record<string, Brand[]>;
-   // sliders: Record<string, SliderImage[]>;
-   // priceRanges: Record<string, PriceRange[]>;
-   initLoading: boolean;
+   status: "loading" | "successful" | "error";
 };
 
 const initialAppState: AppState = {
    categories: [],
-   // priceRanges: {},
-   // sliders: {},
-   // brands: {},
-   initLoading: true,
+   status: "loading",
 };
 
 export const useAppStore = defineStore("app", {
@@ -22,7 +17,7 @@ export const useAppStore = defineStore("app", {
    }),
    actions: {
       storingCategory(payload: Partial<AppState>) {
-         this.initLoading = false;
+         this.status = payload.status || this.status;
          this.categories = payload.categories || [];
       },
    },

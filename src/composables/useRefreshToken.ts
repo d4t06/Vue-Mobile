@@ -1,32 +1,40 @@
-import { useAuthStore, type Token } from "@/stores/auth";
-import { publicRequest } from "@/utils/request";
+import { useAuthStore, type AuthResponse } from "@/stores/auth";
+import axios from "axios";
 
-const REFRESH_URL = "/auth/refresh";
+const REFRESH_URL = "http://localhost:8080/api/auth/refresh";
+
+// const privateRequest = axios.create({
+//    baseURL: BASE_URL,
+//    withCredentials: true,
+// });
 
 export default function useRefreshToken() {
    const authStore = useAuthStore();
 
    const refresh = async () => {
+      console.log("run refresh");
       try {
-         const res = await publicRequest.get(REFRESH_URL);
+         /**
+          * Not use privateRequest instance
+          * because is cause infinite loop
+          * for skip jwt authentication
+          */
+         const res = await axios.get(REFRESH_URL, {
+            withCredentials: true,
+         });
 
-         const { token, userInfo } = res.data.data as {
-            token: string;
-            userInfo: {
-               username: string;
-               role: Token;
-            };
-         };
+         const { token, userInfo } = res.data.data as AuthResponse;
 
          authStore.setAuthenticate({
-            token,
-            name: userInfo.username || "",
-            role: userInfo.role || "",
+            user: {
+               ...userInfo,
+               token,
+            },
          });
 
          return token;
       } catch (error) {
-         throw new Error();
+         console.log({ message: error });
       }
    };
 

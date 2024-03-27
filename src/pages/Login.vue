@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import Button from "@/components/Button.vue";
-import { useAuthStore, type Token } from "@/stores/auth";
-import { publicRequest } from "@/utils/request";
-import { ref } from "vue";
+import Button from "@/components/ui/Button.vue";
+import { useAuthStore, type AuthResponse } from "@/stores/auth";
+import axios from "axios";
+import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
-const LOGIN_URL = "/auth/login";
+const LOGIN_URL = "http://localhost:8080/api/auth/login";
+
+const usernameRef = ref<HTMLInputElement | null>(null);
 
 const isSubmit = ref(false);
 const username = ref("");
@@ -15,31 +17,40 @@ const errorMsg = ref("");
 const authStore = useAuthStore();
 const router = useRouter();
 
+// router.beforeEach((to, from) => {
+//    console.log("from", from.path, "to", to.path);
+
+//    if (from.path) {
+//       authStore.setAuthenticate({ prevPath: from.path });
+//    }
+// });
+
 const handleSubmit = async (e: Event) => {
    e.preventDefault();
+
    try {
       isSubmit.value = true;
 
-      const response = await publicRequest.post(LOGIN_URL, {
-         username: username.value,
-         password: password.value,
-      });
+      const response = await axios.post(
+         LOGIN_URL,
+         {
+            username: username.value,
+            password: password.value,
+         },
+         {
+            withCredentials: true,
+         }
+      );
 
-      const { token, userInfo } = response.data.data as {
-         token: string;
-         userInfo: {
-            username: string;
-            role: Token;
-         };
-      };
+      const { token, userInfo } = response.data.data as AuthResponse;
 
       authStore.setAuthenticate({
-         token,
-         name: userInfo.username || "",
-         role: userInfo.role || "",
+         user: { ...userInfo, token },
+         loading: false,
       });
 
       router.push("/");
+      authStore.setAuthenticate({ prevPath: null });
    } catch (error: any) {
       if (!error?.response) {
          errorMsg.value = "No server response";
@@ -49,15 +60,33 @@ const handleSubmit = async (e: Event) => {
          errorMsg.value = "Sign in fail";
       }
 
-      console.log(">> login error", error);
+      console.log({ message: error });
    } finally {
       isSubmit.value = false;
    }
 };
 
+watch(
+   usernameRef,
+   () => {
+      usernameRef.value?.focus();
+   },
+   { flush: "post" }
+);
+
+watch(
+   () => 0,
+   () => {
+      if (authStore.user) return router.push("/");
+   },
+   {
+      immediate: true,
+   }
+);
+
 const classes = {
    container:
-      "rounded-[24px]  md:flex-grow ml-0 mr-0 my-auto md:ml-[200px] md:mr-[200px] bg-white p-[20px]",
+      "rounded-[24px] w-[90vw] md:flex-grow md:w-auto mx-auto my-auto md:mx-[200px] bg-white p-[20px] md:px-[30px]",
    form: "flex flex-col md:flex-row justify-between",
    right: "space-y-[16px] mt-[20px] md:mt-0",
    inputGroup: "flex flex-col space-y-[2px]",
@@ -68,6 +97,7 @@ const classes = {
 </script>
 
 <template>
+   {{ console.log("render check from.path", authStore.prevPath) }}
    <div :class="classes.container">
       <form
          :class="`${classes.form} ${isSubmit ? 'opacity-60 pointer-events-none' : ''}`"
@@ -84,13 +114,10 @@ const classes = {
             <div :class="classes.inputGroup">
                <label :class="classes.label" htmlFor="username">Username</label>
                <input
+                  ref="usernameRef"
                   :class="classes.input"
-                  ref="{userInputRef}"
                   id="username"
-                  autoComplete="off"
                   type="text"
-                  placeholder="example..."
-                  required
                   v-model="username"
                />
             </div>
@@ -110,15 +137,22 @@ const classes = {
                <label className="ml-[8px]" htmlFor="persist"> Trust this device :v ? </label>
             </div>
 
-            <Button variant="push" className="leading-[30px] w-full md:w-auto" type="submit">
-               Sign in
-            </Button>
-            <p className="text-[14px]">
-               Don't have an account jet ?,
-               <RouterLink class="text-[#cd1818] hover:underline ml-[4px]" to="/register">
-                  Sign up</RouterLink
+            <div class="md:text-right space-y-[10px]">
+               <Button
+                  rounded="max"
+                  variant="push"
+                  className="leading-[26px] w-full md:w-auto"
+                  type="submit"
                >
-            </p>
+                  Sign in
+               </Button>
+               <p className="text-[14px]">
+                  Don't have an account jet ?,
+                  <RouterLink class="text-[#cd1818] hover:underline ml-[4px]" to="/register">
+                     Sign up</RouterLink
+                  >
+               </p>
+            </div>
          </div>
       </form>
    </div>

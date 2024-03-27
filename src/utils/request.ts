@@ -9,7 +9,6 @@ const publicRequest = axios.create({
 const privateRequest = axios.create({
    baseURL: BASE_URL,
    withCredentials: true,
-   headers: { "Content-Type": "application/json" },
 });
 
 export { publicRequest, privateRequest };
