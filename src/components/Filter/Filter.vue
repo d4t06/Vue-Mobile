@@ -50,7 +50,7 @@ const pricesByCategory = computed(() => getPricesByCategory());
 
             <template v-for="price in pricesByCategory">
                <PriceItem
-                  :toggle="() => handleToggle({ variant: 'price', value: price })"
+                  :toggle="() => handleToggle({ variant: 'price', value: price})"
                   :priceRange="price"
                />
             </template>

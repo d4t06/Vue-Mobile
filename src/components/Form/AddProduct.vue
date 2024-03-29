@@ -5,10 +5,10 @@ import MyInput from "@/components/ui/MyInput.vue";
 import OverlayCta from "@/components/ui/OverlayCta.vue";
 import { useAppStore } from "@/stores/app";
 import type { Category, Product, ProductSchema } from "@/types";
-import { generateId, inputClasses } from "@/utils/appHelper";
+import { generateId, inputClasses, moneyFormat } from "@/utils/appHelper";
 import { ArrowPathIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch, type InputHTMLAttributes } from "vue";
 import Gallery from "../Gallery.vue";
 import Button from "@/components/ui/Button.vue";
 import useProductAction, { type ProductModal } from "@/composables/useProductAction";
@@ -122,6 +122,12 @@ const handleDeleteProduct = async () => {
    }
 };
 
+const priceInputAttrs: InputHTMLAttributes = {
+   onFocus: (e) =>
+      ((e.target as HTMLInputElement).value = productData.price ? productData.price + "" : ""),
+   onBlur: (e) => ((e.target as HTMLInputElement).value = moneyFormat(productData.price || "")),
+};
+
 watch(
    props,
    () => {
@@ -147,7 +153,9 @@ watch(
 <template>
    <div class="flex items-center space-x-[8px]">
       <PencilSquareIcon class="w-[24px]" />
-      <h1 class="text-[24px] font-[500]">{{ props.type === 'add' ? 'Add new product' : 'Edit product' }}</h1>
+      <h1 class="text-[24px] font-[500]">
+         {{ props.type === "add" ? "Add new product" : "Edit product" }}
+      </h1>
    </div>
    <div class="flex mx-[-8px] mt-[14px]">
       <div class="w-1/3 px-[8px]">
@@ -219,7 +227,7 @@ watch(
                <label htmlFor="">Price</label>
                <MyInput
                   name="price"
-                  :attrs="{ value: productData.price || '' }"
+                  :attrs="{ value: productData.price || '', ...priceInputAttrs }"
                   @input="(e: any) => handleInput('price', e.target.value)"
                />
             </div>

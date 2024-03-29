@@ -4,6 +4,8 @@ import { useAuthStore, type AuthResponse } from "@/stores/auth";
 import axios from "axios";
 import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import { loginClasses } from "@/utils/appHelper";
+
 const LOGIN_URL = "http://localhost:8080/api/auth/login";
 
 const usernameRef = ref<HTMLInputElement | null>(null);
@@ -13,17 +15,8 @@ const username = ref("");
 const password = ref("");
 
 const errorMsg = ref("");
-
 const authStore = useAuthStore();
 const router = useRouter();
-
-// router.beforeEach((to, from) => {
-//    console.log("from", from.path, "to", to.path);
-
-//    if (from.path) {
-//       authStore.setAuthenticate({ prevPath: from.path });
-//    }
-// });
 
 const handleSubmit = async (e: Event) => {
    e.preventDefault();
@@ -84,47 +77,38 @@ watch(
    }
 );
 
-const classes = {
-   container:
-      "rounded-[24px] w-[90vw] md:flex-grow md:w-auto mx-auto my-auto md:mx-[200px] bg-white p-[20px] md:px-[30px]",
-   form: "flex flex-col md:flex-row justify-between",
-   right: "space-y-[16px] mt-[20px] md:mt-0",
-   inputGroup: "flex flex-col space-y-[2px]",
-   label: "text-[#000]",
-   input: "py-[4px] rounded-[6px] border border-black/15 outline-none px-[10px]",
-   errorMessage: "bg-red-500/30 text-red-500 p-[6px] rounded-[6px] inline-block",
-};
+const classes = {};
 </script>
 
 <template>
    {{ console.log("render check from.path", authStore.prevPath) }}
-   <div :class="classes.container">
+   <div :class="loginClasses.container">
       <form
-         :class="`${classes.form} ${isSubmit ? 'opacity-60 pointer-events-none' : ''}`"
+         :class="`${loginClasses.form} ${isSubmit ? 'opacity-60 pointer-events-none' : ''}`"
          @submit="handleSubmit"
       >
-         <div class="left text-center md:text-left space-y-[10px]">
-            <h1 class="text-[26px] font-[500]" to="/">
+         <div :class="loginClasses.left">
+            <h1 :class="loginClasses.HDMobile">
                HD <span class="text-[#cd1818]">Mobile</span>
             </h1>
-            <h2 class="text-[22px]">Sign in</h2>
-            <p v-if="errorMsg" :class="classes.errorMessage">{{ errorMsg }}</p>
+            <h1 class="text-[26px] text-[#1f1f1f] mt-[10px]">Sign in</h1>
+            <p v-if="errorMsg" :class="loginClasses.errorMessage">{{ errorMsg }}</p>
          </div>
-         <div :class="classes.right">
-            <div :class="classes.inputGroup">
-               <label :class="classes.label" htmlFor="username">Username</label>
+         <div :class="loginClasses.right">
+            <div :class="loginClasses.inputGroup">
+               <label :class="loginClasses.label + ' pt-[8px]'" htmlFor="username">Username</label>
                <input
                   ref="usernameRef"
-                  :class="classes.input"
+                  :class="loginClasses.input"
                   id="username"
                   type="text"
                   v-model="username"
                />
             </div>
-            <div :class="classes.inputGroup">
-               <label :class="classes.label" htmlFor="password">Password</label>
+            <div :class="loginClasses.inputGroup">
+               <label :class="loginClasses.label" htmlFor="password">Password</label>
                <input
-                  :class="classes.input"
+                  :class="loginClasses.input"
                   type="text"
                   id="password"
                   autoComplete="off"
@@ -134,19 +118,18 @@ const classes = {
             </div>
             <div className="persist-check">
                <input type="checkbox" id="persist" />
-               <label className="ml-[8px]" htmlFor="persist"> Trust this device :v ? </label>
+               <label className="ml-[8px] text-[#1f1f1f]" htmlFor="persist"> Trust this device :v ? </label>
             </div>
 
-            <div class="md:text-right space-y-[10px]">
+            <div class="md:text-right">
                <Button
-                  rounded="max"
                   variant="push"
-                  className="leading-[26px] w-full md:w-auto"
+                  className="leading-[26px] w-full md:w-auto mt-[20px]"
                   type="submit"
                >
                   Sign in
                </Button>
-               <p className="text-[14px]">
+               <p className="text-[14px] mt-[20px]">
                   Don't have an account jet ?,
                   <RouterLink class="text-[#cd1818] hover:underline ml-[4px]" to="/register">
                      Sign up</RouterLink

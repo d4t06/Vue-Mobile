@@ -3,7 +3,7 @@ import Button from "@/components/ui/Button.vue";
 import { HomeIcon } from "@heroicons/vue/24/outline";
 
 const classes = {
-   btnContainer: "!absolute z-[99] bottom-[15px] left-[15px] h-[44px] w-[44px] ",
+   btnContainer: "!absolute z-[99] bottom-[15px] left-[15px] h-[36px] w-[36px] ",
 };
 </script>
 
@@ -13,7 +13,7 @@ const classes = {
          <RouterView />
       </div>
       <Button someThing="some thing" href="/" :className="classes.btnContainer" variant="push" size="clear">
-         <HomeIcon class="w-[24px]" />
+         <HomeIcon class="w-[22px]" />
       </Button>
    </div>
 </template>

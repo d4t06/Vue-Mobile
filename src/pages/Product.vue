@@ -39,7 +39,7 @@ watch(
    [route, appStatus],
    () => {
       if (appStatus.value == "loading") return;
-      getProduct({ categoryID: curCategory.value?.id }, { replace: true });
+      getProduct({ category_id: curCategory.value?.id }, { replace: true });
    },
    {
       immediate: true,

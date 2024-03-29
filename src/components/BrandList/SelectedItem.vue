@@ -1,16 +1,25 @@
 <script lang="ts" setup>
-import type { Brand } from "@/types";
+import type { Brand, PriceRange } from "@/types";
 import { TrashIcon } from "@heroicons/vue/24/outline";
 
-type Props = {
-   brand: Brand;
-   onClick: () => void
+type PriceItem = {
+   type: "filter";
+   price: PriceRange;
+   onClick: () => void;
 };
-const { brand } = defineProps<Props>();
+
+type BrandItem = {
+   type: "brand";
+   brand: Brand;
+   onClick: () => void;
+};
+
+type Props = PriceItem | BrandItem;
+const { props } = defineProps<{ props: Props }>();
 </script>
 <template>
-   <div :onClick="onClick" class="selected-item" key="{index}">
-      <p>{{ brand.brand_name }}</p>
+   <div :onClick="props.onClick" class="selected-item" key="{index}">
+      <p>{{ props.type === "brand" ? props.brand.brand_name : props.price.label }}</p>
       <TrashIcon class="w-[24px]" />
    </div>
 </template>

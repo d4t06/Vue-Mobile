@@ -8,6 +8,7 @@ import useFilterAction from "@/composables/useFilterAction";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import BrandSkeleton from "../Skeleton/BrandSkeleton.vue";
 import useCurrentCategory from "@/composables/useCurrentCategory";
+import type { PriceRange } from "@/types";
 
 const { getBrandsByCategory, status } = useCurrentCategory();
 const { handleToggle, brands, price, isFetching } = useFilterAction();
@@ -23,8 +24,19 @@ const brandsByCategory = computed(() => getBrandsByCategory());
          <template v-if="isFilter">
             <SelectedItem
                v-for="brand in brands"
-               :onClick="() => handleToggle({ variant: 'brand', value: brand })"
-               :brand="brand"
+               :props="{
+                  type: 'brand',
+                  onClick: () => handleToggle({ variant: 'brand', value: brand }),
+                  brand,
+               }"
+            />
+            <SelectedItem
+               v-if="price != null"
+               :props="{
+                  type: 'filter',
+                  onClick: () => handleToggle({ variant: 'price', value: 'clear' }),
+                  price,
+               }"
             />
 
             <button

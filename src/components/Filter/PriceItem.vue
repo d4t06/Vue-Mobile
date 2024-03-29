@@ -14,20 +14,19 @@ const { price } = useFilterAction();
 
 const active = computed(() => {
    if (priceRange) return price.value?.id === priceRange?.id;
-   else return !price.value
+   else return !price.value;
 });
 
 const classes = {
-   active: "text-[#cd1818] font-[500]",
+   active: "text-[#cd1818] font-[500] pointer-events-none",
    btn: "py-[3px] px-[12px] text-[15px]",
 };
 </script>
 
 <template>
-   {{ console.log("check props", priceRange) }}
    <Button
       size="clear"
-      :onClick="toggle"
+      :onClick="active ? () => {} : toggle"
       :active="`${active ? classes.active : ''}`"
       :class="classes.btn"
       variant="push"

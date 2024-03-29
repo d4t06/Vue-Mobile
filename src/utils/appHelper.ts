@@ -1,4 +1,4 @@
-import type { Category, ImageType } from "@/types";
+import type { Category, ImageSchema, ImageType } from "@/types";
 
 export const inputClasses = {
    input: "p-[6px] pl-[12px] font-[500] bg-[#f1f1f1] w-full h-full rounded-[8px] placeholder:text-[#808080] outline-none text-[#333] border border-black/10 text-[16px] translate-y-[0] h-[calc(100%-4px)]",
@@ -6,12 +6,25 @@ export const inputClasses = {
       "p-[4px] text-[#333] transition-transform  bg-[#e1e1e1] hover:scale-[1.05] hover:bg-[#cd1818] hover:text-white",
 };
 
+export const loginClasses = {
+   container:
+      "rounded-[24px] w-[90vw] md:flex-grow md:w-auto mx-auto my-auto md:mx-[100px] bg-white p-[20px] md:p-[30px] md:pt-[calc(40px+30px+10px)]",
+   HDMobile: 'text-[26px] font-[500] leading-[40px]',
+   left: 'mt-0 md:mt-[-50px] text-center md:text-left',
+   form: "flex flex-col md:flex-row justify-between",
+   right: "space-y-[16px] mt-[20px] md:mt-0",
+   inputGroup: "flex flex-col space-y-[2px]",
+   label: "text-[#1f1f1f]",
+   input: "py-[4px] rounded-[6px] border border-black/15 outline-none px-[10px]",
+   errorMessage: "bg-red-500/30 text-red-500 p-[6px] rounded-[6px] inline-block",
+};
+
 export const sleep = (time: number) => new Promise<void>((rs) => setTimeout(() => rs(), time));
 
 export const moneyFormat = (money: string | number) => {
    const formatter = new Intl.NumberFormat("en-US");
    if (!money) return "";
-   return formatter.format(+money) + "đ";
+   return formatter.format(+money) + " đ";
 };
 
 export const generateId = (name: string): string => {
@@ -31,7 +44,7 @@ export const generateId = (name: string): string => {
 };
 
 export const initImageObject = (data: Partial<ImageType>) => {
-   const newImage: ImageType = {
+   const newImage: ImageSchema = {
       public_id: "",
       image_url: "",
       link_to: "",
