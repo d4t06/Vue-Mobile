@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { computed } from "vue";
-import useProduct from "@/composables/useProducts";
+import useProduct from "@/hooks/useProducts";
 import BrandFilterSkeleton from "../Skeleton/BrandFilterSkeleton.vue";
-import useFilterAction from "@/composables/useFilterAction";
+import useFilterAction from "@/hooks/useFilterAction";
 import BrandItem from "./BrandItem.vue";
-import useCurrentCategory from "@/composables/useCurrentCategory";
+import useCurrentCategory from "@/hooks/useCurrentCategory";
 import PriceFilterSkeleton from "../Skeleton/PriceFilterSkeleton.vue";
 import PriceItem from "./PriceItem.vue";
 
@@ -23,7 +23,7 @@ const pricesByCategory = computed(() => getPricesByCategory());
 
       <div :class="`filter-list ${isFetching ? 'disable' : ''}`">
          <template v-if="status == 'loading'">
-            <BrandFilterSkeleton v-for="key in [...Array(5).keys()]" />
+            <BrandFilterSkeleton v-for="key in [...Array(5).keys()]" :key="key"/>
          </template>
          <template v-else>
             <BrandItem :toggle="() => handleToggle({ variant: 'brand', value: 'clear' })" />
@@ -43,7 +43,7 @@ const pricesByCategory = computed(() => getPricesByCategory());
 
       <div :class="`filter-list price ${isFetching ? 'disable' : ''}`">
          <template v-if="status == 'loading'">
-            <PriceFilterSkeleton v-for="key in [...Array(5).keys()]" />
+            <PriceFilterSkeleton v-for="key in [...Array(5).keys()]" :key="key" />
          </template>
          <template v-else>
             <PriceItem :toggle="() => handleToggle({ variant: 'price', value: 'clear' })" />

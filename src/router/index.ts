@@ -10,8 +10,12 @@ import Account from "@/pages/Account.vue";
 import Dashboard from "@/pages/Dashboard/Dashboard.vue";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import DashboardProduct from "@/pages/Dashboard/DashboardProduct.vue";
+import DashboardProductDetail from "@/pages/Dashboard/ProductDetail/ProductDetail.vue";
 import Category from "@/pages/Dashboard/Category/Category.vue";
 import Banner from "@/pages/Dashboard/Banner.vue";
+import Init from "@/pages/Dashboard/Init.vue";
+import CenterLayout from "@/layouts/CenterLayout.vue";
+import ProductDetail from "@/pages/ProductDetail/ProductDetail.vue";
 
 const routeList = [
    {
@@ -25,6 +29,10 @@ const routeList = [
    {
       path: "/:categoryAscii",
       component: Product,
+   },
+   {
+      path: "/product/:product_ascii",
+      component: ProductDetail,
    },
    {
       path: "/Login",
@@ -46,9 +54,20 @@ const routeList = [
       component: Dashboard,
       layout: DashboardLayout,
    },
+
+   {
+      path: "/dashboard/init",
+      component: Init,
+      layout: CenterLayout
+   },
    {
       path: "/dashboard/product",
       component: DashboardProduct,
+      layout: DashboardLayout,
+   },
+   {
+      path: "/dashboard/product/:product_ascii",
+      component: DashboardProductDetail,
       layout: DashboardLayout,
    },
    {

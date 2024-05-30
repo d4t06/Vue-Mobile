@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, watch, reactive, computed } from "vue";
 import { MyInput, Button } from "../ui";
-import type { PriceRangeSchema } from "@/types";
+
 import ModalHeader from "../Modal/ModalHeader.vue";
 
 type Props = {

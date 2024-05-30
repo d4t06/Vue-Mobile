@@ -6,7 +6,9 @@ import { ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { loginClasses } from "@/utils/appHelper";
 
-const LOGIN_URL = "http://localhost:8080/api/auth/login";
+const LOGIN_URL = `${
+   import.meta.env.VITE_API_ENDPOINT || "https://spring-mobile-latest.onrender.com/api"
+}/auth/login`;
 
 const usernameRef = ref<HTMLInputElement | null>(null);
 
@@ -77,26 +79,29 @@ watch(
    }
 );
 
-const classes = {};
 </script>
 
 <template>
    {{ console.log("render check from.path", authStore.prevPath) }}
    <div :class="loginClasses.container">
       <form
-         :class="`${loginClasses.form} ${isSubmit ? 'opacity-60 pointer-events-none' : ''}`"
+         :class="`${loginClasses.form} ${
+            isSubmit ? 'opacity-60 pointer-events-none' : ''
+         }`"
          @submit="handleSubmit"
       >
          <div :class="loginClasses.left">
             <h1 :class="loginClasses.HDMobile">
-               HD <span class="text-[#cd1818]">Mobile</span>
+               Vue <span class="text-[#cd1818]">Mobile</span>
             </h1>
             <h1 class="text-[26px] text-[#1f1f1f] mt-[10px]">Sign in</h1>
             <p v-if="errorMsg" :class="loginClasses.errorMessage">{{ errorMsg }}</p>
          </div>
          <div :class="loginClasses.right">
             <div :class="loginClasses.inputGroup">
-               <label :class="loginClasses.label + ' pt-[8px]'" htmlFor="username">Username</label>
+               <label :class="loginClasses.label + ' pt-[8px]'" htmlFor="username"
+                  >Username</label
+               >
                <input
                   ref="usernameRef"
                   :class="loginClasses.input"
@@ -118,7 +123,9 @@ const classes = {};
             </div>
             <div className="persist-check">
                <input type="checkbox" id="persist" />
-               <label className="ml-[8px] text-[#1f1f1f]" htmlFor="persist"> Trust this device :v ? </label>
+               <label className="ml-[8px] text-[#1f1f1f]" htmlFor="persist">
+                  Trust this device :v ?
+               </label>
             </div>
 
             <div class="md:text-right">
@@ -131,7 +138,10 @@ const classes = {};
                </Button>
                <p className="text-[14px] mt-[20px]">
                   Don't have an account jet ?,
-                  <RouterLink class="text-[#cd1818] hover:underline ml-[4px]" to="/register">
+                  <RouterLink
+                     class="text-[#cd1818] hover:underline ml-[4px]"
+                     to="/register"
+                  >
                      Sign up</RouterLink
                   >
                </p>

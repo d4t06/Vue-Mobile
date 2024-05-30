@@ -2,12 +2,12 @@
 import ConfirmModal from "@/components/Modal/ConfirmModal.vue";
 import Modal from "@/components/Modal/Modal.vue";
 import { Box, Button, OverlayCta } from "@/components/ui";
-import useCategory from "@/composables/useCategory";
+import useCategory from "@/hooks/useCategory";
 import { inputClasses } from "@/utils/appHelper";
 import { ArrowPathIcon, TrashIcon } from "@heroicons/vue/24/outline";
-import useSliderActions from "@/composables/useSliderActions";
+import useSliderActions from "@/hooks/useSliderActions";
 import { reactive, ref } from "vue";
-import type { ImageType, Slider, SliderImage, SliderImageSchema } from "@/types";
+
 import AddSliderImage from "@/components/Form/AddSliderImage.vue";
 
 const { categories, status } = useCategory({ autoGetCategories: true });
@@ -67,7 +67,6 @@ const handleOpenModal = (props: OpenAddModal | OpenEditModal | OpenDeleteModal) 
    const { modal, ...rest } = props;
 
    console.log("open modal check res", rest);
-   
 
    Object.assign(currentData, rest);
 
@@ -91,13 +90,13 @@ const handleOpenModal = (props: OpenAddModal | OpenEditModal | OpenDeleteModal) 
 interface AddSliderImage extends OpenModal {
    modal: "add";
    sliderImage: SliderImageSchema;
-   image: ImageType
+   image: ImageType;
 }
 
 interface EditSliderImage extends OpenModal {
    modal: "edit";
    sliderImage: SliderImageSchema;
-   image: ImageType
+   image: ImageType;
 }
 
 interface DeleteSliderImage extends OpenModal {
@@ -115,23 +114,29 @@ const handleUseSliderActions = async (props: UseSliderActions) => {
             type: "add-image",
             sliderImage: props.sliderImage,
             sliderIndex: currentData.currentSliderIndex,
-            image: props.image
+            image: props.image,
          });
          break;
       case "edit":
-         if (currentData.currentSliderImageIndex === null || currentData?.currentSlider === null)
+         if (
+            currentData.currentSliderImageIndex === null ||
+            currentData?.currentSlider === null
+         )
             return;
          await sliderActions({
             type: "edit-image",
             sliderImage: props.sliderImage,
             sliderIndex: currentData.currentSliderImageIndex,
             sliderImageID: currentData.currentSlider.id,
-            image: props.image
+            image: props.image,
          });
          break;
 
       case "delete":
-         if (currentData?.currentSliderImage === null || currentData.currentSliderIndex === null)
+         if (
+            currentData?.currentSliderImage === null ||
+            currentData.currentSliderIndex === null
+         )
             return;
          await sliderActions({
             type: "delete-image",
@@ -160,7 +165,10 @@ const handleUseSliderActions = async (props: UseSliderActions) => {
                   <div class="w-1/2 px-[8px] flex-shrink-0 mt-[8px]">
                      <Box className="pt-[25%]">
                         <template v-slot:children>
-                           <img :src="currentSliderImage.image.image_url || ''" alt="asd" />
+                           <img
+                              :src="currentSliderImage.image.image_url || ''"
+                              alt="asd"
+                           />
                            <OverlayCta>
                               <Button
                                  variant="clear"
@@ -224,36 +232,47 @@ const handleUseSliderActions = async (props: UseSliderActions) => {
    </template>
 
    <Modal v-if="isOpenModal !== 'close'" :close="handleCloseModal">
-      <AddSliderImage
-         v-if="currentData.currentSlider && isOpenModal === 'add'"
-         type="add"
-         :close="handleCloseModal"
-         :isLoading="isFetching == 'add-image'"
-         :currentSlider="currentData.currentSlider"
-         :submit="
-            (sliderImageSchema, image) =>
-               handleUseSliderActions({ modal: 'add', sliderImage: sliderImageSchema, image })
-         "
-      />
+      <template v-slot:children>
+         <AddSliderImage
+            v-if="currentData.currentSlider && isOpenModal === 'add'"
+            type="add"
+            :close="handleCloseModal"
+            :isLoading="isFetching == 'add-image'"
+            :currentSlider="currentData.currentSlider"
+            :submit="
+               (sliderImageSchema, image) =>
+                  handleUseSliderActions({
+                     modal: 'add',
+                     sliderImage: sliderImageSchema,
+                     image,
+                  })
+            "
+         />
 
-      <AddSliderImage
-         v-if="currentData.currentSliderImage && isOpenModal === 'edit'"
-         type="edit"
-         :close="handleCloseModal"
-         :isLoading="isFetching == 'add-image'"
-         :submit="
-            (sliderImageSchema, image) =>
-               handleUseSliderActions({ modal: 'edit', sliderImage: sliderImageSchema ,image })
-         "
-         :currentSliderImage="currentData.currentSliderImage"
-      />
+         <AddSliderImage
+            v-if="currentData.currentSliderImage && isOpenModal === 'edit'"
+            type="edit"
+            :close="handleCloseModal"
+            :isLoading="isFetching == 'add-image'"
+            :submit="
+               (sliderImageSchema, image) =>
+                  handleUseSliderActions({
+                     modal: 'edit',
+                     sliderImage: sliderImageSchema,
+                     image,
+                  })
+            "
+            :currentSliderImage="currentData.currentSliderImage"
+         />
 
-      <ConfirmModal
-         v-if="isOpenModal === 'delete'"
-         :close="handleCloseModal"
-         :callback="() => handleUseSliderActions({ modal: 'delete' })"
-         :loading="isFetching === 'delete-image'"
-         :title="`Delete  :v`"
-      />
+         <ConfirmModal
+            v-if="isOpenModal === 'delete'"
+            :close="handleCloseModal"
+            :callback="() => handleUseSliderActions({ modal: 'delete' })"
+            :loading="isFetching === 'delete-image'"
+            :title="`Delete  :v`"
+         />
+      </template>
    </Modal>
 </template>
+@/hooks/useCategory@/hooks/useSliderActions

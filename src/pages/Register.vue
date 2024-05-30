@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import Button from "@/components/ui/Button.vue";
-import { useAuthStore } from "@/stores/auth";
 import { publicRequest } from "@/utils/request";
 import { CheckIcon, XMarkIcon } from "@heroicons/vue/16/solid";
 import { ref, watch } from "vue";
@@ -24,7 +23,6 @@ const validConfirmPassword = ref(false);
 
 const errorMsg = ref("");
 
-const authStore = useAuthStore();
 const router = useRouter();
 
 const handleSubmit = async (e: Event) => {
@@ -32,7 +30,7 @@ const handleSubmit = async (e: Event) => {
    try {
       isSubmit.value = true;
 
-      const res = await publicRequest.post(REGISTER_URL, {
+      await publicRequest.post(REGISTER_URL, {
          username: username.value,
          password: password.value,
       });
@@ -77,12 +75,14 @@ const classes = {
 <template>
    <div :class="loginClasses.container">
       <form
-         :class="`${loginClasses.form} ${isSubmit ? ' opacity-60 pointer-events-none' : ''}`"
+         :class="`${loginClasses.form} ${
+            isSubmit ? ' opacity-60 pointer-events-none' : ''
+         }`"
          @submit="handleSubmit"
       >
          <div :class="loginClasses.left">
             <h1 :class="loginClasses.HDMobile">
-               HD <span class="text-[#cd1818]">Mobile</span>
+               Vue <span class="text-[#cd1818]">Mobile</span>
             </h1>
             <h1 class="text-[26px] mt-[10px] text-[#1f1f1f]">Create new account</h1>
             <p v-if="errorMsg" :class="loginClasses.errorMessage">{{ errorMsg }}</p>
@@ -90,7 +90,9 @@ const classes = {
          <div :class="loginClasses.right">
             <div :class="loginClasses.inputGroup">
                <div :class="classes.labelGroup">
-                  <label :class="loginClasses.label + ' pt-[8px]'" htmlFor="username">Username</label>
+                  <label :class="loginClasses.label + ' pt-[8px]'" htmlFor="username"
+                     >Username</label
+                  >
                   <span v-if="username">
                      <CheckIcon v-if="validName" :class="classes.checkIcon" />
                      <XMarkIcon v-else :class="classes.xIcon" />
@@ -127,7 +129,9 @@ const classes = {
 
             <div :class="loginClasses.inputGroup">
                <div :class="classes.labelGroup">
-                  <label :class="loginClasses.label" htmlFor="confirm">Confirm password</label>
+                  <label :class="loginClasses.label" htmlFor="confirm"
+                     >Confirm password</label
+                  >
                   <span v-if="confirmPassword">
                      <CheckIcon
                         v-if="validConfirmPassword && validPassword"

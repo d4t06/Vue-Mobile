@@ -4,7 +4,8 @@ import Header from "./_components/Header/Header.vue";
 import PersistLogin from "./PersistLogin.vue";
 import ToastPortal from "@/components/ToastPortal.vue";
 import Footer from "./_components/Footer/Footer.vue";
-import useCategory from "@/composables/useCategory";
+import useCategory from "@/hooks/useCategory";
+import ScrollTop from "./_components/ScrollTop.vue";
 
 const { getCategories } = useCategory();
 
@@ -26,7 +27,7 @@ watch(
          <div class="container mx-auto py-[30px]">
             <RouterView />
          </div>
-         <!-- <ScrollTop /> -->
+         <ScrollTop />
          <Footer />
 
          <div class="container mx-auto">
@@ -40,3 +41,4 @@ watch(
       </div>
    </PersistLogin>
 </template>
+@/hooks/useCategory

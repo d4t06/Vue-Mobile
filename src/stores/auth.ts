@@ -35,7 +35,7 @@ export const useAuthStore = defineStore("auth", {
          Object.assign(this, payload);
       },
       setLoading({ loading }: { loading: boolean }) {
-         this.loading = this.loading;
+         this.loading = loading;
       },
    },
 });

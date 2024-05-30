@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { Brand } from "@/types";
 import Button from "../ui/Button.vue";
 import { computed } from "vue";
-import useFilterAction from "@/composables/useFilterAction";
+import useFilterAction from "@/hooks/useFilterAction";
 
 type Props = {
    brand?: Brand;
@@ -19,7 +18,6 @@ const active = computed(() =>
 );
 
 const classes = {
-   active: "text-[#cd1818] font-[500]",
    btn: "py-[3px] px-[12px] text-[15px]",
 };
 </script>
@@ -28,10 +26,11 @@ const classes = {
    <Button
       size="clear"
       :onClick="toggle"
-      :active="`${active ? classes.active : ''}`"
+      :active="active"
       :class="classes.btn"
       variant="push"
       colors="secondary"
       >{{ brand ? brand.brand_name : "All" }}
    </Button>
 </template>
+@/hooks/useFilterAction

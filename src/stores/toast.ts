@@ -1,4 +1,4 @@
-import type { Toast } from "@/types";
+
 import { nanoid } from "nanoid";
 import { defineStore } from "pinia";
 
@@ -31,7 +31,7 @@ export const useToastStore = defineStore("toast", {
          this.toasts = [...this.toasts, toast];
       },
       setErrorToast(msg: string) {
-         const toast: Toast = initToastObject({ desc: msg, title: "error" });
+         const toast: Toast = initToastObject({ desc: msg || "Some things went wrong", title: "error" });
          this.toasts = [...this.toasts, toast];
       },
    },

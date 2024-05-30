@@ -3,7 +3,7 @@ import ModalHeader from "../Modal/ModalHeader.vue";
 import Modal from "../Modal/Modal.vue";
 import Gallery from "../Gallery.vue";
 import { reactive, ref, watch } from "vue";
-import type { ImageType, Slider, SliderImage, SliderImageSchema } from "@/types";
+
 import { useImageStore } from "@/stores/image";
 import MyInput from "../ui/MyInput.vue";
 import Button from "../ui/Button.vue";
@@ -61,21 +61,20 @@ const handleChoseImage = (imageUrl: string) => {
 const handleSubmit = () => {
    if (!sliderImageData.image || !chosenImage.value) return;
 
-   switch (props.type) {
-      case "add":
-         if (!props.currentSlider) return;
-         sliderImageData.slider_id = props.currentSlider.id;
-      case "edit":
-         if (sliderImageData.slider_id === null) return;
-
-         const sliderImageSchema: SliderImageSchema = {
-            image_id: sliderImageData.image.id,
-            link_to: sliderImageData.link_to,
-            slider_id: sliderImageData.slider_id,
-         };
-
-         props.submit(sliderImageSchema, chosenImage.value);
+   if (props.type === "add") {
+      if (!props.currentSlider) return;
+      sliderImageData.slider_id = props.currentSlider.id;
    }
+
+   if (sliderImageData.slider_id === null) return;
+
+   const sliderImageSchema: SliderImageSchema = {
+      image_id: sliderImageData.image.id,
+      link_to: sliderImageData.link_to,
+      slider_id: sliderImageData.slider_id,
+   };
+
+   props.submit(sliderImageSchema, chosenImage.value);
 };
 
 // run init slider data when edit
@@ -137,6 +136,11 @@ const titleMaps = {
    </div>
 
    <Modal zIndex="z-[199]" v-if="isOpenModal" :close="closeModalSelf">
-      <Gallery :handleChose="(value) => handleChoseImage(value)" :close="closeModalSelf" />
+      <template v-slot:children>
+         <Gallery
+            :handleChose="(images) => handleChoseImage(images[0].image_url)"
+            :close="closeModalSelf"
+         />
+      </template>
    </Modal>
 </template>

@@ -1,17 +1,23 @@
 {
-  "name": "vue-project",
+  "name": "Vue-Mobile",
+  "homepage": "https://d4t06.github.io/Vue-Mobile",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build --force"
+    "type-check": "vue-tsc --build --force",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@heroicons/vue": "^2.1.1",
+    "@tiptap/extension-image": "^2.4.0",
+    "@tiptap/pm": "^2.4.0",
+    "@tiptap/starter-kit": "^2.4.0",
+    "@tiptap/vue-3": "^2.4.0",
     "axios": "^1.6.7",
     "class-variance-authority": "^0.7.0",
     "i": "^0.3.7",
@@ -27,6 +33,7 @@
     "@vitejs/plugin-vue": "^5.0.3",
     "@vue/tsconfig": "^0.5.1",
     "autoprefixer": "^10.4.17",
+    "gh-pages": "^6.1.1",
     "npm-run-all2": "^6.1.1",
     "postcss": "^8.4.35",
     "sass": "^1.71.1",

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Toast } from "@/types";
+
 import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 

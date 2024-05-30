@@ -24,8 +24,7 @@ watch(childRef, () => childRef.value?.inputRef.focus(), { once: true });
 </script>
 
 <template>
-   {{ console.log("render") }}
-   <div class="w-[300px] bg-[#fff]">
+   <div class="w-[400px] max-w-[80vw] bg-[#fff]">
       <ModalHeader :close="close" :title="title" />
       <form @submit.prevent="handleSubmit">
          <MyInput
@@ -35,7 +34,7 @@ watch(childRef, () => childRef.value?.inputRef.focus(), { once: true });
              value: value, }"
          />
          <p class="text-right mt-[20px]">
-            <Button className="leading-[24px]" :loading="loading" type="submit"> Save </Button>
+            <Button variant="push" className="leading-[24px]" :loading="loading" type="submit"> Save </Button>
          </p>
       </form>
    </div>

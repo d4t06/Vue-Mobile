@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import useImageAction from "@/composables/useUploadImage";
+import useImageAction from "@/hooks/useUploadImage";
 const { inputChangeHandler } = useImageAction();
 </script>
 
@@ -8,3 +8,4 @@ const { inputChangeHandler } = useImageAction();
       <input class="hidden" :onChange="inputChangeHandler" type="file" multiple accept="image/*" id="image-upload" />
    </Teleport>
 </template>
+@/hooks/useUploadImage

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { Button } from "./ui";
-import useSortActions from "@/composables/useSortActions";
+import useSortActions from "@/hooks/useSortActions";
 import type { SortStoreType } from "@/stores/sort";
-import useProduct from "@/composables/useProducts";
+import useProduct from "@/hooks/useProducts";
 import { generateId } from "@/utils/appHelper";
 
 type Continent = {
@@ -34,16 +34,20 @@ const { isFetching } = useProduct();
 
 const classes = {
    active: "text-[#cd1818] font-[500]",
-   btn: "py-[3px] px-[12px] text-[15px]",
+   btn: "py-[3px] px-[12px] text-[15px] flex-shrink-0",
 };
 </script>
 <template>
-   <div :class="`flex items-center  mt-[20px]`">
-      <h5 class="text-[16px] font-[500] translate-y-[1px]">Sort</h5>
-      <div :class="`ml-[14px] flex space-x-[10px] ${isFetching ? 'disable' : ''}`">
+   <div :class="`flex w-full flex-col md:flex-row md:items-center md:mt-[20px]`">
+      <h5 class="mr-[14px] font-[500] translate-y-[1px]">Sort</h5>
+      <div
+         :class="`flex py-[4px] flex-wrap overflow-x-auto w-full mt-[-10px] ml-[-10px] space-x-[10px]  space-y-[10px] ${
+            isFetching ? 'disable' : ''
+         }`"
+      >
          <Button
-            :class="classes.btn"
-            :active="`${!enable ? classes.active : ''}`"
+            :class="`${classes.btn} ml-[10px] mt-[10px]`"
+            :active="!enable"
             :onClick="() => handleSort({ action: 'clear' })"
             size="clear"
             variant="push"
@@ -62,7 +66,7 @@ const classes = {
                   })
             "
             :class="classes.btn"
-            :active="`${nameAscii === generateId(item.name) ? classes.active : ''}`"
+            :active="nameAscii === generateId(item.name)"
             size="clear"
             variant="push"
             colors="secondary"
@@ -71,3 +75,4 @@ const classes = {
       </div>
    </div>
 </template>
+@/hooks/useSortActions@/hooks/useProducts

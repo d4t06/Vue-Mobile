@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import Search from "@/components/Search/Search.vue";
-import { Cog6ToothIcon, UserIcon } from "@heroicons/vue/24/outline";
+import { Bars3Icon, Cog6ToothIcon, UserIcon } from "@heroicons/vue/24/outline";
 import { useAppStore } from "@/stores/app";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
+import Button from "@/components/ui/Button.vue";
+import MobileSidebar from "@/components/MobileSidebar.vue";
+import Modal from "@/components/Modal/Modal.vue";
+import { ref } from "vue";
 
 const appStore = useAppStore();
 const authStore = useAuthStore();
 const { categories, status } = storeToRefs(appStore);
+
+const isOpenSidebar = ref(false);
+
+const closeModal = () => (isOpenSidebar.value = false);
 </script>
 
 <template>
@@ -20,15 +28,31 @@ const { categories, status } = storeToRefs(appStore);
    <div class="container mx-auto">
       <div class="header-top">
          <div class="header-top-wrap">
-            <div class="left w-1/4 max-[768px]:hidden">
+            <div class="w-full h-[50px] flex items-center justify-center md:hidden">
+               <RouterLink class="text-[22px] font-[500] p-[6px]" to="/">
+                  Vue <span class="text-[#cd1818]">Mobile</span>
+               </RouterLink>
+
+               <Button
+                  :onClick="() => (isOpenSidebar = true)"
+                  variant="push"
+                  colors="secondary"
+                  size="clear"
+                  class="!absolute p-[4px] left-[10px]"
+               >
+                  <Bars3Icon class="w-[24px]" />
+               </Button>
+            </div>
+
+            <div class="left w-1/4 hidden md:block">
                <RouterLink class="text-[26px] font-[500]" to="/">
-                  HD <span class="text-[#cd1818]">Mobile</span>
+                  Vue <span class="text-[#cd1818]">Mobile</span>
                </RouterLink>
             </div>
 
             <Search />
 
-            <div class="w-1/4 max-[768px]:hidden text-right">
+            <div class="w-1/4 hidden md:block text-right">
                <template v-if="!authStore.loading">
                   <RouterLink
                      v-if="!authStore.user"
@@ -55,8 +79,15 @@ const { categories, status } = storeToRefs(appStore);
          <div class="header-nav-wrap">
             <ul class="nav-list">
                <template v-for="category in categories">
-                  <li v-if="status === 'successful' && !!categories.length && !!category.is_show" className="nav-item">
-                     <RouterLink :to="category.category_ascii">
+                  <li
+                     v-if="
+                        status === 'successful' &&
+                        !!categories.length &&
+                        !!category.is_show
+                     "
+                     className="nav-item"
+                  >
+                     <RouterLink :to="`/${category.category_ascii}`">
                         <p>{{ category.category_name }}</p>
                      </RouterLink>
                   </li>
@@ -73,11 +104,11 @@ const { categories, status } = storeToRefs(appStore);
             </ul>
          </div>
       </div>
-   </div>
+   </div>   
 
-   <!-- <Sidebar isOpen={isOpenSidebar} setIsOpen={setIsOpenSidebar} /> -->
+   <MobileSidebar :close="closeModal" :isOpenSidebar="isOpenSidebar" />
 
-   <!-- {{showModal && <Modal setShowModal={setShowModal}></Modal>}} -->
+   <Modal v-if="isOpenSidebar" zIndex="z-[201]" :close="closeModal" />
 </template>
 
 <style scoped lang="scss">

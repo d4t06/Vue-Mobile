@@ -1,4 +1,4 @@
-import type { Brand, PriceRange } from "@/types";
+
 import { defineStore } from "pinia";
 
 // export type FilterType = {

@@ -3,26 +3,32 @@ import AddProduct from "@/components/Form/AddProduct.vue";
 import Button from "@/components/ui/Button.vue";
 import MyInput from "@/components/ui/MyInput.vue";
 import Table from "@/components/ui/Table/Table.vue";
-import useCategory from "@/composables/useCategory";
-import useGetProduct from "@/composables/useGetProduct";
+import useCategory from "@/hooks/useCategory";
+import useGetProduct from "@/hooks/useGetProduct";
+import router from "@/router";
 import { useProductStore } from "@/stores/product";
-import type { Category, Product } from "@/types";
-import { inputClasses, moneyFormat } from "@/utils/appHelper";
+
+import { inputClasses } from "@/utils/appHelper";
 import { PlusIcon } from "@heroicons/vue/16/solid";
-import { MagnifyingGlassIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
+import {
+   ArrowPathIcon,
+   Cog6ToothIcon,
+   MagnifyingGlassIcon,
+   PencilSquareIcon,
+} from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
-import { reactive, ref, watch } from "vue";
+import { ref, watch } from "vue";
 
 type Tab = "all" | "add" | "edit";
 
 const currentTab = ref<Tab>("all");
-const currentProduct = ref<Product>();
+const currentProduct = ref<ProductList>();
 const currentProductIndex = ref<number>();
 
 const curCategory = ref<Category>();
 
 const productStore = useProductStore();
-const { products } = storeToRefs(productStore);
+const { products, status } = storeToRefs(productStore);
 
 const { getProduct } = useGetProduct();
 const { categories } = useCategory({ autoGetCategories: true });
@@ -43,7 +49,7 @@ const handleAfterDeleteProduct = () => {
 watch(
    curCategory,
    () => {
-      getProduct({ categoryID: curCategory.value?.id || null, pageSize: 2 }, { replace: true });
+      getProduct({ category_id: curCategory.value?.id, size: 2 }, { replace: true });
    },
    {
       immediate: true,
@@ -52,8 +58,8 @@ watch(
 
 const classes = {
    hide: "hidden",
-   tab: "border-b-[4px] py-[3px] px-[12px] hover:brightness-100 flex-shrink-0",
-   activeTab: "border-[#cd1818] text-[20px]",
+   tab: "border-b-[4px] border-transparent  py-[3px] px-[12px] hover:brightness-100 flex-shrink-0",
+   activeTab: "!border-[#cd1818] text-[20px]",
 };
 </script>
 
@@ -72,7 +78,7 @@ const classes = {
          variant="push"
          class="ml-auto"
       >
-         <PlusIcon class="w-[20px]" />
+         <PlusIcon class="w-[20px] mr-[4px]" />
          Add product
       </Button>
 
@@ -81,58 +87,86 @@ const classes = {
       </Button>
    </div>
    <div :class="`${currentTab != 'all' ? classes.hide : ''}`">
-      <div class="flex mt-[20px]">
+      <div class="flex mt-[20px] border-b border-black/10">
          <button
             :onClick="() => (curCategory = undefined)"
-            :class="`${classes.tab} ${curCategory === undefined ? classes.activeTab : ''}`"
+            :class="`${classes.tab} ${
+               curCategory === undefined ? classes.activeTab : ''
+            }`"
          >
             All
          </button>
 
-         <button
-            v-for="category in categories"
-            :class="`${classes.tab} ${
-               curCategory?.category_ascii === category.category_ascii ? classes.activeTab : ''
-            }`"
-            :onClick="() => (curCategory = category)"
-         >
-            {{ category.category_name }}
-         </button>
+         <slot v-for="category in categories">
+            <button
+               v-if="category.is_show"
+               :class="`${classes.tab} ${
+                  curCategory?.category_ascii === category.category_ascii
+                     ? classes.activeTab
+                     : ''
+               }`"
+               :onClick="() => (curCategory = category)"
+            >
+               {{ category.category_name }}
+            </button>
+         </slot>
       </div>
 
       <div class="mt-[30px]">
-         <Table :colList="['Name', 'Giá', '']">
-            <template v-for="(product, index) in products">
-               <tr>
-                  <td>{{ product.product_name }}</td>
-                  <td>{{ moneyFormat(product.price) }}</td>
-                  <td class="!text-right">
-                     <Button
-                        :onClick="() => handleOpenEdit(index)"
-                        :class="inputClasses.overlayButton"
-                        variant="clear"
-                        size="clear"
-                        colors="clear"
-                     >
-                        <PencilSquareIcon class="w-[24px]" />
-                     </Button>
-                  </td>
-               </tr>
-            </template>
-         </Table>
+         <ArrowPathIcon
+            v-if="status === 'loading' || status === 'more-loading'"
+            class="w-[24px] animate-spin"
+         />
+
+         <template v-else>
+            <Table v-if="!!products.length" :col-list="['Name', 'Price', '']">
+               <template v-for="(product, index) in products">
+                  <tr>
+                     <td>{{ product.product_name }}</td>
+                     <td>---</td>
+                     <td class="!text-right space-x-[8px]">
+                        <Button
+                           :onClick="() => handleOpenEdit(index)"
+                           :class="inputClasses.overlayButton"
+                           variant="clear"
+                           size="clear"
+                           colors="clear"
+                        >
+                           <PencilSquareIcon class="w-[24px]" />
+                        </Button>
+                        <Button
+                           :onClick="
+                              () => router.push(`product/${product.product_ascii}`)
+                           "
+                           :class="inputClasses.overlayButton"
+                           variant="clear"
+                           size="clear"
+                           colors="clear"
+                        >
+                           <Cog6ToothIcon class="w-[24px]" />
+                        </Button>
+                     </td>
+                  </tr>
+               </template>
+            </Table>
+            <p v-else class="text-center">¯\_(ツ)_/¯</p>
+         </template>
       </div>
    </div>
 
    <div :class="`${currentTab === 'add' ? '' : classes.hide}`">
-      <AddProduct type="add" />
+      <AddProduct :props="{ type: 'add' }" />
    </div>
    <div :class="`${currentTab == 'edit' ? '' : classes.hide}`">
       <AddProduct
-         v-if="currentProduct != null"
-         type="edit"
-         :currentIndex="currentProductIndex"
-         :product="currentProduct"
-         :cbAfterDelete="handleAfterDeleteProduct"
+         v-if="currentProduct != null && currentProductIndex != undefined"
+         :props="{
+            type: 'edit',
+            product: currentProduct,
+            currentIndex: currentProductIndex,
+            cbAfterDelete: handleAfterDeleteProduct,
+         }"
       />
    </div>
 </template>
+@/hooks/useCategory@/hooks/useGetProduct

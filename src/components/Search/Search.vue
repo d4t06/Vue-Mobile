@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import { ArrowPathIcon, MagnifyingGlassIcon, XMarkIcon } from "@heroicons/vue/24/outline";
-import { ref } from "vue";
 
 const handleSearchText = (e: Event) => {
    console.log((e.target as HTMLInputElement).value);
 };
 
 const handleSubmit = () => {};
-
-const handleShow = () => {};
-
-const query = ref("");
 </script>
 
 <template>

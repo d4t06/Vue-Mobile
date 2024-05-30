@@ -1,14 +1,12 @@
 <script lang="ts" setup>
-import useCategory from "@/composables/useCategory";
 import { computed } from "vue";
-import { useRoute } from "vue-router";
 import BrandItem from "./BrandItem.vue";
 import SelectedItem from "./SelectedItem.vue";
-import useFilterAction from "@/composables/useFilterAction";
+import useFilterAction from "@/hooks/useFilterAction";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import BrandSkeleton from "../Skeleton/BrandSkeleton.vue";
-import useCurrentCategory from "@/composables/useCurrentCategory";
-import type { PriceRange } from "@/types";
+import useCurrentCategory from "@/hooks/useCurrentCategory";
+
 
 const { getBrandsByCategory, status } = useCurrentCategory();
 const { handleToggle, brands, price, isFetching } = useFilterAction();

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Button from "@/components/ui/Button.vue";
-import useLogout from "@/composables/useLogout";
+import useLogout from "@/hooks/useLogout";
 import RequireAuth from "@/layouts/RequireAuth.vue";
 
 const logOut = useLogout();
@@ -17,3 +17,4 @@ const handleLogout = () => {
       </div>
    </RequireAuth>
 </template>
+@/hooks/useLogout

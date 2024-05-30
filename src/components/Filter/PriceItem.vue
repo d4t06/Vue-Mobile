@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { PriceRange } from "@/types";
 import Button from "../ui/Button.vue";
 import { computed } from "vue";
-import useFilterAction from "@/composables/useFilterAction";
+import useFilterAction from "@/hooks/useFilterAction";
 
 type Props = {
    priceRange?: PriceRange;
@@ -27,7 +26,7 @@ const classes = {
    <Button
       size="clear"
       :onClick="active ? () => {} : toggle"
-      :active="`${active ? classes.active : ''}`"
+      :active="active"
       :class="classes.btn"
       variant="push"
       colors="secondary"

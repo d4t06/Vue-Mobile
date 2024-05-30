@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Brand } from "@/types";
+
 
 type Props = {
    brand: Brand;

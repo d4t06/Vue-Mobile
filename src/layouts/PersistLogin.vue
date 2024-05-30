@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import useRefreshToken from "@/composables/useRefreshToken";
+import useRefreshToken from "@/hooks/useRefreshToken";
 import { useAuthStore } from "@/stores/auth";
 import { ref, watch } from "vue";
 
@@ -36,3 +36,4 @@ watch(
 <template>
    <slot />
 </template>
+@/hooks/useRefreshToken

@@ -1,4 +1,4 @@
-import type { Product } from "@/types";
+
 import { defineStore } from "pinia";
 import type { SortStoreType } from "./sort";
 
@@ -6,7 +6,7 @@ type ProductState = {
    status: "" | "loading" | "more-loading" | "successful" | "error";
    categoryID: number | null;
    page: number;
-   products: Product[];
+   products: ProductList[];
    count: number;
    pageSize: number;
    isLast: boolean;

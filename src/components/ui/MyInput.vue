@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { inputClasses } from "@/utils/appHelper";
-import { ref, type InputHTMLAttributes, type Ref } from "vue";
+import { ref, type InputHTMLAttributes } from "vue";
 
 interface Props {
    className?: string;
@@ -14,7 +14,5 @@ defineExpose({ inputRef });
 </script>
 
 <template>
-   <div class="bg-[#ccc] rounded-[8px] w-full">
       <input :class="`${inputClasses.input} ${className} `" v-bind="attrs" ref="inputRef" />
-   </div>
 </template>

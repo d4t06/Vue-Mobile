@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Brand, PriceRange } from "@/types";
+
 import { TrashIcon } from "@heroicons/vue/24/outline";
 
 type PriceItem = {

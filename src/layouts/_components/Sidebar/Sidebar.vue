@@ -28,7 +28,7 @@ console.log("check path", route.path);
 <template>
    <div :class="`sidebar ${expand ? 'expand' : ''}`">
       <div class="head">
-         <h1 v-if="expand" class="logo-text">HD <span class="text-[#cd1818]">Dashboard</span></h1>
+         <h1 v-if="expand" class="logo-text">Vue  <span class="text-[#cd1818]">Dashboard</span></h1>
 
          <img v-else class="logo-image" :src="logo" />
       </div>
@@ -74,7 +74,6 @@ console.log("check path", route.path);
          :onClick="handleExpand"
          size="clear"
          variant="push"
-         colors="secondary"
          class="p-[4px] !absolute bottom-[20px] right-0 translate-x-[50%] z-[10]"
       >
          <slot v-if="expand"><ChevronLeftIcon class="w-[24px]" /></slot>

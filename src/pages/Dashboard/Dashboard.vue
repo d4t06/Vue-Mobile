@@ -1,5 +1,5 @@
 <script lang="ts" setup></script>
 
 <template>
-   <p>This is dashboard page</p>
+   <p class="text-center">¯\_(ツ)_/¯</p>
 </template>

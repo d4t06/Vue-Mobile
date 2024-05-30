@@ -1,4 +1,4 @@
-import type { Category } from "@/types";
+
 import { defineStore } from "pinia";
 
 type AppState = {

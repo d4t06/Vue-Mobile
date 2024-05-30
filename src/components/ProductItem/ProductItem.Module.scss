@@ -6,7 +6,7 @@
    box-shadow: 0 4px 15px 0px rgba(0, 0, 0, 0.15);
    text-decoration: none;
    border: 1px solid transparent;
-   transition: border linear .15s;
+   transition: border linear 0.15s;
    padding-top: 10px;
    border-radius: 8px;
    height: 100%;
@@ -28,7 +28,7 @@
    }
 
    &_name {
-      font-size: 18px;
+      font-size: 16px;
       line-height: 24px;
       font-weight: 500;
       color: #333;
@@ -37,9 +37,22 @@
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
-
-      @media screen and (max-width: 768px) {
+   }
+   &_price {
+      margin-top: 14px;
+      &--current {
          font-size: 16px;
+         line-height: 22px;
+         color: #cd1818;
+         font-weight: 600;
+      }
+   }
+   .storage-list {
+      .storage-item {
+         &.active {
+            color: #cd1818;
+            font-weight: 500;
+         }
       }
    }
 
@@ -49,16 +62,17 @@
          transform: translateY(-8px);
       }
    }
-}
 
-.product-item_price--current {
-   margin-top: 10px;
-   font-size: 22px;
-   line-height: 22px;
-   color: #cd1818;
-   font-weight: 600;
-
-   @media screen and (max-width: 768px) {
-      font-size: 2rem;
+   @media screen and (min-width: 640px) {
+      &_price--current {
+         margin-top: 6px;
+         font-size: 18px;
+      }
+   }
+   @media screen and (min-width: 768px) {
+      &_price--current {
+         margin-top: 10px;
+         font-size: 20px;
+      }
    }
 }

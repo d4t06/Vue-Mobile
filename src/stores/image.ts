@@ -1,4 +1,4 @@
-import type { ImageSchema, ImageType } from "@/types";
+
 import { defineStore } from "pinia";
 
 type StateType = {

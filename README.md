@@ -7,6 +7,10 @@
 -  Child component props will remind in init render and don't change, so use :key to make
    Vue track the change of the key, when the key change, the props will pass to child component
 
+## Define props
+
+-  Do not destruct props in order to keep is reactivity
+
 #### Listening Event
 
 -  v-on:click="cb" or @click="cb" or :onClick=""
@@ -25,3 +29,12 @@
 
 -  Define named prop attrs ad Partial(Attribute>)
 -  Then use v-bind="attrs"
+
+### Watch
+
+-  run before component mount
+- 
+
+### WatchEffect
+
+-  run after component mount, run once, no dependencies

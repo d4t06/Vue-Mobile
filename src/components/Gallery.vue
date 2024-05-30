@@ -1,22 +1,25 @@
 <script lang="ts" setup>
 import { ref, watch, computed } from "vue";
 import Button from "./ui/Button.vue";
-import type { ImageType } from "@/types";
 import { formatSize } from "@/utils/appHelper";
 
 import { ArrowPathIcon, ArrowUpTrayIcon } from "@heroicons/vue/24/outline";
 import GalleryItem from "./GalleryItem.vue";
-import useImageAction from "@/composables/useUploadImage";
+import useImageAction from "@/hooks/useUploadImage";
 import Skeleton from "./Skeleton/Skeleton.vue";
 
 type Props = {
-   handleChose: (image_url: string) => void;
+   handleChose: (images: ImageType[]) => void;
    close: () => void;
+   variant?: "one" | "multiple";
 };
 
-const { close, handleChose } = defineProps<Props>();
+const { close, handleChose, variant } = withDefaults(defineProps<Props>(), {
+   variant: "one",
+});
 
 const chosenImage = ref<ImageType>();
+const selectImages = ref<ImageType[]>([]);
 
 const {
    getImages,
@@ -32,9 +35,37 @@ const {
 
 const ableToChosenImage = computed(() => status.value === "success" && chosenImage.value);
 
+const handleSelectImage = (image: ImageType) => {
+   console.log("select image");
+
+   switch (variant) {
+      case "one":
+         selectImages.value = [image];
+
+         break;
+      case "multiple":
+         const newSelectImages = [...selectImages.value];
+
+         const index = newSelectImages.findIndex((i) => i.id === image.id);
+         if (index === -1) {
+            newSelectImages.push(image);
+         } else newSelectImages.splice(index, 1);
+
+         selectImages.value = newSelectImages;
+   }
+};
+
 const handleSubmit = async () => {
    if (!chosenImage.value) return;
-   handleChose(chosenImage.value.image_url);
+
+   switch (variant) {
+      case "one":
+         handleChose([chosenImage.value]);
+         break;
+      case "multiple":
+         handleChose(selectImages.value);
+         break;
+   }
    close();
 };
 
@@ -57,7 +88,7 @@ watch(
    }
 );
 
-console.log("chekc is lsat", isLast.value);
+// console.log("chekc is lsat", isLast.value);
 
 const classes = {
    container: "w-[90vw] bg-white h-[80vh] overflow-hidden",
@@ -80,7 +111,10 @@ const classes = {
             <h1 class="text-[22px] font-[500]">Gallery</h1>
             <Button
                variant="push"
-               :class="`ml-[10px]  ${status === 'loading' ? 'opacity-60 pointer-events-none' : ''}`"
+               colors="secondary"
+               :class="`ml-[10px]  ${
+                  status === 'loading' ? 'opacity-60 pointer-events-none' : ''
+               }`"
             >
                <label :class="`flex  cursor-pointer`" htmlFor="image-upload">
                   <ArrowUpTrayIcon class="w-[22px] mr-[4px]" />
@@ -100,7 +134,12 @@ const classes = {
                <div class="flex flex-wrap mt-[-8px]">
                   <!-- render temporary image -->
                   <template v-for="tempImage in tempImages">
-                     <GalleryItem :imageUrl="tempImage.image_url">
+                     <GalleryItem
+                        :props="{
+                           variant: 'loading',
+                           imageUrl: tempImage.image_url,
+                        }"
+                     >
                         <ArrowPathIcon
                            class="animate-spin absolute z-10 duration-1000 text-[#000] w-[30px]"
                         />
@@ -109,14 +148,33 @@ const classes = {
                   <!-- render current images -->
                   <template v-for="image in images">
                      <GalleryItem
-                        :imageUrl="image.image_url"
-                        :onClick="() => (chosenImage = image)"
-                        :active="chosenImage?.id === image.id"
+                        v-if="variant === 'one'"
+                        :props="{
+                           variant: 'one',
+                           imageUrl: image.image_url,
+                           active: chosenImage?.id === image.id,
+                           onClick: () => (chosenImage = image),
+                        }"
+                     />
+
+                     <GalleryItem
+                        v-if="variant === 'multiple'"
+                        :props="{
+                           variant: 'multiple',
+                           imageUrl: image.image_url,
+                           active: chosenImage?.id === image.id,
+                           chose: () => (chosenImage = image),
+                           select: () => handleSelectImage(image),
+                           index: selectImages.indexOf(image) + 1,
+                        }"
                      />
                   </template>
 
                   <template v-if="status == 'loading'">
-                     <div v-for="key in [...Array(18).keys()]" class="w-1/6 px-[4px] mt-[8px]">
+                     <div
+                        v-for="_key in [...Array(18).keys()]"
+                        class="w-1/6 px-[4px] mt-[8px]"
+                     >
                         <Skeleton className="pt-[100%]" />
                      </div>
                   </template>
@@ -124,7 +182,9 @@ const classes = {
             </template>
 
             <div v-if="images.length && isRemaining" class="text-center mt-[14px]">
-               <Button :disabled="isLast" :onClick="handleGetMore" variant="push"> More </Button>
+               <Button :disabled="isLast" :onClick="handleGetMore" variant="push">
+                  More
+               </Button>
             </div>
          </div>
          <div :class="classes.bodyRight">
@@ -151,7 +211,12 @@ const classes = {
                      </span>
                   </li>
                </ul>
-               <Button variant="push" :loading="isFetching" :onClick="handleDeleteImage">
+               <Button
+                  variant="push"
+                  colors="secondary"
+                  :loading="isFetching"
+                  :onClick="handleDeleteImage"
+               >
                   Delete
                </Button>
             </template>
@@ -159,3 +224,4 @@ const classes = {
       </div>
    </div>
 </template>
+@/hooks/useUploadImage
