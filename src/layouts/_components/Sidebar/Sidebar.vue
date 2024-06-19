@@ -5,7 +5,7 @@ import {
    BuildingStorefrontIcon,
    ComputerDesktopIcon,
    DevicePhoneMobileIcon,
-PhotoIcon,
+   PhotoIcon,
 } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 import { RouterLink, useRoute } from "vue-router";
@@ -28,7 +28,9 @@ console.log("check path", route.path);
 <template>
    <div :class="`sidebar ${expand ? 'expand' : ''}`">
       <div class="head">
-         <h1 v-if="expand" class="logo-text">Vue  <span class="text-[#cd1818]">Dashboard</span></h1>
+         <h1 v-if="expand" class="logo-text">
+            Vue <span class="text-[#cd1818]">Dashboard</span>
+         </h1>
 
          <img v-else class="logo-image" :src="logo" />
       </div>
@@ -42,7 +44,9 @@ console.log("check path", route.path);
          </RouterLink>
          <RouterLink
             :to="BASE_URL + '/product'"
-            :class="`${route.path === BASE_URL + '/product' ? 'active' : ''} sidebar__item`"
+            :class="`${
+               route.path === BASE_URL + '/product' ? 'active' : ''
+            } sidebar__item`"
          >
             <DevicePhoneMobileIcon class="w-[24px]" />
             <slot v-if="expand">Product</slot>
@@ -50,7 +54,9 @@ console.log("check path", route.path);
 
          <RouterLink
             :to="BASE_URL + '/category'"
-            :class="`${route.path === BASE_URL + '/category' ? 'active' : ''} sidebar__item`"
+            :class="`${
+               route.path === BASE_URL + '/category' ? 'active' : ''
+            } sidebar__item`"
          >
             <BookmarkSquareIcon class="w-[24px]" />
             <slot v-if="expand">Category</slot>
@@ -58,7 +64,9 @@ console.log("check path", route.path);
 
          <RouterLink
             :to="BASE_URL + '/banner'"
-            :class="`${route.path === BASE_URL + '/banner' ? 'active' : ''} sidebar__item`"
+            :class="`${
+               route.path === BASE_URL + '/banner' ? 'active' : ''
+            } sidebar__item`"
          >
             <PhotoIcon class="w-[24px]" />
             <slot v-if="expand">Banner</slot>
@@ -74,6 +82,7 @@ console.log("check path", route.path);
          :onClick="handleExpand"
          size="clear"
          variant="push"
+         border="clear"
          class="p-[4px] !absolute bottom-[20px] right-0 translate-x-[50%] z-[10]"
       >
          <slot v-if="expand"><ChevronLeftIcon class="w-[24px]" /></slot>

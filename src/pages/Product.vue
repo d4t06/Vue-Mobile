@@ -62,7 +62,7 @@ watch(
       <Slider
          v-else-if="curCategory"
          :sliderImages="curCategory.category_slider.slider.slider_images"
-         :key="curCategory.category_ascii"
+         :key="curCategory.category_name_ascii"
       />
       <div class="mt-[30px] flex">
          <div class="w-full md:w-2/3">
@@ -100,7 +100,7 @@ watch(
 
                <ProductSkeleton
                   :count="6"
-                  :className="`${isGetMoreLoading ? 'h-[100%]' : ''}`"
+                  :skeletonClassName="`${isGetMoreLoading ? 'h-full' : ''}`"
                   v-if="isReplaceLoading || isGetMoreLoading"
                />
             </div>
@@ -126,4 +126,3 @@ watch(
       </div>
    </template>
 </template>
-@/hooks/useCategory@/hooks/useGetProduct@/hooks/useProducts@/hooks/useCurrentCategory

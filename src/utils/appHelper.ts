@@ -1,16 +1,14 @@
-
-
 export const inputClasses = {
    input: "p-[6px] pl-[12px] font-[500] bg-[#fff] w-full h-full rounded-[8px] placeholder:text-[#808080] outline-none text-[#333] border border-black/10 text-[16px] translate-y-[0] h-[calc(100%-4px)]",
    overlayButton:
-      "p-[4px] text-[#333] transition-transform  bg-[#e1e1e1] hover:scale-[1.05] hover:bg-[#cd1818] hover:text-white",
+      "p-[4px] text-[#333] transition-transform  bg-[#f1f1f1] hover:scale-[1.05] hover:bg-[#cd1818] hover:text-white rounded-[8px]",
 };
 
 export const loginClasses = {
    container:
       "rounded-[24px] w-[90vw] md:flex-grow md:w-auto mx-auto my-auto md:mx-[100px] bg-white p-[20px] md:p-[30px] md:pt-[calc(40px+30px+10px)]",
-   HDMobile: 'text-[26px] font-[500] leading-[40px]',
-   left: 'mt-0 md:mt-[-50px] text-center md:text-left',
+   HDMobile: "text-[26px] font-[500] leading-[40px]",
+   left: "mt-0 md:mt-[-50px] text-center md:text-left",
    form: "flex flex-col md:flex-row justify-between",
    right: "space-y-[16px] mt-[20px] md:mt-0",
    inputGroup: "flex flex-col space-y-[2px]",
@@ -19,7 +17,8 @@ export const loginClasses = {
    errorMessage: "bg-red-500/30 text-red-500 p-[6px] rounded-[6px] inline-block",
 };
 
-export const sleep = (time: number) => new Promise<void>((rs) => setTimeout(() => rs(), time));
+export const sleep = (time: number) =>
+   new Promise<void>((rs) => setTimeout(() => rs(), time));
 
 export const moneyFormat = (money: string | number) => {
    const formatter = new Intl.NumberFormat("en-US");
@@ -57,7 +56,9 @@ export const initImageObject = (data: Partial<ImageType>) => {
 };
 
 export const findCurCategory = (categories: Category[], curCategoryAscii: string) => {
-   const curCategory = categories.find((cat) => cat.category_ascii === curCategoryAscii);
+   const curCategory = categories.find(
+      (cat) => cat.category_name_ascii === curCategoryAscii
+   );
    return curCategory;
 };
 
@@ -72,4 +73,14 @@ export const formatSize = (size: number) => {
    }
 
    return mb + "," + size.toFixed(1) + units[1];
+};
+
+export const getLocalStorage = () =>
+   JSON.parse(localStorage.getItem("Vue-Mobile") || "{}") as Record<string, any>;
+
+export const setLocalStorage = (key: string, value: any) => {
+   const storage = getLocalStorage();
+   storage[key] = value;
+
+   return localStorage.setItem("Vue-Mobile", JSON.stringify(storage));
 };

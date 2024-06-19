@@ -2,15 +2,15 @@
 import { cva } from "class-variance-authority";
 
 const classes = {
-   container: `relative before:absolute before:content-[""] before:inset-0 before:bg-white before:border-[#ccc] before:z-[-1] `,
+   container: `relative before:absolute before:content-[""] before:inset-0 before:bg-white before:border-[#e1e1e1] before:z-[-1] `,
 };
 
 const PushFrameVariant = cva(classes.container, {
    variants: {
       size: {
          primary:
-            "before:rounded-[14px] rounded-[14px] before:border-[4px] before:shadow-[0_4px_0_#ccc] p-[14px] active:translate-y-[4px]",
-         small: "before:rounded-[8px] rounded-[8px] before:border-[2px] before:shadow-[0_2px_0_#ccc] p-[10px] active:translate-y-[2px]",
+            "before:rounded-[14px] rounded-[14px] before:border-[4px] before:shadow-[0_4px_0_#e1e1e1] p-[14px] active:translate-y-[4px]",
+         small: "before:rounded-[8px] rounded-[8px] before:border-[2px] before:shadow-[0_2px_0_#e1e1e1] p-[10px] active:translate-y-[2px]",
       },
       pushAble: {
          primary: "active:before:shadow-none",

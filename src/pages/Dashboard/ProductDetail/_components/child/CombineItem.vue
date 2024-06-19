@@ -86,7 +86,7 @@ const findLowestCombineIdByStorage = (newCombine: ProductCombine) => {
    productDetail.value.combines.forEach((c) => {
       const sameStorage = c.storage_id === storage.id;
 
-      if (sameStorage) {
+      if (sameStorage && !!c.price) {
          const isNewCombine = c.id === newCombine.id;
          const isLowerPrice = isNewCombine
             ? newCombine.price < MAX_VAL
@@ -123,7 +123,10 @@ const findLowestProductStorage = (lowestPriceOfStorage: number) => {
             );
 
             if (!defaultCombineOfStorage) throw new Error("");
-            if (defaultCombineOfStorage.price < MAX_VAL) {
+            if (
+               !!defaultCombineOfStorage.price &&
+               defaultCombineOfStorage.price < MAX_VAL
+            ) {
                lowestPriceStorageId = defaultCombineOfStorage.storage_id;
             }
          }
@@ -131,7 +134,7 @@ const findLowestProductStorage = (lowestPriceOfStorage: number) => {
    });
 
    const newDefaultStorage: DefaultStorage = {
-      product_ascii: productDetail.value.product_ascii,
+      product_id: productDetail.value.id,
       storage_id: lowestPriceStorageId,
    };
 
@@ -193,20 +196,15 @@ const handleUpdateCombine = async () => {
       <p class="text-center">Some thing went wrong</p>
    </template>
 
-   <tr v-else>
+   <tr class="hover:bg-[#f1f1f1]" v-else>
       <td>
-         <span class="font-[500] text-[#cd1818]"> {{ storage.storage }}</span>
-         {{ ` / ${color.color} ${isDefaultCombine ? "(default)" : ""}` }}
+         <span class="font-[500] text-[#cd1818]"> {{ storage.storage_name }}</span>
+         {{ ` / ${color.color_name} ${isDefaultCombine ? "(default)" : ""}` }}
       </td>
       <td>{{ foundedCombine.quantity }}</td>
       <td>{{ moneyFormat(foundedCombine.price) }}</td>
       <td class="!text-right">
-         <Button
-            :onClick="handleOpenModal"
-            :class="`px-[14px]`"
-            variant="push"
-            colors="secondary"
-         >
+         <Button :onClick="handleOpenModal" variant="push" colors="secondary">
             <PencilSquareIcon class="w-[20px] mr-[6px]" />
             Change
          </Button>
@@ -218,7 +216,7 @@ const handleUpdateCombine = async () => {
          <div class="w-[300px] bg-[#fff]">
             <ModalHeader
                :close="closeModal"
-               :title="`Edit '${storage.storage} / ${color.color}'`"
+               :title="`Edit '${storage.storage_name} / ${color.color_name}'`"
             />
             <form class="space-y-[14px]" @submit.prevent="handleUpdateCombine">
                <div class="space-y-[6px]">

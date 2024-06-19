@@ -47,26 +47,20 @@ const handleColorActions = async (props: Edit | Delete) => {
 <template>
    <Box>
       <template v-slot:children>
-         <p>{{ color.color }}</p>
+         <p>{{ color.color_name }}</p>
          <OverlayCta>
-            <Button
-               variant="clear"
-               size="clear"
-               colors="clear"
+            <button
                :class="inputClasses.overlayButton"
                :onClick="() => (openModal = 'edit')"
             >
-               <PencilIcon class="w-[20px]" />
-            </Button>
-            <Button
-               variant="clear"
-               size="clear"
-               colors="clear"
+               <PencilIcon class="w-[24px]" />
+            </button>
+            <button
                :class="inputClasses.overlayButton"
                :onClick="() => (openModal = 'delete')"
             >
-               <TrashIcon class="w-[20px]" />
-            </Button>
+               <TrashIcon class="w-[24px]" />
+            </button>
          </OverlayCta>
       </template>
    </Box>
@@ -78,7 +72,7 @@ const handleColorActions = async (props: Edit | Delete) => {
             :close="closeModal"
             :submit="(value) => handleColorActions({ variant: 'edit', value })"
             :loading="isFetching"
-            :initValue="color.color"
+            :initValue="color.color_name"
             title="Edit Color"
          />
 

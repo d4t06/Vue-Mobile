@@ -13,7 +13,7 @@ const activeStyles: Partial<CSSStyleDeclaration> = {
 };
 
 const inActiveStyles: Partial<CSSStyleDeclaration> = {
-   borderColor: "rgba(0,0,0,0.15)",
+
 };
 
 const findDraggableItem = (el: HTMLDivElement) => {

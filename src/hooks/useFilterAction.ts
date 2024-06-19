@@ -37,7 +37,7 @@ export default function useFilterAction() {
             if (props.value === "clear") filterStore.brands = [];
             else {
                const brand = props.value;
-               const index = brands.value.findIndex((b) => b.brand_ascii === brand.brand_ascii);
+               const index = brands.value.findIndex((b) => b.id === brand.id);
 
                if (index == -1) {
                   filterStore.brands.push(brand);

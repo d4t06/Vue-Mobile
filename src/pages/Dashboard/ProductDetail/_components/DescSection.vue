@@ -13,6 +13,6 @@ const { productDetail } = storeToRefs(p);
 <template>
    <template v-if="productDetail">
       <h5 :class="classes.label">Description</h5>
-      <MyEditor classNames="h-[65vh]" :productAscii="productDetail.product_ascii" :content="productDetail.description.content" />
+      <MyEditor classNames="h-[65vh]" :productId="productDetail.id" :content="productDetail.description.content" />
    </template>
 </template>

@@ -33,8 +33,9 @@
 ### Watch
 
 -  run before component mount
-- 
 
 ### WatchEffect
 
 -  run after component mount, run once, no dependencies
+
+- Remove API_ENDPOINT before deploy

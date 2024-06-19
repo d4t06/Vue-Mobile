@@ -16,6 +16,8 @@
    }
    &-frame {
       position: relative;
+      display: inline-flex;
+      align-items: center;
       height: 225px;
       padding: 0 5px;
    }
@@ -41,7 +43,7 @@
    &_price {
       margin-top: 14px;
       &--current {
-         font-size: 16px;
+         font-size: 18px;
          line-height: 22px;
          color: #cd1818;
          font-weight: 600;

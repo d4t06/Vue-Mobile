@@ -7,7 +7,6 @@ export default {
       container: {
          padding: {
             DEFAULT: "10px",
-            sm: "0",
          },
       },
    },

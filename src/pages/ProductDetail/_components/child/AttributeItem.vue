@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 type Props = {
    attributeId: number;
-   product: Product;
+   product: ProductDetail;
 };
 
 const { attributeId, product } = defineProps<Props>();
@@ -22,12 +22,12 @@ const foundedProAttribute = computed(() =>
 </script>
 <template>
    <tr>
-      <td class="w-[40%]">{{ foundedCatAttribute?.attribute || "..." }}</td>
+      <td class="w-[40%]">{{ foundedCatAttribute?.attribute_name || "..." }}</td>
       <td class="leading-[1.6]">{{ foundedProAttribute?.value || "..." }}</td>
    </tr>
 </template>
 
 
 <style lang="scss" scoped>
-@import url("./style.scss");
+@import url("./AttributeItem.module.scss");
 </style>

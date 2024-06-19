@@ -2,9 +2,8 @@
 import ModalHeader from "../Modal/ModalHeader.vue";
 import Modal from "../Modal/Modal.vue";
 import Gallery from "../Gallery.vue";
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
-import { useImageStore } from "@/stores/image";
 import MyInput from "../ui/MyInput.vue";
 import Button from "../ui/Button.vue";
 import Box from "../ui/Box.vue";
@@ -15,22 +14,24 @@ import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 type BaseProps = {
    submit: (data: SliderImageSchema, image: ImageType) => void;
    close: () => void;
-   isLoading: boolean;
+   loading: boolean;
 };
 
 type AddProps = BaseProps & {
    type: "add";
-   currentSlider?: Slider;
+   currentSlider: Slider;
 };
 
 type EditProps = BaseProps & {
    type: "edit";
-   sliderImage?: SliderImage;
+   sliderImage: SliderImage;
 };
 
-type Props = AddProps | EditProps;
+type Props = {
+   props: AddProps | EditProps;
+};
 
-const props = defineProps<Props>();
+const p = defineProps<Props>();
 
 const isOpenModal = ref(false);
 
@@ -45,26 +46,24 @@ const sliderImageData = reactive<{
    slider_id: null,
 });
 
-const imageStore = useImageStore();
+const isSameImage = computed(
+   () =>
+      p.props.type === "edit" &&
+      sliderImageData.image?.id === p.props.sliderImage.image_id
+);
 
 const closeModalSelf = () => (isOpenModal.value = false);
 
-const handleChoseImage = (imageUrl: string) => {
-   const image = imageStore.images.find((i) => i.image_url === imageUrl);
-   if (!image) return console.log(">>> image not found");
-   else {
-      sliderImageData.image = image;
-      chosenImage.value = image;
-   }
-};
-
 const handleSubmit = () => {
    if (!sliderImageData.image || !chosenImage.value) return;
+   if (isSameImage.value) return;
 
-   if (props.type === "add") {
-      if (!props.currentSlider) return;
-      sliderImageData.slider_id = props.currentSlider.id;
+   if (p.props.type === "add") {
+      if (!p.props.currentSlider) return;
+      sliderImageData.slider_id = p.props.currentSlider.id;
    }
+
+   console.log("check sliderImageData", sliderImageData);
 
    if (sliderImageData.slider_id === null) return;
 
@@ -74,15 +73,15 @@ const handleSubmit = () => {
       slider_id: sliderImageData.slider_id,
    };
 
-   props.submit(sliderImageSchema, chosenImage.value);
+   p.props.submit(sliderImageSchema, chosenImage.value);
 };
 
 // run init slider data when edit
 watch(
    () => 0,
    () => {
-      if (props.type === "edit") {
-         Object.assign(sliderImageData, props.sliderImage);
+      if (p.props.type === "edit") {
+         Object.assign(sliderImageData, p.props.sliderImage);
       }
    },
    { immediate: true }
@@ -95,21 +94,18 @@ const titleMaps = {
 </script>
 <template>
    <div class="w-[700px] max-w-[80vw]">
-      <ModalHeader :close="close" :title="titleMaps[props.type]" />
+      <ModalHeader :close="p.props.close" :title="titleMaps[p.props.type]" />
       <div class="w-full">
          <Box v-if="sliderImageData.image?.image_url" className="pt-[25%]">
             <template v-slot:children>
                <img :src="sliderImageData.image.image_url" alt="asd" />
                <OverlayCta>
-                  <Button
-                     variant="clear"
-                     size="clear"
-                     colors="clear"
-                     :class="inputClasses.overlayButton"
+                  <button
+                     :class="`${inputClasses.overlayButton} rounded-[8px]`"
                      :onClick="() => (isOpenModal = true)"
                   >
                      <ArrowPathIcon class="w-[24px]" />
-                  </Button>
+                  </button>
                </OverlayCta>
             </template>
          </Box>
@@ -127,10 +123,10 @@ const titleMaps = {
             class="mt-[30px]"
             variant="push"
             :onClick="handleSubmit"
-            :loading="isLoading"
-            :disabled="!sliderImageData.image"
+            :loading="p.props.loading"
+            :disabled="!sliderImageData.image || isSameImage"
          >
-            {{ props.type === "add" ? "Add" : "Save change" }}
+            {{ p.props.type === "add" ? "Add" : "Save change" }}
          </Button>
       </div>
    </div>
@@ -138,7 +134,12 @@ const titleMaps = {
    <Modal zIndex="z-[199]" v-if="isOpenModal" :close="closeModalSelf">
       <template v-slot:children>
          <Gallery
-            :handleChose="(images) => handleChoseImage(images[0].image_url)"
+            :handleChose="
+               (images) => {
+                  sliderImageData.image = images[0];
+                  chosenImage = images[0];
+               }
+            "
             :close="closeModalSelf"
          />
       </template>

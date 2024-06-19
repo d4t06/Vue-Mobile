@@ -60,6 +60,8 @@ export default function useSpecActions({ closeModal }: Props) {
                break;
             }
          }
+
+         toastStore.setSuccessToast("Update product specification successful");
       } catch (error) {
          console.log({ message: error });
          toastStore.setErrorToast("");

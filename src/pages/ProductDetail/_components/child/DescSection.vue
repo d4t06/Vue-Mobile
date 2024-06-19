@@ -4,7 +4,7 @@ import { Button } from "@/components/ui";
 import { ref, watch } from "vue";
 
 type Props = {
-   product: Product | null;
+   product: ProductDetail | null;
    loading: boolean;
 };
 
@@ -53,7 +53,7 @@ watch(
          <Skeleton className="w-full h-[500px] !rounded-[14px]" />
       </template>
       <template v-else-if="props.product">
-         <div v-html="props.product.description.content"></div>
+         <div class="font-['Open_sans']" v-html="props.product.description.content"></div>
          <div
             v-if="!isShowMore"
             class="absolute w-full bottom-0 h-[150px] blur-block"

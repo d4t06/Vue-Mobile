@@ -1,8 +1,9 @@
 .table {
    width: 100%;
    border-collapse: collapse;
-   // border: 1px solid #ccc;
    background-color: #fff;
+   border-radius: 8px;
+   overflow: hidden;
    tr {
       border-bottom: 1px solid rgba($color: #000000, $alpha: 0.15);
       &:last-child {
@@ -18,12 +19,6 @@
       color: #fff;
       text-transform: uppercase;
       font-weight: 500;
-      &:first-child {
-         border-radius: 6px 0 0 0;
-      }
-      &:last-child {
-         border-radius: 0 6px 0 0;
-      }
    }
    .product-image {
       width: 90px;

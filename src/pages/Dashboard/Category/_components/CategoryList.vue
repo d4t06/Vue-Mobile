@@ -29,7 +29,7 @@ const handleAddCategory = async (value: string, type: "Add" | "Edit") => {
 
    const newCategory: CategorySchema = {
       category_name: value,
-      category_ascii: generateId(value),
+      category_name_ascii: generateId(value),
       attribute_order: "",
       is_show: 1,
    };
@@ -93,30 +93,24 @@ const mainClasses = inject("classes") as Record<string, string>;
                         {{ category.category_name }}</span
                      >
                      <OverlayCta>
-                        <Button
+                        <button
                            :onClick="
                               () =>
                                  handleOpenModal({ currentIndex: index, modal: 'edit' })
                            "
                            :class="inputClasses.overlayButton"
-                           variant="clear"
-                           size="clear"
-                           colors="clear"
                         >
-                           <PencilSquareIcon class="w-[22px]" />
-                        </Button>
-                        <Button
+                           <PencilSquareIcon class="w-[24px]" />
+                        </button>
+                        <button
                            :onClick="
                               () =>
                                  handleOpenModal({ currentIndex: index, modal: 'delete' })
                            "
                            :class="inputClasses.overlayButton"
-                           variant="clear"
-                           colors="clear"
-                           size="clear"
                         >
-                           <TrashIcon class="w-[22px]" />
-                        </Button>
+                           <TrashIcon class="w-[24px]" />
+                        </button>
                      </OverlayCta>
                   </template>
                </Box>

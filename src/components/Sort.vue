@@ -4,6 +4,13 @@ import useSortActions from "@/hooks/useSortActions";
 import type { SortStoreType } from "@/stores/sort";
 import useProduct from "@/hooks/useProducts";
 import { generateId } from "@/utils/appHelper";
+import { GetProductParams } from "@/hooks/useGetProduct";
+
+type Props = {
+   additionParams?: Partial<GetProductParams>
+}
+
+const props = defineProps<Props>()
 
 type Continent = {
    column: SortStoreType["column"];
@@ -38,17 +45,17 @@ const classes = {
 };
 </script>
 <template>
-   <div :class="`flex w-full flex-col md:flex-row md:items-center md:mt-[20px]`">
+   <div :class="`flex w-full flex-col md:flex-row md:items-center md:mt-[14px]`">
       <h5 class="mr-[14px] font-[500] translate-y-[1px]">Sort</h5>
       <div
-         :class="`flex py-[4px] flex-wrap overflow-x-auto w-full mt-[-10px] ml-[-10px] space-x-[10px]  space-y-[10px] ${
+         :class="`flex pb-[2px] flex-wrap overflow-x-auto w-full mt-[-10px] ml-[-10px] space-x-[10px] space-y-[10px] ${
             isFetching ? 'disable' : ''
          }`"
       >
          <Button
             :class="`${classes.btn} ml-[10px] mt-[10px]`"
             :active="!enable"
-            :onClick="() => handleSort({ action: 'clear' })"
+            :onClick="() => handleSort({ action: 'clear', params: props.additionParams })"
             size="clear"
             variant="push"
             colors="secondary"
@@ -63,6 +70,7 @@ const classes = {
                      name: item.name,
                      column: item.column,
                      type: item.type,
+                     params: props.additionParams
                   })
             "
             :class="classes.btn"
@@ -75,4 +83,3 @@ const classes = {
       </div>
    </div>
 </template>
-@/hooks/useSortActions@/hooks/useProducts

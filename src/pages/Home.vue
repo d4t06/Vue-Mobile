@@ -21,8 +21,8 @@ const sliderImages = ref<SliderImage[]>([]);
 
 const getHomeSliderImages = () => {
    return (
-      appStore.categories.find((c) => c.category_ascii === "home")?.category_slider.slider
-         .slider_images || []
+      appStore.categories.find((c) => c.category_name_ascii === "home")?.category_slider
+         .slider.slider_images || []
    );
 };
 
@@ -42,7 +42,7 @@ watch(
    appStore,
    () => {
       if (appStore.status === "loading") return;
-      getProduct({}, { replace: true });
+      getProduct({ size: 4 }, { replace: true });
    },
    {
       immediate: true,
@@ -56,14 +56,11 @@ watch(
    <div class="mt-[30px]">
       <h2 class="text-[18px] md:text-[22px] font-[500] text-[#333]">New Products</h2>
 
-      <div class="flex flex-wrap mt-[12px] mx-[-8px]">
-         <ProductSkeleton :count="8" v-if="status === 'loading'" />
+      <div class="flex flex-wrap mt-[12px] mx-[-4px]">
+         <ProductSkeleton className="sm:w-1/4" :count="8" v-if="status === 'loading'" />
 
          <template v-else-if="!!products.length">
-            <div
-               v-for="product in products"
-               class="w-1/2 sm:w-1/3 px-[8px] mt-[8px]"
-            >
+            <div v-for="product in products" class="w-1/2 sm:w-1/4 px-[4px] mt-[8px]">
                <ProductItem :product="product" />
             </div>
          </template>

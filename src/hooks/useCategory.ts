@@ -122,7 +122,7 @@ export default function useCategory(props?: Props) {
    };
 
    watch(
-      () => 0,
+      () => {},
       () => {
          if (props?.autoGetCategories) {
             if (!categories.value.length) getCategories();

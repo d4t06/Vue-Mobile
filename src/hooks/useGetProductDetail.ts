@@ -13,12 +13,12 @@ export default function useGetProductDetail() {
 
    const getProductDetail = async () => {
       try {
-         const productAscii = route.params.product_ascii;
+         const productId = route.params.id;
          status.value = "loading";
 
          await sleep(500);
 
-         const res = await publicRequest.get(`${PRODUCT_URL}/${productAscii}`);
+         const res = await publicRequest.get(`${PRODUCT_URL}/${productId}`);
          productDetailStore.storingProduct(res.data.data);
          status.value = "success";
          // productDetail.value = res.data.data as Product;

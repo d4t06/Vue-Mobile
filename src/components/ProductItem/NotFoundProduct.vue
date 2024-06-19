@@ -11,7 +11,7 @@ const classes = {
 <template>
    <div :class="classes.container">
       <img :class="classes.image" :src="empty" alt="" />
-      <p class="text-[18px] mt-[30px]">
+      <p class="text-[18px] mt-[14px]">
          No result found, ¯\_(ツ)_/¯
       </p>
    </div>

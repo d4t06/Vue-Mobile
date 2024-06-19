@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 type StateType = {
-   productDetail: Product | null;
+   productDetail: ProductDetail | null;
 };
 
 const initialState: StateType = {
@@ -11,7 +11,7 @@ const initialState: StateType = {
 export const useProductDetailStore = defineStore("productDetail", {
    state: () => initialState,
    actions: {
-      storingProduct(payload: Product) {
+      storingProduct(payload: ProductDetail) {
          this.productDetail = payload;
       },
       resetProduct() {

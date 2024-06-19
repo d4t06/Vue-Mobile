@@ -15,14 +15,24 @@ const { callback, close, desc, title, loading } = defineProps<Props>();
 
 <template>
    <div
-      :class="`max-w-[calc(90vw-40px)] 
+      :class="`w-[400px] max-w-[calc(90vw-40px)] 
       ${loading ? 'opacity-60 pointer-events-none' : ''}`"
    >
       <ModalHeader :close="close" :title="title || 'Wait a minute'" />
-      <p class="text-[16px] font-semibold text-red-500">{{ desc || "This action can not be undone" }}</p>
+
+      <slot />
+
+      <p class="text-[16px] font-semibold text-red-500">
+         {{ desc || "This action can not be undone" }}
+      </p>
       <div class="flex gap-[10px] mt-[20px]">
          <Button variant="push" colors="secondary" :onClick="close"> Close </Button>
-         <Button className="leading-[24px]" :loading="loading" variant="push" :onClick="callback">
+         <Button
+            className="leading-[24px] w-[120px]"
+            :loading="loading"
+            variant="push"
+            :onClick="callback"
+         >
             Yes, sure
          </Button>
       </div>

@@ -109,7 +109,7 @@ const sliderActions = async (props: AddImages | DeleteImages) => {
 </script>
 <template>
    <div :class="`${classes.flexContainer} items-center`">
-      <div class="w-2/12 text-center">{{ color.color }}</div>
+      <div class="w-2/12 text-center">{{ color.color_name }}</div>
       <div :class="`${classes.flexContainer} flex-grow mt-[-16px]`">
          <div
             v-for="(sliderImage, sliderIndex) in color.product_slider.slider
@@ -124,19 +124,13 @@ const sliderActions = async (props: AddImages | DeleteImages) => {
                <template v-slot:children>
                   <img :src="sliderImage.image.image_url" alt="" />
                   <OverlayCta>
-                     <Button
-                        variant="clear"
-                        size="clear"
-                        colors="clear"
+                     <button
                         :class="inputClasses.overlayButton"
                         :onClick="() => {}"
                      >
                         <ArrowPathIcon class="w-[24px]" />
-                     </Button>
-                     <Button
-                        variant="clear"
-                        size="clear"
-                        colors="clear"
+                     </button>
+                     <button
                         :class="inputClasses.overlayButton"
                         :onClick="
                            () =>
@@ -148,7 +142,7 @@ const sliderActions = async (props: AddImages | DeleteImages) => {
                         "
                      >
                         <TrashIcon class="w-[24px]" />
-                     </Button>
+                     </button>
                   </OverlayCta>
                </template>
             </Box>

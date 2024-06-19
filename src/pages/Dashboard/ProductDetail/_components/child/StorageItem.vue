@@ -56,26 +56,20 @@ const handleStorageActions = async (props: Delete | Edit) => {
 <template>
    <Box>
       <template v-slot:children>
-         <p>{{ storage.storage }}</p>
+         <p>{{ storage.storage_name }}</p>
          <OverlayCta>
-            <Button
-               variant="clear"
-               size="clear"
-               colors="clear"
+            <button
                :class="inputClasses.overlayButton"
                :onClick="() => (openModal = 'edit')"
             >
-               <PencilIcon class="w-[20px]" />
-            </Button>
-            <Button
-               variant="clear"
-               size="clear"
-               colors="clear"
+               <PencilIcon class="w-[24px]" />
+            </button>
+            <button
                :class="inputClasses.overlayButton"
                :onClick="() => (openModal = 'delete')"
             >
-               <TrashIcon class="w-[20px]" />
-            </Button>
+               <TrashIcon class="w-[24px]" />
+            </button>
          </OverlayCta>
       </template>
    </Box>
@@ -87,7 +81,7 @@ const handleStorageActions = async (props: Delete | Edit) => {
             :close="closeModal"
             :submit="(value) => handleStorageActions({ variant: 'edit', value })"
             :loading="isFetching"
-            :initValue="storage.storage"
+            :initValue="storage.storage_name"
             title="Edit storage"
          />
 
@@ -101,4 +95,3 @@ const handleStorageActions = async (props: Delete | Edit) => {
       </template>
    </Modal>
 </template>
-@/hooks/useStorageActions

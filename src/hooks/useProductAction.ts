@@ -31,12 +31,13 @@ export default function useProductAction({ isOpenModal }: Props) {
    type EditProduct = {
       type: "edit";
       product: ProductSchema;
-      currentIndex: number | undefined;
+      id: number;
+      index: number;
    };
 
    type DeleteProduct = {
       type: "delete";
-      productAscii: string;
+      id: number;
    };
 
    type Params = AddProduct | EditProduct | DeleteProduct;
@@ -46,46 +47,36 @@ export default function useProductAction({ isOpenModal }: Props) {
          switch (props.type) {
             case "add":
                isFetching.value = "add";
+               if (import.meta.env.DEV) await sleep(500);
 
                const res = await privateRequest.post(`${PRODUCT_URL}`, props.product);
-
                const newProduct = res.data.data as ProductList;
-
-               if (import.meta.env.DEV) await sleep(500);
 
                products.value.push(newProduct);
 
                break;
 
-            case "edit":
-               const { product: updateProduct, currentIndex } = props;
-
-               if (currentIndex === undefined) throw new Error("Missing current index");
-
-               const oldProduct = products.value[currentIndex];
-
-               isFetching.value = "delete";
-
-               // api
-               await privateRequest.put(`${PRODUCT_URL}/${oldProduct.id}`, updateProduct);
-
+            case "edit": {
+               const { product, index, id } = props;
+               isFetching.value = "edit";
                if (import.meta.env.DEV) await sleep(500);
-               Object.assign(products.value[currentIndex], updateProduct);
+
+               await privateRequest.put(`${PRODUCT_URL}/${id}`, product);
+
+               Object.assign(products.value[index], product);
 
                break;
+            }
 
             case "delete":
-               const { productAscii } = props;
-
+               const { id } = props;
                isFetching.value = "delete";
+               if (import.meta.env.DEV) await sleep(500);
 
                // api
-               await privateRequest.delete(`${PRODUCT_URL}/${productAscii}`);
+               await privateRequest.delete(`${PRODUCT_URL}/${id}`);
                // local update
-               if (import.meta.env.DEV) await sleep(500);
-               const newProducts = products.value.filter(
-                  (p) => p.product_ascii !== productAscii
-               );
+               const newProducts = products.value.filter((p) => p.id !== id);
                products.value = newProducts;
          }
 

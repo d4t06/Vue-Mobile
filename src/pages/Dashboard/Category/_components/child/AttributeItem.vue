@@ -90,7 +90,7 @@ const classes = {
          :className="classes.container"
       >
          <div class="flex items-center">
-            <span>{{ foundedAttribute.attribute.attribute }}</span>
+            <span>{{ foundedAttribute.attribute.attribute_name }}</span>
             <div :class="classes.ctaContainer">
                <Button
                   :className="classes.button"
@@ -120,8 +120,8 @@ const classes = {
             <AddItem
                v-if="openModal === 'edit'"
                :close="closeModal"
-               :title="`Edit attribute '${foundedAttribute.attribute.attribute}'`"
-               :initValue="foundedAttribute.attribute!.attribute"
+               :title="`Edit attribute '${foundedAttribute.attribute.attribute_name}'`"
+               :initValue="foundedAttribute.attribute!.attribute_name"
                :submit="
                   (value) =>
                      handleEditAttribute({id: foundedAttribute.attribute!.id, value}
@@ -133,7 +133,7 @@ const classes = {
                v-if="openModal === 'delete'"
                :close="closeModal"
                :loading="isFetching"
-               :title="`Delete attribute '${foundedAttribute.attribute.attribute}'`"
+               :title="`Delete attribute '${foundedAttribute.attribute.attribute_name}'`"
                :callback="() =>handleDeleteAttribute({id: foundedAttribute.attribute!.id})"
             />
          </template>

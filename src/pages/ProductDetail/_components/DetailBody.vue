@@ -7,7 +7,7 @@ import PushFrame from "@/components/ui/PushFrame.vue";
 
 type Props = {
    loading: boolean;
-   product: Product | null;
+   product: ProductDetail | null;
 };
 
 const props = defineProps<Props>();
@@ -40,7 +40,8 @@ const classes = {
 
             <PushFrame v-else-if="product" className="spec">
                <div class="p-[20px]">
-                  <img :class="classes.specImage" :src="props.product?.image_url" />
+                  <img v-if="props.product?.image_url" :class="classes.specImage" :src="props.product?.image_url" />
+                  <img v-else class="m-auto" :src="'https://d4t06.github.io/HD-Chat/assets/search-empty-ChRLxitn.png'" />
                </div>
                <table class="w-full mt-[20px]">
                   <tbody>

@@ -12,7 +12,6 @@ import { computed, reactive, ref, watch } from "vue";
 import Gallery from "../Gallery.vue";
 import Button from "@/components/ui/Button.vue";
 import useProductAction, { type ProductModal } from "@/hooks/useProductAction";
-// import { useToastStore } from "@/stores/toast";
 import ConfirmModal from "../Modal/ConfirmModal.vue";
 
 type AddProduct = {
@@ -33,15 +32,15 @@ type Props = {
 const initProduct = {
    category_id: 0,
    image_url: "",
-   product_ascii: "",
+   product_name_ascii: "",
    product_name: "",
    brand_id: 0,
    installment: false,
 } as ProductSchema;
 
-const { props } = defineProps<Props>();
+const p = defineProps<Props>();
 
-const productData = reactive<ProductSchema>({ ...initProduct });
+const productData = reactive<ProductSchema>(initProduct);
 const isOpenModal = ref<ProductModal>("close");
 const curCategory = ref<Category>();
 
@@ -60,7 +59,7 @@ const handleInput = (field: keyof typeof productData, value: any) => {
    if (field === "product_name") {
       Object.assign(productData, {
          [field]: value,
-         product_ascii: generateId(value),
+         product_name_ascii: generateId(value),
       });
 
       isChange.value = true;
@@ -77,27 +76,6 @@ const handleInput = (field: keyof typeof productData, value: any) => {
    Object.assign(productData, { [field]: value });
 };
 
-type OpenModal = {
-   modal: ProductModal;
-};
-
-interface OpenOtherModal extends OpenModal {
-   modal: "gallery";
-}
-interface OpenDeleteModal extends OpenModal {
-   modal: "delete";
-}
-
-const handleOpenModal = ({ ...props }: OpenOtherModal | OpenDeleteModal) => {
-   switch (props.modal) {
-      case "gallery":
-      case "delete":
-         break;
-   }
-
-   isOpenModal.value = props.modal;
-};
-
 const handleCloseModal = () => (isOpenModal.value = "close");
 
 function resetForm() {
@@ -106,7 +84,7 @@ function resetForm() {
 }
 
 const handleSubmit = async () => {
-   switch (props.type) {
+   switch (p.props.type) {
       case "add":
          await productActions({ type: "add", product: productData });
          resetForm();
@@ -116,7 +94,8 @@ const handleSubmit = async () => {
          await productActions({
             type: "edit",
             product: productData,
-            currentIndex: props.currentIndex,
+            index: p.props.currentIndex,
+            id: p.props.product.id,
          });
 
          isChange.value = false;
@@ -125,27 +104,30 @@ const handleSubmit = async () => {
 };
 
 const handleDeleteProduct = async () => {
-   if (props.type === "edit" && props.product) {
-      await productActions({ type: "delete", productAscii: props.product.product_ascii });
+   if (p.props.type === "edit" && p.props.product) {
+      await productActions({
+         type: "delete",
+         id: p.props.product.id,
+      });
       Object.assign(productData, initProduct);
 
-      props.cbAfterDelete && props.cbAfterDelete();
+      p.props.cbAfterDelete && p.props.cbAfterDelete();
    }
 };
 
 watch(
-   props,
+   [() => p.props],
    () => {
       const handleInitProduct = () => {
-         if (props.type === "edit") {
-            const { product } = props;
+         if (p.props.type === "edit") {
+            const { product } = p.props;
             if (product) {
                const category = categories.value.find(
                   (c) => c.id === product.category_id
                );
                if (category) {
                   curCategory.value = category;
-                  Object.assign(productData, props.product);
+                  Object.assign(productData, p.props.product);
                }
             }
          }
@@ -161,13 +143,13 @@ watch(
    <div class="flex items-center space-x-[8px] text-[#1f1f1f]">
       <PencilSquareIcon class="w-[24px]" />
       <h1 class="text-[24px] font-[500]">
-         {{ props.type === "add" ? "Add new product" : "Edit product" }}
+         {{ p.props.type === "add" ? "Add new product" : "Edit product" }}
       </h1>
    </div>
    <div class="flex mx-[-8px] mt-[14px]">
       <div class="w-1/3 px-[8px]">
          <template v-if="!productData.image_url">
-            <Box :onClick="() => handleOpenModal({ modal: 'gallery' })" />
+            <Box :onClick="() => (isOpenModal = 'gallery')" />
          </template>
 
          <template v-else>
@@ -175,15 +157,12 @@ watch(
                <template v-slot:children>
                   <img :src="productData.image_url" alt="asd" />
                   <OverlayCta>
-                     <Button
-                        variant="clear"
-                        size="clear"
-                        colors="clear"
+                     <button
                         :class="inputClasses.overlayButton"
-                        :onClick="() => handleOpenModal({ modal: 'gallery' })"
+                        :onClick="() => (isOpenModal = 'gallery')"
                      >
                         <ArrowPathIcon class="w-[24px]" />
-                     </Button>
+                     </button>
                   </OverlayCta>
                </template>
             </Box>
@@ -202,7 +181,7 @@ watch(
                />
             </div>
 
-            <template v-if="props.type === 'add'">
+            <template v-if="p.props.type === 'add'">
                <div class="space-y-[4px]">
                   <label class="font-[500] text-[#1f1f1f]" htmlFor="category"
                      >Category</label
@@ -221,22 +200,22 @@ watch(
                      </template>
                   </select>
                </div>
-
-               <div :class="`space-y-[4px] ${!curCategory && 'disable'}`">
-                  <label class="font-[500] text-[#1f1f1f]" htmlFor="brand">Brand</label>
-                  <select
-                     @input="(e: any) => handleInput('brand_id', +e.target.value)"
-                     :value="productData.brand_id"
-                     :class="inputClasses.input"
-                     name="brand"
-                  >
-                     <option :value="undefined">- - -</option>
-                     <option v-for="brand in brandsByCategory" :value="brand.id">
-                        {{ brand.brand_name }}
-                     </option>
-                  </select>
-               </div>
             </template>
+
+            <div :class="`space-y-[4px] ${!curCategory && 'disable'}`">
+               <label class="font-[500] text-[#1f1f1f]" htmlFor="brand">Brand</label>
+               <select
+                  @input="(e: any) => handleInput('brand_id', +e.target.value)"
+                  :value="productData.brand_id"
+                  :class="inputClasses.input"
+                  name="brand"
+               >
+                  <option :value="undefined">- - -</option>
+                  <option v-for="brand in brandsByCategory" :value="brand.id">
+                     {{ brand.brand_name }}
+                  </option>
+               </select>
+            </div>
          </div>
       </div>
    </div>
@@ -245,20 +224,22 @@ watch(
       <Button
          class="mt-[30px]"
          variant="push"
+         border="clear"
          :onClick="handleSubmit"
          :loading="isFetching === 'add' || isFetching === 'edit'"
          :disabled="!isChange"
       >
-         {{ props.type === "add" ? "Save" : "Save change" }}
+         {{ p.props.type === "add" ? "Save" : "Save change" }}
       </Button>
    </div>
 
-   <template v-if="props.type == 'edit'">
+   <template v-if="p.props.type == 'edit'">
       <h5 class="text-red-500 mt-[30px] ${classes.label} font-semibold">DANGER ZONE</h5>
       <div class="border-red-500 border rounded-[16px] p-[14px]">
          <Button
+            border="clear"
             variant="push"
-            :onClick="() => props.type === 'edit' && handleOpenModal({ modal: 'delete' })"
+            :onClick="() => (p.props.type === 'edit' ? (isOpenModal = 'delete') : {})"
          >
             Delete Product
          </Button>
@@ -274,11 +255,11 @@ watch(
             :handleChose="(value) => handleInput('image_url', value[0].image_url)"
          />
          <ConfirmModal
-            v-if="isOpenModal === 'delete' && props.type === 'edit' && props.product"
+            v-if="isOpenModal === 'delete' && p.props.type === 'edit' && p.props.product"
             :close="handleCloseModal"
             :callback="handleDeleteProduct"
             :loading="isFetching === 'delete'"
-            :title="`Delete product ' ${props.product.product_name} ' :v`"
+            :title="`Delete product ' ${p.props.product.product_name} ' :v`"
          />
       </template>
    </Modal>

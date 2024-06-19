@@ -6,7 +6,7 @@ import { RouterLink } from "vue-router";
 
 const classes = {
    primary: "text-white rounded-[6px]  hover:brightness-90 text-[14px] bg-[#cd1818]",
-   push: 'active:translate-y-[2px] active:before:shadow-none before:z-[-1] before:border-[2px]  before:absolute before:content-[""]  before:inset-0 ',
+   push: 'active:translate-y-[2px] active:before:shadow-none before:z-[-1]  before:absolute before:content-[""]  before:inset-0 ',
    active: "translate-y-[2px] before:shadow-none text-[#cd1818] font-[500]",
 };
 
@@ -34,14 +34,19 @@ const ButtonVariant = cva(
             primary:
                "before:bg-[#cd1818] before:border-[#a00000] text-[#fff] before:shadow-[0_2px_0_#a00000]",
             secondary:
-               "before:bg-[#f6f6f6] before:border-[#ccc] text-[#333] before:shadow-[0_2px_0_#ccc]",
-            third: "before:bg-[#fff] before:border-[#a40000] text-[#333] before:shadow-[0_2px_0_#a40000]",
+               "before:bg-[#f6f6f6] before:border-[#e1e1e1] text-[#333] before:shadow-[0_2px_0_#e1e1e1]",
+            third: "before:bg-[#fff] before:border-[#cd1818] text-[#333] before:shadow-[0_2px_0_#cd1818]",
             clear: "",
          },
          hover: {
             brightness: "hover:brightness-[.90]",
             scale: "transition-transform hover:scale-[1.05]",
             clear: "",
+         },
+         border: {
+            primary: "before:border-[2px]",
+            thin: "before:border-[1px] before:border-b-[2px]",
+            clear: "before:border-b-[2px]",
          },
       },
 
@@ -52,6 +57,7 @@ const ButtonVariant = cva(
          rounded: "primary",
          colors: "primary",
          hover: "clear",
+         border: "primary",
       },
    }
 );
@@ -60,17 +66,30 @@ interface ButtonProps extends /* @vue-ignore */ ButtonHTMLAttributes {
    href?: string;
    active?: boolean;
    loading?: boolean;
+   disabled?: boolean;
    className?: string;
    variant?: "primary" | "push" | "clear" | null | undefined;
    size?: "primary" | "full" | "clear" | null | undefined;
    rounded?: "primary" | "lg" | "max" | "clear" | null | undefined;
    hover?: "brightness" | "scale" | "clear" | null | undefined;
    colors?: "primary" | "clear" | "secondary" | "third" | null | undefined;
+   border?: "primary" | "clear" | "thin" | null | undefined;
    rest?: Partial<ButtonHTMLAttributes>;
 }
 
-const { href, variant, colors, size, className, loading, hover, rounded, ...rest } =
-   defineProps<ButtonProps>();
+const {
+   href,
+   variant,
+   colors,
+   size,
+   className,
+   disabled = false,
+   loading = false,
+   border,
+   hover,
+   rounded,
+   ...rest
+} = defineProps<ButtonProps>();
 </script>
 
 <template>
@@ -78,7 +97,7 @@ const { href, variant, colors, size, className, loading, hover, rounded, ...rest
       v-if="href"
       v-bind="rest"
       :to="href"
-      :class="ButtonVariant({ variant, size, rounded, colors, className })"
+      :class="ButtonVariant({ variant, size, rounded, colors, border, className })"
    >
       <slot />
    </RouterLink>
@@ -86,12 +105,14 @@ const { href, variant, colors, size, className, loading, hover, rounded, ...rest
    <template v-else>
       <button
          v-bind="rest"
+         :disabled="loading || disabled"
          :class="`${ButtonVariant({
             variant,
             size,
             rounded,
             colors,
             hover,
+            border,
             className,
          })} ${active ? classes.active + ' ' + active : ''}`"
       >

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Search from "@/components/Search/Search.vue";
-import { Bars3Icon, Cog6ToothIcon, UserIcon } from "@heroicons/vue/24/outline";
+import { Bars3Icon, Cog6ToothIcon, ShoppingCartIcon, UserIcon } from "@heroicons/vue/24/outline";
 import { useAppStore } from "@/stores/app";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/stores/auth";
@@ -87,7 +87,7 @@ const closeModal = () => (isOpenSidebar.value = false);
                      "
                      className="nav-item"
                   >
-                     <RouterLink :to="`/${category.category_ascii}`">
+                     <RouterLink :to="`/${category.category_name_ascii}`">
                         <p>{{ category.category_name }}</p>
                      </RouterLink>
                   </li>
@@ -95,6 +95,12 @@ const closeModal = () => (isOpenSidebar.value = false);
             </ul>
 
             <ul class="nav-list">
+               <li v-if="authStore.user?.role.includes('ADMIN')" class="nav-item">
+                  <RouterLink to="/cart">
+                     <span class="nav-text">Cart</span>
+                     <ShoppingCartIcon class="w-[24px]" />
+                  </RouterLink>
+               </li>
                <li v-if="authStore.user?.role.includes('ADMIN')" class="nav-item">
                   <RouterLink to="/dashboard">
                      <span class="nav-text">Dashboard</span>

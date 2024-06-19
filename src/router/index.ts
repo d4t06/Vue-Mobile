@@ -16,6 +16,9 @@ import Banner from "@/pages/Dashboard/Banner.vue";
 import Init from "@/pages/Dashboard/Init.vue";
 import CenterLayout from "@/layouts/CenterLayout.vue";
 import ProductDetail from "@/pages/ProductDetail/ProductDetail.vue";
+import CartLayout from "@/layouts/CartLayout.vue";
+import Cart from "@/pages/Cart/Cart.vue";
+import Search from "@/pages/Search.vue";
 
 const routeList = [
    {
@@ -27,11 +30,20 @@ const routeList = [
       component: Account,
    },
    {
+      path: "/cart",
+      component: Cart,
+      layout: CartLayout,
+   },
+   {
+      path: "/search/:q",
+      component: Search,
+   },
+   {
       path: "/:categoryAscii",
       component: Product,
    },
    {
-      path: "/product/:product_ascii",
+      path: "/product/:id",
       component: ProductDetail,
    },
    {
@@ -58,7 +70,7 @@ const routeList = [
    {
       path: "/dashboard/init",
       component: Init,
-      layout: CenterLayout
+      layout: CenterLayout,
    },
    {
       path: "/dashboard/product",
@@ -66,7 +78,7 @@ const routeList = [
       layout: DashboardLayout,
    },
    {
-      path: "/dashboard/product/:product_ascii",
+      path: "/dashboard/product/:id",
       component: DashboardProductDetail,
       layout: DashboardLayout,
    },

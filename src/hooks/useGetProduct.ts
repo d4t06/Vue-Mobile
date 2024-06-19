@@ -5,6 +5,28 @@ import { sleep } from "@/utils/appHelper";
 import { publicRequest } from "@/utils/request";
 import { useFiltersStore } from "@/stores/filter";
 
+type Filter = {
+   category_id: number | null;
+   brand_id: number[] | null;
+   price: number[] | null;
+   // storing q to use sort
+   q: string | null;
+};
+
+type ProductResponse = Filter & {
+   count: number;
+   category_id: number | null;
+   brand_id: number[] | null;
+   is_last: boolean;
+   products: ProductList[];
+   page: number;
+   size: number;
+   column: SortStoreType["column"] | null;
+   type: SortStoreType["type"] | null;
+};
+
+export type GetProductParams = Omit<ProductResponse, "is_last" | "products" | "count">;
+
 export default function useGetProduct() {
    const productStore = useProductStore();
    const filterStore = useFiltersStore();
@@ -15,32 +37,11 @@ export default function useGetProduct() {
    type PageParams = {
       page: number;
       size: number;
-      // sort: [SortStoreType["column"], SortStoreType["type"]] | null;
       sort: string | null;
    };
 
-   type Filter = {
-      category_id: number | null;
-      brand_id: number[] | null;
-      price: number[] | null;
-   };
-
-   type ProductResponse = Filter & {
-      count: number;
-      category_id: number | null;
-      brand_id: number[] | null;
-      is_last: boolean;
-      products: ProductList[];
-      page: number;
-      size: number;
-      column: SortStoreType["column"] | null;
-      type: SortStoreType["type"] | null;
-   };
-
-   type Params = Omit<ProductResponse, "is_last" | "products" | "count">;
-
    const getProduct = async (
-      params: Partial<Params>,
+      params: Partial<GetProductParams>,
       option?: { replace?: boolean; more?: boolean }
    ) => {
       try {
@@ -48,18 +49,22 @@ export default function useGetProduct() {
          else productStore.storingProducts({ status: "loading" });
 
          const getProductFilter: Filter = {
-            brand_id: filterStore.brands.length ? filterStore.brands.map((b) => b.id) : null,
+            brand_id: filterStore.brands.length
+               ? filterStore.brands.map((b) => b.id)
+               : null,
             category_id: params.category_id || productStore.categoryID || null,
             price: filterStore.price
                ? [filterStore.price.from_price, filterStore.price.to_price]
                : null,
+            // not use store's q, pass q manually
+            q: params.q || null,
          };
 
          const getProductParams: PageParams = {
             page: params.page || 0,
-            size: 2,
-
-            sort: sortStore.column ? `${sortStore.column +","+ sortStore.type}` : null,
+            size: params.size || 2  ,
+            // for search page
+            sort: sortStore.column ? `${sortStore.column + "," + sortStore.type}` : null,
          };
 
          if (import.meta.env.DEV) await sleep(1000);
@@ -75,7 +80,7 @@ export default function useGetProduct() {
             status: "successful",
             replace: option?.replace ?? false,
             products: data.products,
-            // if don't pass category_id, default use store category_id
+            // if don't pass category_id, default use store's category_id
             categoryID: params.category_id || productStore.categoryID || null,
             page: data.page,
             count: data.count,
@@ -85,6 +90,7 @@ export default function useGetProduct() {
             type: data.type,
             price: data.price,
             pageSize: data.size,
+            q: data.q,
          });
       } catch (error) {
          productStore.storingProducts({ status: "error" });

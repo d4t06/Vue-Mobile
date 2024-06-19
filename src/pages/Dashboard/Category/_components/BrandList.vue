@@ -69,7 +69,7 @@ const handleAddBrand = async (value: string, type: "add" | "edit") => {
 
    const newBrand: BrandSchema = {
       brand_name: value,
-      brand_ascii: generateId(value),
+      brand_name_ascii: generateId(value),
       category_id: curCategory.value.id,
       image_url: "",
    };
@@ -127,7 +127,9 @@ const classes = {
 
       <template v-if="!!curCategory">
          <div
-            :class="`${mainClasses.flexContainer}  mt-[-16px] ${isFetching ? 'disable' : ''}`"
+            :class="`${mainClasses.flexContainer}  mt-[-16px] ${
+               isFetching ? 'disable' : ''
+            }`"
          >
             <template v-for="(brand, index) in brandsByCategory">
                <div :class="`col w-2/12 ${mainClasses.flexCol}`">

@@ -13,7 +13,7 @@ const { brands } = useFilterAction();
 
 const active = computed(() =>
    brand
-      ? brands.value.findIndex((b) => b.brand_ascii === brand.brand_ascii) !== -1
+      ? brands.value.findIndex((b) => b.id === brand.id) !== -1
       : !brands.value.length
 );
 
@@ -33,4 +33,3 @@ const classes = {
       >{{ brand ? brand.brand_name : "All" }}
    </Button>
 </template>
-@/hooks/useFilterAction

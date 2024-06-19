@@ -2,12 +2,8 @@
    max-width: 500px;
    flex-grow: 1;
    height: 40px;
-   border-radius: 10px;
+   z-index: 100;
    position: relative;
-   overflow: hidden;
-   z-index: 200;
-   // box-shadow: 2px 2px 8px rgba($color: #000000, $alpha: 0.15);
-   border: 1px solid rgba($color: #000000, $alpha: 0.1);
 
    @media screen and (max-width: 768px) {
       max-width: unset;
@@ -17,6 +13,9 @@
 }
 .form {
    height: 100%;
+   border: 1px solid rgba($color: #000000, $alpha: 0.1);
+   border-radius: 10px;
+   overflow: hidden;
 }
 .input {
    height: 100%;
@@ -58,28 +57,14 @@
 }
 
 .search-result {
-   background-color: #fff;
-   width: 500px;
-   border-radius: 8px;
-   padding: 10px 6px;
-   max-height: 60vh;
-   overflow: auto;
-
-   @media screen and (max-width: 768px) {
-      width: calc(100vw - 20px);
-      border-radius: 0 0 6px 6px;
-   }
-   &-title {
-      font-weight: 500;
-      margin-bottom: 10px;
-   }
    .product {
       display: flex;
       padding: 4px 0;
       border-left: 4px solid transparent;
       cursor: pointer;
       &-img {
-         width: 60px;
+         margin-left: 6px;
+         width: 70px;
          flex-shrink: 0;
       }
       &-info {
@@ -88,6 +73,8 @@
          line-height: 20px;
          .price {
             color: #cd1818;
+            font-size: 20px;
+            margin-top: 4px;
          }
       }
       &:hover {

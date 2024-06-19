@@ -3,7 +3,6 @@ import { AddItemTextArea, Modal } from "@/components/Modal";
 import { Button } from "@/components/ui";
 import useSpecActions from "@/hooks/useSpecActions";
 import { useProductDetailStore } from "@/stores/productDetail";
-import { inputClasses } from "@/utils/appHelper";
 import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
@@ -48,7 +47,7 @@ const handleSpecActions = async (value: string) => {
 
    const productAttribute: ProductAttributeSchema = {
       category_attribute_id: orderId,
-      product_ascii: productDetail.value.product_ascii,
+      product_id: productDetail.value.id,
       value: value,
    };
 
@@ -71,7 +70,7 @@ const handleSpecActions = async (value: string) => {
    <template v-if="foundedCatAttribute">
       <tr class="hover:bg-[#f1f1f1]">
          <td>
-            {{ foundedCatAttribute.attribute }}
+            {{ foundedCatAttribute.attribute_name }}
          </td>
          <td>
             <p class="mr-[20px] whitespace-break-spaces">
@@ -79,34 +78,19 @@ const handleSpecActions = async (value: string) => {
             </p>
          </td>
          <td class="text-right">
-            <Button
-               :onClick="() => (openModal = true)"
-               :class="`${inputClasses.overlayButton} px-[14px]`"
-               variant="clear"
-               colors="clear"
-               size="clear"
-            >
+            <Button variant="push" colors="secondary" :onClick="() => (openModal = true)">
                <PencilSquareIcon class="w-[22px] mr-[6px]" />
                Change
             </Button>
          </td>
       </tr>
 
-      <!-- <div class="flex flex-nowrap">
-         <div class="w-2/12 ">
-           
-         </div>
-         <div class="w-10/12">
-           
-         </div>
-      </div> -->
-
       <Modal v-if="openModal" :close="closeModal">
          <template v-slot:children>
             <AddItemTextArea
                :close="closeModal"
                :loading="isFetching"
-               :title="`Edit '${foundedCatAttribute.attribute}''`"
+               :title="`Edit '${foundedCatAttribute.attribute_name}''`"
                :initValue="foundedAttribute.attribute?.value || ''"
                :submit="(value) => handleSpecActions(value)"
             />

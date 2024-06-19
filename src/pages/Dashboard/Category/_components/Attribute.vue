@@ -64,8 +64,8 @@ const handleAttributeActions = async (props: Add | Edit | Delete) => {
    if (curCategory.value === null) return;
 
    const newAttribute: CategoryAttributeSchema = {
-      attribute: "",
-      attribute_ascii: "",
+      attribute_name: "",
+      attribute_name_ascii: "",
       category_id: curCategory.value.id,
    };
 
@@ -73,8 +73,8 @@ const handleAttributeActions = async (props: Add | Edit | Delete) => {
       case "add":
       case "edit":
          Object.assign(newAttribute, {
-            attribute: props.value,
-            attribute_ascii: generateId(props.value),
+            attribute_name: props.value,
+            attribute_name_ascii: generateId(props.value),
          } as Partial<CategoryAttributeSchema>);
    }
 
@@ -135,7 +135,6 @@ const classes = inject("classes") as Record<string, string>;
             Add attribute
          </Button>
       </div>
-
       <template v-if="curCategory">
          <div
             :class="`flex flex-wrap mt-[14px] gap-[10px] ${isFetching ? 'disable' : ''}`"
@@ -162,7 +161,7 @@ const classes = inject("classes") as Record<string, string>;
          <AddItem
             v-if="openModal === 'add'"
             :close="closeModal"
-            :title="'Add attribute'"
+            :title="'Add attribute_name'"
             :submit="(value) => handleAttributeActions({ variant: 'add', value })"
             :loading="isFetching"
          />

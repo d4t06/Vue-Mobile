@@ -3,18 +3,19 @@ import Button from "@/components/ui/Button.vue";
 import useLogout from "@/hooks/useLogout";
 import RequireAuth from "@/layouts/RequireAuth.vue";
 
-const logOut = useLogout();
+const { logout, isFetching } = useLogout();
 
 const handleLogout = () => {
-   logOut();
+   logout();
 };
 </script>
 
 <template>
    <RequireAuth :allow-roles="['USER']">
       <div class="pt-[30px]">
-         <Button :onclick="handleLogout" variant="push"> Sign out </Button>
+         <Button :loading="isFetching" :onclick="handleLogout" variant="push">
+            Sign out
+         </Button>
       </div>
    </RequireAuth>
 </template>
-@/hooks/useLogout

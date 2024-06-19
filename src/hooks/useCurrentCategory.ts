@@ -14,7 +14,7 @@ export default function useCurrentCategory() {
       const categoryAscii = route.params.categoryAscii;
       if (!categoryAscii) return undefined;
 
-      return appStore.categories.find((c) => c.category_ascii === categoryAscii);
+      return appStore.categories.find((c) => c.category_name_ascii === categoryAscii);
    };
 
    const getBrandsByCategory = () => {
@@ -35,7 +35,7 @@ export default function useCurrentCategory() {
       console.log('check categries',appStore.categories);
       
       return (
-         appStore.categories.find((c) => c.category_ascii === "home")?.category_slider.slider
+         appStore.categories.find((c) => c.category_name_ascii === "home")?.category_slider.slider
             .slider_images || []
       );
    };

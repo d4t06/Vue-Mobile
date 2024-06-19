@@ -5,8 +5,8 @@ import MyInput from "@/components/ui/MyInput.vue";
 import Table from "@/components/ui/Table/Table.vue";
 import useCategory from "@/hooks/useCategory";
 import useGetProduct from "@/hooks/useGetProduct";
+import useProduct from "@/hooks/useProducts";
 import router from "@/router";
-import { useProductStore } from "@/stores/product";
 
 import { inputClasses } from "@/utils/appHelper";
 import { PlusIcon } from "@heroicons/vue/16/solid";
@@ -16,10 +16,11 @@ import {
    MagnifyingGlassIcon,
    PencilSquareIcon,
 } from "@heroicons/vue/24/outline";
-import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 
 type Tab = "all" | "add" | "edit";
+
+const { products, status, page, isLast } = useProduct();
 
 const currentTab = ref<Tab>("all");
 const currentProduct = ref<ProductList>();
@@ -27,11 +28,12 @@ const currentProductIndex = ref<number>();
 
 const curCategory = ref<Category>();
 
-const productStore = useProductStore();
-const { products, status } = storeToRefs(productStore);
-
 const { getProduct } = useGetProduct();
 const { categories } = useCategory({ autoGetCategories: true });
+
+const handleGetMore = () => {
+   getProduct({ page: page.value + 1 }, { more: true });
+};
 
 const handleOpenEdit = (index: number) => {
    currentProductIndex.value = index;
@@ -67,7 +69,7 @@ const classes = {
    <div class="flex justify-between">
       <div :class="`${currentTab != 'all' ? classes.hide : ''} flex space-x-[10px]`">
          <MyInput :attrs="{ placeholder: 'iPhone thirteen' }" class="" />
-         <Button variant="push">
+         <Button variant="push" border="clear">
             <MagnifyingGlassIcon class="w-[24px]" />
          </Button>
       </div>
@@ -76,13 +78,20 @@ const classes = {
          v-if="currentTab === 'all'"
          :onClick="() => (currentTab = 'add')"
          variant="push"
+         border="clear"
          class="ml-auto"
       >
          <PlusIcon class="w-[20px] mr-[4px]" />
          Add product
       </Button>
 
-      <Button v-else :onClick="() => (currentTab = 'all')" variant="push" class="ml-auto">
+      <Button
+         v-else
+         colors="secondary"
+         :onClick="() => (currentTab = 'all')"
+         variant="push"
+         class="ml-auto"
+      >
          Close
       </Button>
    </div>
@@ -101,9 +110,7 @@ const classes = {
             <button
                v-if="category.is_show"
                :class="`${classes.tab} ${
-                  curCategory?.category_ascii === category.category_ascii
-                     ? classes.activeTab
-                     : ''
+                  curCategory?.id === category.id ? classes.activeTab : ''
                }`"
                :onClick="() => (curCategory = category)"
             >
@@ -113,10 +120,7 @@ const classes = {
       </div>
 
       <div class="mt-[30px]">
-         <ArrowPathIcon
-            v-if="status === 'loading' || status === 'more-loading'"
-            class="w-[24px] animate-spin"
-         />
+         <ArrowPathIcon v-if="status === 'loading'" class="w-[24px] animate-spin" />
 
          <template v-else>
             <Table v-if="!!products.length" :col-list="['Name', 'Price', '']">
@@ -125,32 +129,40 @@ const classes = {
                      <td>{{ product.product_name }}</td>
                      <td>---</td>
                      <td class="!text-right space-x-[8px]">
-                        <Button
+                        <button
                            :onClick="() => handleOpenEdit(index)"
-                           :class="inputClasses.overlayButton"
-                           variant="clear"
-                           size="clear"
-                           colors="clear"
+                           :class="`${inputClasses.overlayButton}`"
                         >
                            <PencilSquareIcon class="w-[24px]" />
-                        </Button>
-                        <Button
+                        </button>
+                        <button
+                           class="rounded-[8px]"
                            :onClick="
-                              () => router.push(`product/${product.product_ascii}`)
+                              () => router.push(`product/${product.id}`)
                            "
-                           :class="inputClasses.overlayButton"
-                           variant="clear"
-                           size="clear"
-                           colors="clear"
+                           :class="`${inputClasses.overlayButton}`"
                         >
                            <Cog6ToothIcon class="w-[24px]" />
-                        </Button>
+                        </button>
                      </td>
                   </tr>
                </template>
             </Table>
             <p v-else class="text-center">¯\_(ツ)_/¯</p>
          </template>
+
+         <p class="text-center mt-[20px]">
+            <Button
+               v-if="status !== 'loading' && status !== 'error'"
+               border="clear"
+               :loading="status === 'more-loading'"
+               variant="push"
+               :onClick="handleGetMore"
+               :disabled="isLast"
+            >
+               More
+            </Button>
+         </p>
       </div>
    </div>
 
@@ -169,4 +181,3 @@ const classes = {
       />
    </div>
 </template>
-@/hooks/useCategory@/hooks/useGetProduct

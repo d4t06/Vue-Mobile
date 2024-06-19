@@ -7,11 +7,11 @@ import { ref } from "vue";
 
 type Props = {
    content: string;
-   productAscii: string;
+   productId: number;
    classNames?: string;
 };
 
-const { content, classNames, productAscii } = defineProps<Props>();
+const { content, classNames, productId } = defineProps<Props>();
 const isChange = ref(false);
 const lock = ref(true);
 
@@ -49,7 +49,7 @@ const classes = {
          :setIsChange="setIsChange"
          :setLock="setLock"
          :editor="editor"
-         :productAscii="productAscii"
+         :productId="productId"
       />
       <div :class="`${classes.editContainer} ${classNames}`">
          <EditorContent :editor="editor" />

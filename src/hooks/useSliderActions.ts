@@ -2,84 +2,110 @@ import { ref } from "vue";
 import usePrivateRequest from "./usePrivateRequest";
 import { useAppStore } from "@/stores/app";
 import { useToastStore } from "@/stores/toast";
+import { sleep } from "@/utils/appHelper";
 
 const SLIDER_IMAGE_URL = "/sliders/images";
 
-type Fetching = "add-image" | "delete-image" | "";
+type Add = {
+   type: "add";
+   sliderId: number;
+   categoryIndex: number;
+   images: ImageType[];
+};
 
-type AddSliderImage = {
-   type: "add-image";
+type Edit = {
+   type: "edit";
+   categoryIndex: number;
    sliderImage: SliderImageSchema;
-   sliderIndex: number;
+   id: number;
    image: ImageType;
+   index: number;
 };
 
-type EditSliderImage = {
-   type: "edit-image";
-   sliderImage: SliderImageSchema;
-   sliderIndex: number;
-   sliderImageID: number;
-   image: ImageType;
+type Delete = {
+   type: "delete";
+   index: number;
+   sliderImageId: number;
+   categoryIndex: number;
 };
 
-type DeleteSliderImage = {
-   type: "delete-image";
-   sliderIndex: number;
-   sliderImageID: number;
-};
+type SliderAction = Add | Delete | Edit;
 
-type SliderAction = AddSliderImage | DeleteSliderImage | EditSliderImage;
-
-export default function useSliderActions({ close }: { close: () => void }) {
-   const isFetching = ref<Fetching>("");
+export default function useSliderActions() {
+   const isFetching = ref(false);
 
    const appStore = useAppStore();
    const toastStore = useToastStore();
    const privateRequest = usePrivateRequest();
 
-   const sliderActions = async (props: SliderAction) => {
-      console.log("slider actions check props", props);
-      console.log("slider actions check app", appStore.categories);
-
+   const actions = async (props: SliderAction) => {
       try {
-         switch (props.type) {
-            case "add-image":
-               isFetching.value = "add-image";
+         isFetching.value = true;
+         if (import.meta.env.DEV) await sleep(500);
 
-               const res = await privateRequest.post(SLIDER_IMAGE_URL, [
-                  props.sliderImage,
-               ]);
-               const newSliderImage = res.data.data as SliderImage;
-               newSliderImage.image = props.image;
+         switch (props.type) {
+            case "add":
+               const { images, sliderId, categoryIndex } = props;
+
+               const schemas = images.map(
+                  (image) =>
+                     ({
+                        image_id: image.id,
+                        slider_id: sliderId,
+                        link_to: "",
+                     } as SliderImageSchema)
+               );
+
+               const res = await privateRequest.post(SLIDER_IMAGE_URL, schemas);
+
+               const data = res.data.data as SliderImage[];
+
+               const newSliderImages = data.map(
+                  (sI, index) => ({ ...sI, image: images[index] } as SliderImage)
+               );
 
                appStore.categories[
-                  props.sliderIndex
-               ].category_slider.slider.slider_images.push(newSliderImage);
+                  categoryIndex
+               ].category_slider.slider.slider_images.push(...newSliderImages);
 
                toastStore.setSuccessToast("Add slider images successful");
                break;
-            case "edit-image":
-               break;
-            case "delete-image":
-               isFetching.value = "delete-image";
 
-               await privateRequest.delete(`${SLIDER_IMAGE_URL}/${props.sliderImageID}`);
+            case "edit": {
+               const { index, id, categoryIndex, sliderImage, image } = props;
+
+               await privateRequest.put(`${SLIDER_IMAGE_URL}/${id}`, sliderImage);
+
+               Object.assign(
+                  appStore.categories[categoryIndex].category_slider.slider.slider_images[
+                     index
+                  ],
+                  { image, image_id: image.id } as Partial<SliderImage>
+               );
+
+               toastStore.setSuccessToast("Edit slider image successful");
+               break;
+            }
+            case "delete": {
+               const { index, sliderImageId, categoryIndex } = props;
+
+               await privateRequest.delete(`${SLIDER_IMAGE_URL}/${sliderImageId}`);
 
                appStore.categories[
-                  props.sliderIndex
-               ].category_slider.slider.slider_images.splice(props.sliderIndex, 1);
+                  categoryIndex
+               ].category_slider.slider.slider_images.splice(index, 1);
 
-               toastStore.setSuccessToast("Delete slider images successful");
+               toastStore.setSuccessToast("Delete slider image successful");
                break;
+            }
          }
       } catch (error) {
          console.log({ message: error });
          toastStore.setErrorToast(`${props.type} slider image fail`);
       } finally {
-         isFetching.value = "";
-         close();
+         isFetching.value = false;
       }
    };
 
-   return { sliderActions, isFetching };
+   return { actions, isFetching };
 }

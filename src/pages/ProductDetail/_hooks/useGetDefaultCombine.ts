@@ -3,7 +3,7 @@ import { Ref, watchEffect } from "vue";
 type Props = {
    color: Ref<ProductColor | undefined>;
    storage: Ref<ProductStorage | undefined>;
-   product: Ref<Product | null>;
+   product: Ref<ProductDetail | null>;
 };
 
 export default function useGetDefaultCombine({ color, storage, product }: Props) {

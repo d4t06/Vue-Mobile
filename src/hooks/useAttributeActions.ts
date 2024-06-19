@@ -72,7 +72,7 @@ export default function useAttributeActions({ curCategoryIndex, closeModal }: Pr
 
                const newCategory: CategorySchema = {
                   attribute_order: newAttributeOrder,
-                  category_ascii: curCategory.value.category_ascii,
+                  category_name_ascii: curCategory.value.category_name_ascii,
                   category_name: curCategory.value.category_name,
                   is_show: 1,
                };
@@ -124,7 +124,7 @@ export default function useAttributeActions({ curCategoryIndex, closeModal }: Pr
 
                   const newCategorySchema: CategorySchema = {
                      attribute_order: newAttributeOrder,
-                     category_ascii: curCategory.value.category_ascii,
+                     category_name_ascii: curCategory.value.category_name_ascii,
                      category_name: curCategory.value.category_name,
                      is_show: 1,
                   };
@@ -168,7 +168,7 @@ export default function useAttributeActions({ curCategoryIndex, closeModal }: Pr
          const newOrder = newOrderArray.join("_");
          const newCategorySchema: CategorySchema = {
             attribute_order: newOrder,
-            category_ascii: curCategory.value.category_ascii,
+            category_name_ascii: curCategory.value.category_name_ascii,
             category_name: curCategory.value.category_name,
             is_show: 1,
          };

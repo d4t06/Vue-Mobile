@@ -1,6 +1,6 @@
 import { useProductDetailStore } from "@/stores/productDetail";
 import { useToastStore } from "@/stores/toast";
-import { generateId } from "@/utils/appHelper";
+import { generateId, sleep } from "@/utils/appHelper";
 import { privateRequest } from "@/utils/request";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
@@ -41,13 +41,14 @@ export default function useColorActions({ closeModal }: Props) {
       try {
          if (!productDetail.value) return;
          isFetching.value = true;
+         if (import.meta.env.DEV) await sleep(500);
 
          switch (props.variant) {
             case "add": {
                const color: ProductColorSchema = {
-                  product_ascii: productDetail.value.product_ascii,
-                  color: props.value,
-                  color_ascii: generateId(props.value),
+                  product_id: productDetail.value.id,
+                  color_name: props.value,
+                  color_name_ascii: generateId(props.value),
                };
                const res = await privateRequest.post(`${MANAGE_COLOR_URL}`, color);
 
@@ -64,9 +65,9 @@ export default function useColorActions({ closeModal }: Props) {
             case "edit": {
                const { value, id, index } = props;
                const color: ProductColorSchema = {
-                  product_ascii: productDetail.value.product_ascii,
-                  color: value,
-                  color_ascii: generateId(value),
+                  product_id: productDetail.value.id,
+                  color_name: value,
+                  color_name_ascii: generateId(value),
                };
 
                await privateRequest.put(`${MANAGE_COLOR_URL}/${id}`, color);

@@ -1,4 +1,3 @@
-
 import { defineStore } from "pinia";
 import type { SortStoreType } from "./sort";
 
@@ -14,6 +13,7 @@ type ProductState = {
    column: SortStoreType["column"] | null;
    type: SortStoreType["type"] | null;
    price: number[] | null;
+   q: string | null;
 };
 
 const initialProductState: ProductState = {
@@ -28,6 +28,7 @@ const initialProductState: ProductState = {
    column: null,
    type: null,
    price: null,
+   q: null,
 };
 
 export const useProductStore = defineStore("product", {

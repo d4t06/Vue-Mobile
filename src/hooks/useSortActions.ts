@@ -1,12 +1,10 @@
 import { useSortStore } from "@/stores/sort";
 import { storeToRefs } from "pinia";
 import { generateId } from "@/utils/appHelper";
-import useGetProduct from "./useGetProduct";
-import { useProductStore } from "@/stores/product";
+import useGetProduct, { GetProductParams } from "./useGetProduct";
 
 export default function useSortActions() {
    const sortStore = useSortStore();
-   const productStore = useProductStore()
    const { getProduct } = useGetProduct();
    const { column, enable, type, nameAscii } = storeToRefs(sortStore);
 
@@ -15,33 +13,39 @@ export default function useSortActions() {
       column: typeof column.value;
       type: typeof type.value;
       name: string;
+      params?: Partial<GetProductParams>;
    };
    type Clear = {
       action: "clear";
+      params?: Partial<GetProductParams>;
    };
 
    type HandleSort = SortType | Clear;
 
    const handleSort = (props: HandleSort) => {
+      // console.log("check product Store", productStore.categoryID);
 
-      console.log('check product Store', productStore.categoryID);
-      
-      if (!productStore.categoryID) return;
+      // if (!productStore.categoryID) return;
 
       switch (props.action) {
          case "sort":
-            const { column, type, name } = props;
+            const { column, type, name, params = {} } = props;
             if (sortStore.column === column && sortStore.type === type) return;
 
             sortStore.$patch({ column, type, nameAscii: generateId(name), enable: true });
-            getProduct({}, { replace: true });
+            getProduct(params, { replace: true });
             break;
 
          case "clear":
             if (!sortStore.enable) return;
 
-            sortStore.$patch({ column: null, type: null, nameAscii: null, enable: false });
-            getProduct({}, { replace: true });
+            sortStore.$patch({
+               column: null,
+               type: null,
+               nameAscii: null,
+               enable: false,
+            });
+            getProduct(props.params || {}, { replace: true });
             break;
       }
    };

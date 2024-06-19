@@ -17,11 +17,10 @@ type Props = {
    setLock: (v: boolean) => void;
    setIsChange: (v: boolean) => void;
    isChange: boolean;
-   productAscii: string;
+   productId: number;
 };
 
-const { editor, lock, isChange, setLock, productAscii, setIsChange } =
-   defineProps<Props>();
+const { editor, lock, isChange, setLock, productId, setIsChange } = defineProps<Props>();
 
 const toastStore = useToastStore();
 
@@ -62,12 +61,11 @@ const handleSubmit = async (variant: "toolbar" | "modal") => {
       if (!editor) return;
       isFetching.value = variant;
 
-      const descSchema: ProductDescriptionSchema = {
+      const descSchema: Partial<ProductDescriptionSchema> = {
          content: editor.getHTML(),
-         product_ascii: productAscii,
       };
 
-      await privateRequest.put(MANAGE_DESC_URL, descSchema);
+      await privateRequest.put(`${MANAGE_DESC_URL}/${productId}`, descSchema);
       setIsChange(false);
    } catch (error) {
       console.log({ message: error });
