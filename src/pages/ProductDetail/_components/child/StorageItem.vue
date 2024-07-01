@@ -22,7 +22,8 @@ const classes = {
          :active="props.active"
          :onClick="
             () =>
-               props.storage.id !== storage?.id ? handleChoseStorage(props.storage) : {}
+               !props.active ? handleChoseStorage(props.storage) : console.log('already')
+               
          "
          variant="push"
          colors="secondary"

@@ -40,6 +40,9 @@ const handleAddCategory = async (value: string, type: "Add" | "Edit") => {
          break;
 
       case "Edit":
+         if (curCategoryIndex.value === undefined) return;
+         newCategory.attribute_order = categories.value[curCategoryIndex.value].attribute_order
+
          await addOrEditCategory({
             type: "edit",
             category: newCategory,

@@ -88,6 +88,7 @@ const {
    border,
    hover,
    rounded,
+   type = "button",
    ...rest
 } = defineProps<ButtonProps>();
 </script>
@@ -104,6 +105,7 @@ const {
 
    <template v-else>
       <button
+         :type="type"
          v-bind="rest"
          :disabled="loading || disabled"
          :class="`${ButtonVariant({

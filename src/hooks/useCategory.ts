@@ -47,7 +47,7 @@ export default function useCategory(props?: Props) {
    type EditCategory = {
       type: "edit";
       category: CategorySchema;
-      currentIndex: number | undefined;
+      currentIndex: number;
    };
 
    const addOrEditCategory = async ({ ...props }: AddCategory | EditCategory) => {

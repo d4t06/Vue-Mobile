@@ -26,7 +26,7 @@ const classes = {
       </div>
 
       <div class="md:w-4/12 md:px-[12px] mt-[30px] md:mt-0">
-         <div class="">
+         <div class="sm:sticky top-[10px]">
             <h2 :class="parentClasses.title">Specification</h2>
 
             <template v-if="props.loading">
@@ -40,8 +40,16 @@ const classes = {
 
             <PushFrame v-else-if="product" className="spec">
                <div class="p-[20px]">
-                  <img v-if="props.product?.image_url" :class="classes.specImage" :src="props.product?.image_url" />
-                  <img v-else class="m-auto" :src="'https://d4t06.github.io/HD-Chat/assets/search-empty-ChRLxitn.png'" />
+                  <img
+                     v-if="props.product?.image_url"
+                     :class="classes.specImage"
+                     :src="props.product?.image_url"
+                  />
+                  <img
+                     v-else
+                     class="m-auto"
+                     :src="'https://d4t06.github.io/HD-Chat/assets/search-empty-ChRLxitn.png'"
+                  />
                </div>
                <table class="w-full mt-[20px]">
                   <tbody>

@@ -95,7 +95,9 @@ const classes = {
          <template v-if="props.loading">
             <Skeleton className="pt-[50%] w-full" />
          </template>
-         <Slider v-else className="pt-[50%]" :sliderImages="currentSliderImages" />
+         <div v-else class="sm:sticky top-[10px]">
+            <Slider className="pt-[50%]" :sliderImages="currentSliderImages" />
+         </div>
       </div>
 
       <div class="mt-[40px] md:mt-0 md:w-5/12 md:px-[12px]">
