@@ -5,7 +5,7 @@ import { type ButtonHTMLAttributes } from "vue";
 import { RouterLink } from "vue-router";
 
 const classes = {
-   primary: "text-white rounded-[6px]  hover:brightness-90 text-[14px] bg-[#cd1818]",
+   primary: "text-white rounded-[6px]  hover:brightness-90 bg-[#cd1818]",
    push: 'active:translate-y-[2px] active:before:shadow-none before:z-[-1]  before:absolute before:content-[""]  before:inset-0 ',
    active: "translate-y-[2px] before:shadow-none text-[#cd1818] font-[500]",
 };
@@ -62,7 +62,7 @@ const ButtonVariant = cva(
    }
 );
 
-interface ButtonProps extends /* @vue-ignore */ ButtonHTMLAttributes {
+interface ButtonProps {
    href?: string;
    active?: boolean;
    loading?: boolean;
@@ -88,8 +88,6 @@ const {
    border,
    hover,
    rounded,
-   type = "button",
-   ...rest
 } = defineProps<ButtonProps>();
 </script>
 
@@ -98,15 +96,15 @@ const {
       v-if="href"
       v-bind="rest"
       :to="href"
-      :class="ButtonVariant({ variant, size, rounded, colors, border, className })"
+      :class="
+         ButtonVariant({ variant, size, rounded, colors, border, className })
+      "
    >
       <slot />
    </RouterLink>
 
    <template v-else>
       <button
-         :type="type"
-         v-bind="rest"
          :disabled="loading || disabled"
          :class="`${ButtonVariant({
             variant,

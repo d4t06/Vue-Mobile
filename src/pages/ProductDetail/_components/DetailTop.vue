@@ -43,7 +43,8 @@ const curCombine = computed(() => {
    if (!color.value || !storage.value || !props.product) return;
 
    return props.product.combines.find(
-      (c) => c.color_id === color.value!.id && c.storage_id === storage.value!.id
+      (c) =>
+         c.color_id === color.value!.id && c.storage_id === storage.value!.id
    );
 });
 
@@ -52,14 +53,18 @@ const closeModal = () => (openModal.value = false);
 const findDefaultCombineOfStorage = (storage: ProductStorage) => {
    if (!props.product) return;
 
-   return props.product.combines.find((c) => c.id === storage.default_combine.combine_id);
+   return props.product.combines.find(
+      (c) => c.id === storage.default_combine.combine_id
+   );
 };
 
 const handleChoseStorage = (s: ProductStorage) => {
    if (!props.product) return;
 
    const defaultCombine = findDefaultCombineOfStorage(s);
-   const c = props.product.colors.find((c) => c.id === defaultCombine?.color_id);
+   const c = props.product.colors.find(
+      (c) => c.id === defaultCombine?.color_id
+   );
 
    storage.value = s;
    if (c) color.value = c;
@@ -96,7 +101,7 @@ const classes = {
             <Skeleton className="pt-[50%] w-full" />
          </template>
          <div v-else class="sm:sticky top-[10px]">
-            <Slider className="pt-[50%]" :sliderImages="currentSliderImages" />
+            <Slider :quantity="1" :sliderImages="currentSliderImages" />
          </div>
       </div>
 
@@ -137,7 +142,9 @@ const classes = {
                            <Button
                               :className="`w-full ${classes.variantButton}`"
                               :active="c.id === color?.id"
-                              :onClick="() => (c.id !== color?.id ? (color = c) : {})"
+                              :onClick="
+                                 () => (c.id !== color?.id ? (color = c) : {})
+                              "
                               variant="push"
                               colors="secondary"
                            >
@@ -151,7 +158,11 @@ const classes = {
                <div class="mt-[20px]">
                   <h5 :class="classes.label">Price</h5>
                   <h1 :class="classes.price">
-                     {{ curCombine?.price ? moneyFormat(curCombine.price) : "Contact" }}
+                     {{
+                        curCombine?.price
+                           ? moneyFormat(curCombine.price)
+                           : "Contact"
+                     }}
                   </h1>
                </div>
             </PushFrame>

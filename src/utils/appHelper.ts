@@ -14,7 +14,8 @@ export const loginClasses = {
    inputGroup: "flex flex-col space-y-[2px]",
    label: "text-[#1f1f1f]",
    input: "py-[4px] rounded-[6px] border border-black/15 outline-none px-[10px]",
-   errorMessage: "bg-red-500/30 text-red-500 p-[6px] rounded-[6px] inline-block",
+   errorMessage:
+      "bg-red-500/30 text-red-500 p-[6px] rounded-[6px] inline-block",
 };
 
 export const sleep = (time: number) =>
@@ -55,7 +56,10 @@ export const initImageObject = (data: Partial<ImageType>) => {
    return newImage;
 };
 
-export const findCurCategory = (categories: Category[], curCategoryAscii: string) => {
+export const findCurCategory = (
+   categories: Category[],
+   curCategoryAscii: string
+) => {
    const curCategory = categories.find(
       (cat) => cat.category_name_ascii === curCategoryAscii
    );
@@ -76,11 +80,18 @@ export const formatSize = (size: number) => {
 };
 
 export const getLocalStorage = () =>
-   JSON.parse(localStorage.getItem("Vue-Mobile") || "{}") as Record<string, any>;
+   JSON.parse(localStorage.getItem("Vue-Mobile") || "{}") as Record<
+      string,
+      any
+   >;
 
 export const setLocalStorage = (key: string, value: any) => {
    const storage = getLocalStorage();
    storage[key] = value;
 
    return localStorage.setItem("Vue-Mobile", JSON.stringify(storage));
+};
+
+export const getDisable = (v: boolean) => {
+   return v ? "disable" : "";
 };

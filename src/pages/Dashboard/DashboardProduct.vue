@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import AddProduct from "@/components/Form/AddProduct.vue";
+import JsonInput from "@/components/Modal/JsonInput.vue";
+import Modal from "@/components/Modal/Modal.vue";
 import Button from "@/components/ui/Button.vue";
 import MyInput from "@/components/ui/MyInput.vue";
 import Table from "@/components/ui/Table/Table.vue";
@@ -12,6 +14,7 @@ import { inputClasses } from "@/utils/appHelper";
 import { PlusIcon } from "@heroicons/vue/16/solid";
 import {
    ArrowPathIcon,
+   CodeBracketIcon,
    Cog6ToothIcon,
    MagnifyingGlassIcon,
    PencilSquareIcon,
@@ -27,6 +30,7 @@ const currentProduct = ref<ProductList>();
 const currentProductIndex = ref<number>();
 
 const curCategory = ref<Category>();
+const modalRef = ref<"json-import" | "">("");
 
 const { getProduct } = useGetProduct();
 const { categories } = useCategory({ autoGetCategories: true });
@@ -34,6 +38,12 @@ const { categories } = useCategory({ autoGetCategories: true });
 const handleGetMore = () => {
    getProduct({ page: page.value + 1 }, { more: true });
 };
+
+const handleSubmit = (text: string) => {
+   console.log("check ", text);
+};
+
+const closeModal = () => (modalRef.value = "");
 
 const handleOpenEdit = (index: number) => {
    currentProductIndex.value = index;
@@ -51,7 +61,10 @@ const handleAfterDeleteProduct = () => {
 watch(
    curCategory,
    () => {
-      getProduct({ category_id: curCategory.value?.id, size: 2 }, { replace: true });
+      getProduct(
+         { category_id: curCategory.value?.id, size: 2 },
+         { replace: true }
+      );
    },
    {
       immediate: true,
@@ -67,7 +80,11 @@ const classes = {
 
 <template>
    <div class="flex justify-between">
-      <div :class="`${currentTab != 'all' ? classes.hide : ''} flex space-x-[10px]`">
+      <div
+         :class="`${
+            currentTab != 'all' ? classes.hide : ''
+         } flex space-x-[10px]`"
+      >
          <MyInput :attrs="{ placeholder: 'iPhone thirteen' }" class="" />
          <Button variant="push" border="clear">
             <MagnifyingGlassIcon class="w-[24px]" />
@@ -85,15 +102,26 @@ const classes = {
          Add product
       </Button>
 
-      <Button
-         v-else
-         colors="secondary"
-         :onClick="() => (currentTab = 'all')"
-         variant="push"
-         class="ml-auto"
-      >
-         Close
-      </Button>
+      <div class="flex space-x-2" v-else>
+         <Button
+            :onClick="() => (modalRef = 'json-import')"
+            variant="push"
+            border="clear"
+            class="ml-auto"
+         >
+            <CodeBracketIcon class="w-[20px] mr-[4px]" />
+            Import
+         </Button>
+
+         <Button
+            colors="secondary"
+            :onClick="() => (currentTab = 'all')"
+            variant="push"
+            class="ml-auto"
+         >
+            Close
+         </Button>
+      </div>
    </div>
    <div :class="`${currentTab != 'all' ? classes.hide : ''}`">
       <div class="flex mt-[20px] border-b border-black/10">
@@ -120,7 +148,10 @@ const classes = {
       </div>
 
       <div class="mt-[30px]">
-         <ArrowPathIcon v-if="status === 'loading'" class="w-[24px] animate-spin" />
+         <ArrowPathIcon
+            v-if="status === 'loading'"
+            class="w-[24px] animate-spin"
+         />
 
          <template v-else>
             <Table v-if="!!products.length" :col-list="['Name', 'Price', '']">
@@ -137,9 +168,7 @@ const classes = {
                         </button>
                         <button
                            class="rounded-[8px]"
-                           :onClick="
-                              () => router.push(`product/${product.id}`)
-                           "
+                           :onClick="() => router.push(`product/${product.id}`)"
                            :class="`${inputClasses.overlayButton}`"
                         >
                            <Cog6ToothIcon class="w-[24px]" />
@@ -180,4 +209,15 @@ const classes = {
          }"
       />
    </div>
+
+   <Modal :close="closeModal" v-if="modalRef">
+      <template v-slot:children>
+         <JsonInput
+            v-slot:children
+            :submit="handleSubmit"
+            status="input"
+            :close-modal="closeModal"
+         />
+      </template>
+   </Modal>
 </template>

@@ -2,32 +2,47 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/vue/16/solid";
 import Button from "./ui/Button.vue";
 import useSlider from "@/hooks/useSlider";
+import {getDisable} from "@/utils/appHelper"
 
 type Props = {
    className?: string;
    autoSlide?: number;
    sliderImages: SliderImage[];
+   quantity: number;
 };
 
 const props = withDefaults(defineProps<Props>(), {
-   className: "pt-[25%]",
+   className: "",
 });
 
-const { curIndex, next, previous, sliderRef } = useSlider({
+const { next, previous, sliderRef, curIndex } = useSlider({
    sliderImages: props.sliderImages,
    autoSlide: 0,
+   quantity: props.quantity,
 });
 
+const widthMap: Record<number, string> = {
+   1: "w-full",
+   2: "w-1/2",
+};
+
+const ptMap: Record<number, string> = {
+   1: "pt-[60%]",
+   2: "pt-[32%]",
+};
+
 const classes = {
-   container:
-      "absolute inset-0 rounded-[14px] whitespace-nowrap overflow-hidden shadow-[2px_4px_16px_rgba(0,0,0,.15)]",
+   container: "whitespace-nowrap overflow-hidden -mx-2",
    button:
-      "!absolute top-[50%] translate-y-[-50%] flex items-center justify-center bg-white rounded-[99px] shadow-[1px_2px_8px_rgba(0,0,0,.15)] text-[#999]  z-10 transition-transform hover:scale-[1.05] hover:text-[#333] h-[32px] md:h-[40px] w-[32px] md:w-[40px]",
+     `${getDisable(props.sliderImages.length < curIndex.value)} !absolute top-[50%] translate-y-[-50%] flex items-center justify-center bg-white rounded-[99px] shadow-[1px_2px_8px_rgba(0,0,0,.15)] text-[#999]  z-10 transition-transform hover:scale-[1.05] hover:text-[#333] h-[32px] md:h-[40px] w-[32px] md:w-[40px]`,
    leftArrow: "left-[16px]",
    rightArrow: "right-[16px]",
-   sliderItem: "inline-block h-full w-full",
-   sliderIndex:
-      "absolute text-white space-x-[2px] text-[12px] bottom-[8px] left-[16px] flex px-[10px] rounded-[99px] bg-black/40",
+   sliderItem: `inline-block h-full px-2 ${widthMap[props.quantity]}`,
+   imageWrapper: ` ${
+      ptMap[props.quantity]
+   } relative w-full rounded-[14px] overflow-hidden`,
+   // sliderIndex:
+   //    "absolute text-white space-x-[2px] text-[12px] bottom-[8px] left-[16px] flex px-[10px] rounded-[99px] bg-black/40",
 };
 </script>
 
@@ -36,11 +51,13 @@ const classes = {
       <div :class="classes.container" ref="sliderRef">
          <template v-for="sliderImage in sliderImages">
             <div :class="classes.sliderItem">
-               <img
-                  :src="sliderImage.image.image_url"
-                  alt=""
-                  class="w-full object-cover object-center"
-               />
+               <div :class="classes.imageWrapper">
+                  <img
+                     :src="sliderImage.image.image_url"
+                     alt=""
+                     class="w-full object-cover object-center absolute top-0 left-0 h-full"
+                  />
+               </div>
             </div>
          </template>
       </div>
@@ -58,12 +75,5 @@ const classes = {
       >
          <ArrowRightIcon class="w-[18px] md:w-[20px]" />
       </button>
-
-      <div :class="classes.sliderIndex">
-         <span>{{ curIndex }}</span>
-         <span> / </span>
-         <span>{{ sliderImages?.length || 1 }}</span>
-      </div>
    </div>
 </template>
-@/hooks/useSlider

@@ -20,6 +20,7 @@ const { productDetail } = storeToRefs(p);
                v-for="(color, index) in productDetail.colors"
                :color="color"
                :index="index"
+               :quantity="1"
             />
 
             <p v-else class="text-center">¯\_(ツ)_/¯</p>

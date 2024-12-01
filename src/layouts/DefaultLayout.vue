@@ -41,4 +41,3 @@ watch(
       </div>
    </PersistLogin>
 </template>
-@/hooks/useCategory

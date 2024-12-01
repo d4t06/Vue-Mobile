@@ -58,21 +58,29 @@ watch(
 <template>
    <p v-if="appStatus === 'error'">Some thing went wrong</p>
    <template v-else>
-      <Skeleton v-if="appStatus === 'loading'" className="pt-[25%] !rounded-[16px]" />
+      <div v-if="appStatus === 'loading'" class="flex space-x-4">
+         <Skeleton className="pt-[16%] w-1/2 !rounded-[14px]" />
+         <Skeleton className="pt-[16%] w-1/2 !rounded-[14px]" />
+      </div>
       <Slider
          v-else-if="curCategory"
          :sliderImages="curCategory.category_slider.slider.slider_images"
          :key="curCategory.category_name_ascii"
+         :quantity="2"
       />
       <div class="mt-[30px] flex">
          <div class="w-full md:w-2/3">
             <template v-if="appStatus == 'loading'">
-               <Skeleton className="w-[180px] h-[24px] rounded-[4px] mb-[6px]" />
+               <Skeleton
+                  className="w-[180px] h-[24px] rounded-[4px] mb-[6px]"
+               />
             </template>
             <template v-else>
                <h2 class="mb-[6px] text-[22px] font-[500]">
                   {{ getCurCategory()?.category_name }}
-                  <span class="text-[#333] text-[18px]"> ({{ count }} products)</span>
+                  <span class="text-[#333] text-[18px]">
+                     ({{ count }} products)</span
+                  >
                </h2>
             </template>
 

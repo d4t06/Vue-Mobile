@@ -7,17 +7,18 @@ import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
 const INIT_URL = `${
-   import.meta.env.VITE_API_ENDPOINT || "https://spring-mobile-latest.onrender.com/api"
+   import.meta.env.VITE_API_ENDPOINT ||
+   "https://spring-mobile-latest.onrender.com/api"
 }/init`;
 
 const authStore = useAuthStore();
 
 const currentStep = ref(0);
 
-const usernameRef = ref<HTMLInputElement | null>(null);
+// const usernameRef = ref<HTMLInputElement | null>(null);
 
 const isSubmit = ref(false);
-const username = ref("");
+// const username = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 const errorMsg = ref("");
@@ -35,7 +36,7 @@ const handleSubmit = async (e: Event) => {
       await axios.post(
          INIT_URL,
          {
-            username: username.value,
+            username: "admin",
             password: password.value,
          },
          {
@@ -83,23 +84,29 @@ const finish = () => {
                   Vue <span class="text-[#cd1818]">Mobile</span>
                </h1>
                <h1 class="text-[26px] text-[#1f1f1f] mt-[10px]">Dashboard</h1>
-               <p v-if="errorMsg" :class="loginClasses.errorMessage">{{ errorMsg }}</p>
+               <p v-if="errorMsg" :class="loginClasses.errorMessage">
+                  {{ errorMsg }}
+               </p>
             </div>
             <div :class="loginClasses.right">
                <div :class="loginClasses.inputGroup">
-                  <label :class="loginClasses.label + ' pt-[8px]'" htmlFor="username"
+                  <label
+                     :class="loginClasses.label + ' pt-[8px]'"
+                     htmlFor="username"
                      >Username</label
                   >
                   <input
-                     ref="usernameRef"
                      :class="loginClasses.input"
                      id="username"
+                     readonly
                      type="text"
-                     v-model="username"
+                     placeholder="admin"
                   />
                </div>
                <div :class="loginClasses.inputGroup">
-                  <label :class="loginClasses.label" htmlFor="password">Password</label>
+                  <label :class="loginClasses.label" htmlFor="password"
+                     >Password</label
+                  >
                   <input
                      :class="loginClasses.input"
                      type="text"

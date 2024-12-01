@@ -1,18 +1,22 @@
 <script lang="ts" setup>
-import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import { CodeBracketIcon, PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { generateId, inputClasses } from "@/utils/appHelper";
 import { computed, inject, ref } from "vue";
 
 import { Button, Box, OverlayCta } from "@/components/ui";
 import { AddItem, ConfirmModal, Modal } from "@/components/Modal";
 import useCategory from "@/hooks/useCategory";
+import JsonInput from "@/components/Modal/JsonInput.vue";
+import useImportCategory from "@/hooks/useImportCategory";
 
-type Modal = "close" | "edit" | "add" | "delete";
+type Modal = "close" | "edit" | "add" | "delete" | "import";
 
-const isOpenModal = ref<Modal>("close");
+const modal = ref<Modal>("close");
 const curCategoryIndex = ref<number>();
 
 const { addOrEditCategory, categories, deleteCategory, isFetching } = useCategory();
+
+const { status, submit } = useImportCategory();
 
 const curCategory = computed(() =>
    curCategoryIndex.value === undefined
@@ -20,7 +24,13 @@ const curCategory = computed(() =>
       : categories.value[curCategoryIndex.value]
 );
 
-const closeModal = () => (isOpenModal.value = "close");
+const closeModal = () => (modal.value = "close");
+
+const closeImportModal = () => {
+   closeModal();
+
+   status.value = "input";
+};
 
 const handleAddCategory = async (value: string, type: "Add" | "Edit") => {
    if (!value.trim()) {
@@ -41,7 +51,8 @@ const handleAddCategory = async (value: string, type: "Add" | "Edit") => {
 
       case "Edit":
          if (curCategoryIndex.value === undefined) return;
-         newCategory.attribute_order = categories.value[curCategoryIndex.value].attribute_order
+         newCategory.attribute_order =
+            categories.value[curCategoryIndex.value].attribute_order;
 
          await addOrEditCategory({
             type: "edit",
@@ -52,12 +63,12 @@ const handleAddCategory = async (value: string, type: "Add" | "Edit") => {
          break;
    }
 
-   isOpenModal.value = "close";
+   modal.value = "close";
 };
 
 const handleDeleteCategory = async () => {
    await deleteCategory(curCategoryIndex.value);
-   isOpenModal.value = "close";
+   modal.value = "close";
 };
 
 type OpenModal = {
@@ -79,13 +90,25 @@ const handleOpenModal = ({ ...props }: OpenAddModal | OpenEditOrDeleteModal) => 
          break;
    }
 
-   isOpenModal.value = props.modal;
+   modal.value = props.modal;
 };
 
 const mainClasses = inject("classes") as Record<string, string>;
 </script>
 <template>
-   <h1 :class="mainClasses.label">All Category</h1>
+   <div class="flex justify-between">
+      <h1 :class="mainClasses.label">All Category</h1>
+
+      <Button
+         :onClick="() => (modal = 'import')"
+         variant="push"
+         border="clear"
+         class="ml-auto"
+      >
+         <CodeBracketIcon class="w-6 mr-1" />
+         Import
+      </Button>
+   </div>
    <div :class="`${mainClasses.group}`">
       <div :class="`${mainClasses.flexContainer} mt-[-16px]`">
          <template v-for="(category, index) in categories">
@@ -99,7 +122,10 @@ const mainClasses = inject("classes") as Record<string, string>;
                         <button
                            :onClick="
                               () =>
-                                 handleOpenModal({ currentIndex: index, modal: 'edit' })
+                                 handleOpenModal({
+                                    currentIndex: index,
+                                    modal: 'edit',
+                                 })
                            "
                            :class="inputClasses.overlayButton"
                         >
@@ -108,7 +134,10 @@ const mainClasses = inject("classes") as Record<string, string>;
                         <button
                            :onClick="
                               () =>
-                                 handleOpenModal({ currentIndex: index, modal: 'delete' })
+                                 handleOpenModal({
+                                    currentIndex: index,
+                                    modal: 'delete',
+                                 })
                            "
                            :class="inputClasses.overlayButton"
                         >
@@ -126,10 +155,10 @@ const mainClasses = inject("classes") as Record<string, string>;
       </div>
    </div>
 
-   <Modal :close="closeModal" v-if="isOpenModal !== 'close'">
+   <Modal :close="closeModal" v-if="modal !== 'close'">
       <template v-slot:children>
          <AddItem
-            v-if="isOpenModal === 'add'"
+            v-if="modal === 'add'"
             :close="closeModal"
             :submit="(value) => handleAddCategory(value, 'Add')"
             :loading="isFetching"
@@ -137,7 +166,7 @@ const mainClasses = inject("classes") as Record<string, string>;
          />
 
          <AddItem
-            v-if="isOpenModal === 'edit' && curCategory"
+            v-if="modal === 'edit' && curCategory"
             :close="closeModal"
             :submit="(value) => handleAddCategory(value, 'Edit')"
             :loading="isFetching"
@@ -146,11 +175,19 @@ const mainClasses = inject("classes") as Record<string, string>;
          />
 
          <ConfirmModal
-            v-if="isOpenModal === 'delete' && curCategory"
+            v-if="modal === 'delete' && curCategory"
             :close="closeModal"
             :callback="handleDeleteCategory"
             :loading="isFetching"
             :title="`Delete category '${curCategory.category_name}'`"
+         />
+
+         <JsonInput
+            v-if="modal === 'import'"
+            title="Import Category"
+            :close-modal="closeImportModal"
+            :submit="submit"
+            :status="status"
          />
       </template>
    </Modal>
