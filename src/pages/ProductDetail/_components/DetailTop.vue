@@ -98,7 +98,7 @@ const classes = {
    <div class="md:flex md:mx-[-12px]">
       <div class="md:w-7/12 md:px-[12px]">
          <template v-if="props.loading">
-            <Skeleton className="pt-[50%] w-full" />
+            <Skeleton className="pt-[60%] md:pt-[75%] w-full" />
          </template>
          <div v-else class="sm:sticky top-[10px]">
             <Slider :quantity="1" :sliderImages="currentSliderImages" />

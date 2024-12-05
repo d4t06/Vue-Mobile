@@ -8,7 +8,9 @@ import Table from "@/components/ui/Table/Table.vue";
 import useCategory from "@/hooks/useCategory";
 import useGetProduct from "@/hooks/useGetProduct";
 import useProduct from "@/hooks/useProducts";
+import useImportProduct from "@/hooks/useImportProduct";
 import router from "@/router";
+import { getHidden } from "@/utils/appHelper";
 
 import { inputClasses } from "@/utils/appHelper";
 import { PlusIcon } from "@heroicons/vue/16/solid";
@@ -34,16 +36,16 @@ const modalRef = ref<"json-import" | "">("");
 
 const { getProduct } = useGetProduct();
 const { categories } = useCategory({ autoGetCategories: true });
+const { currentIndex, status: importStatus, submit, jsonProducts } = useImportProduct();
 
 const handleGetMore = () => {
    getProduct({ page: page.value + 1 }, { more: true });
 };
 
-const handleSubmit = (text: string) => {
-   console.log("check ", text);
+const closeModal = () => {
+   modalRef.value = "";
+   importStatus.value = "input";
 };
-
-const closeModal = () => (modalRef.value = "");
 
 const handleOpenEdit = (index: number) => {
    currentProductIndex.value = index;
@@ -52,19 +54,16 @@ const handleOpenEdit = (index: number) => {
 };
 
 const handleAfterDeleteProduct = () => {
-   currentTab.value == "all";
+   currentTab.value = "all";
 
-   currentProductIndex.value = undefined;
-   currentProduct.value = undefined;
+   // currentProductIndex.value = undefined;
+   // currentProduct.value = undefined;
 };
 
 watch(
    curCategory,
    () => {
-      getProduct(
-         { category_id: curCategory.value?.id, size: 2 },
-         { replace: true }
-      );
+      getProduct({ category_id: curCategory.value?.id, size: 2 }, { replace: true });
    },
    {
       immediate: true,
@@ -79,30 +78,28 @@ const classes = {
 </script>
 
 <template>
-   <div class="flex justify-between">
-      <div
-         :class="`${
-            currentTab != 'all' ? classes.hide : ''
-         } flex space-x-[10px]`"
-      >
-         <MyInput :attrs="{ placeholder: 'iPhone thirteen' }" class="" />
-         <Button variant="push" border="clear">
-            <MagnifyingGlassIcon class="w-[24px]" />
+   <div class="mb-5">
+      <div :class="`${getHidden(currentTab != 'all')} flex justify-between`">
+         <div :class="`flex space-x-[10px]`">
+            <MyInput :attrs="{ placeholder: 'iPhone thirteen' }" class="" />
+            <Button variant="push" border="clear">
+               <MagnifyingGlassIcon class="w-[24px]" />
+            </Button>
+         </div>
+
+         <Button
+            v-if="currentTab === 'all'"
+            :onClick="() => (currentTab = 'add')"
+            variant="push"
+            border="clear"
+            class="ml-auto"
+         >
+            <PlusIcon class="w-[20px] mr-[4px]" />
+            Add product
          </Button>
       </div>
 
-      <Button
-         v-if="currentTab === 'all'"
-         :onClick="() => (currentTab = 'add')"
-         variant="push"
-         border="clear"
-         class="ml-auto"
-      >
-         <PlusIcon class="w-[20px] mr-[4px]" />
-         Add product
-      </Button>
-
-      <div class="flex space-x-2" v-else>
+      <div :class="`${getHidden(currentTab !== 'add')} flex justify-end space-x-2 h-[38px]`">
          <Button
             :onClick="() => (modalRef = 'json-import')"
             variant="push"
@@ -148,10 +145,7 @@ const classes = {
       </div>
 
       <div class="mt-[30px]">
-         <ArrowPathIcon
-            v-if="status === 'loading'"
-            class="w-[24px] animate-spin"
-         />
+         <ArrowPathIcon v-if="status === 'loading'" class="w-[24px] animate-spin" />
 
          <template v-else>
             <Table v-if="!!products.length" :col-list="['Name', 'Price', '']">
@@ -212,12 +206,20 @@ const classes = {
 
    <Modal :close="closeModal" v-if="modalRef">
       <template v-slot:children>
-         <JsonInput
-            v-slot:children
-            :submit="handleSubmit"
-            status="input"
-            :close-modal="closeModal"
-         />
+         <JsonInput title="Import product" :submit="submit" :status="importStatus" :close-modal="closeModal">
+            <div
+               v-if="importStatus === 'fetching' && jsonProducts.length"
+               class="text-[#333]"
+            >
+               <p class="font-[500] text-[#333]">
+                  {{ currentIndex + 1 }} of {{ jsonProducts?.length }}
+               </p>
+               <div class="flex justify-between mt-1">
+                  <p>{{ jsonProducts[currentIndex].name }}</p>
+                  <ArrowPathIcon class="w-6 animate-spin" />
+               </div>
+            </div>
+         </JsonInput>
       </template>
    </Modal>
 </template>

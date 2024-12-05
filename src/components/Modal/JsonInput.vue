@@ -36,6 +36,8 @@ const classes = {
    <div class="w-[500px] max-w-[90vw]">
       <h1 class="text-xl mb-5">{{ props.title || "Import" }}</h1>
 
+      <slot />
+
       <textarea
          :class="classes.input"
          v-if="props.status === 'input'"

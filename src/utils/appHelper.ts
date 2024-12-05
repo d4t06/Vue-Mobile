@@ -95,3 +95,9 @@ export const setLocalStorage = (key: string, value: any) => {
 export const getDisable = (v: boolean) => {
    return v ? "disable" : "";
 };
+
+
+export const getHidden = (v: boolean) => {
+   return v ? "hidden" : "";
+};
+

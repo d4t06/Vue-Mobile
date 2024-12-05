@@ -27,7 +27,7 @@ const widthMap: Record<number, string> = {
 };
 
 const ptMap: Record<number, string> = {
-   1: "pt-[60%]",
+   1: "pt-[60%] md:pt-[75%]",
    2: "pt-[32%]",
 };
 

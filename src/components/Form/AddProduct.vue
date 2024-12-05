@@ -111,7 +111,7 @@ const handleDeleteProduct = async () => {
       });
       Object.assign(productData, initProduct);
 
-      p.props.cbAfterDelete && p.props.cbAfterDelete();
+      p.props.cbAfterDelete();
    }
 };
 

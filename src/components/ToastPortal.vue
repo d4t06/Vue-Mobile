@@ -48,7 +48,7 @@ watch(
 );
 
 const classes = {
-   wrapper: "fixed bottom-[30px] right-[30px]",
+   wrapper: "fixed z-[999] bottom-[30px] right-[30px]",
    container: "flex space-y-[10px] flex-col items-end",
 };
 </script>

@@ -72,7 +72,7 @@ console.log("check path", route.path);
             <slot v-if="expand">Banner</slot>
          </RouterLink>
 
-         <RouterLink target="blank" :class="`sidebar__item`" to="/">
+         <RouterLink target="_blank" :class="`sidebar__item`" to="/">
             <BuildingStorefrontIcon class="w-[24px]" />
             <slot v-if="expand">My shop</slot>
          </RouterLink>
