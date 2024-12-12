@@ -9,6 +9,7 @@ import ColorItem from "./child/ColorItem.vue";
 import useStorageActions from "@/hooks/useStorageActions";
 import useColorActions from "@/hooks/useColorActions";
 import { Box } from "@/components/ui";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 
 type Modal = "add-storage" | "add-color";
 
@@ -17,9 +18,19 @@ const classes = inject("classes") as Record<string, string>;
 const p = useProductDetailStore();
 const { productDetail } = storeToRefs(p);
 
-const openModal = ref<Modal | "">("");
+const modal = ref<Modal>("add-color");
 
-const closeModal = () => (openModal.value = "");
+const modalRef = ref<ModalRef>();
+
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
+
 const { isFetching: storageFetching, storageActions } = useStorageActions({ closeModal });
 const { isFetching: colorFetching, colorActions } = useColorActions({ closeModal });
 
@@ -56,7 +67,7 @@ const handleAddColor = async (props: AddColor) => {
                   <StorageItem :storage="storage" :index="index" />
                </div>
                <div :class="`${classes.flexCol} w-1/3 `">
-                  <Box :onClick="() => (openModal = 'add-storage')" />
+                  <Box :onClick="() => openModal('add-storage')" />
                </div>
             </div>
          </div>
@@ -72,26 +83,26 @@ const handleAddColor = async (props: AddColor) => {
                   <ColorItem :color="color" :index="index" />
                </div>
                <div :class="`${classes.flexCol} w-1/3 `">
-                  <Box :onClick="() => (openModal = 'add-color')" />
+                  <Box :onClick="() => openModal('add-color')" />
                </div>
             </div>
          </div>
       </div>
    </div>
 
-   <Modal v-if="!!openModal" :close="closeModal">
+   <Modal ref="modalRef">
       <template v-if="productDetail" v-slot:children>
          <AddItem
-            v-if="openModal === 'add-storage'"
-            :close="closeModal"
+            v-if="modal === 'add-storage'"
+            :closeModal="closeModal"
             :submit="(value) => handleAddStorage({ variant: 'add-storage', value })"
             :loading="storageFetching"
             title="Add Storage"
          />
 
          <AddItem
-            v-if="openModal === 'add-color'"
-            :close="closeModal"
+            v-if="modal === 'add-color'"
+            :closeModal="closeModal"
             :submit="(value) => handleAddColor({ variant: 'add-color', value })"
             :loading="colorFetching"
             title="Add color"
@@ -99,4 +110,3 @@ const handleAddColor = async (props: AddColor) => {
       </template>
    </Modal>
 </template>
-@/hooks/useStorageActions@/hooks/useColorActions

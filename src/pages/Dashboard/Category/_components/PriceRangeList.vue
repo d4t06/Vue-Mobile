@@ -3,22 +3,34 @@ import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { computed, inject, ref } from "vue";
 import { inputClasses } from "@/utils/appHelper";
 import { Button } from "@/components/ui";
-import Modal from "@/components/Modal/Modal.vue";
+import Modal, { ModalRef } from "@/components/Modal/Modal.vue";
 import { ConfirmModal } from "@/components/Modal";
 
 import usePriceRangeActions from "@/hooks/usePriceRangeActions";
 import type { PriceRangeModal } from "@/hooks/usePriceRangeActions";
 import AddPriceRange from "@/components/Form/AddPriceRange.vue";
+import { PlusIcon } from "@heroicons/vue/16/solid";
 
-const isOpenModal = ref<PriceRangeModal>("close");
+const modal = ref<PriceRangeModal>("close");
 const curCategoryIndex = ref<number>();
 
 const curPriceRangeIndex = ref<number>();
 
+const modalRef = ref<ModalRef>();
+
+const openModal = (m: PriceRangeModal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
+
 // hooks
 const { priceRangeActions, categories, isFetching } = usePriceRangeActions({
-   curCategoryIndex: curCategoryIndex,
-   isOpenModal: isOpenModal,
+   curCategoryIndex,
+   closeModal,
 });
 
 const curCategory = computed(() =>
@@ -60,10 +72,8 @@ const handleOpenModal = ({ ...props }: OpenAddModal | OpenEditOrDeleteModal) => 
          break;
    }
 
-   isOpenModal.value = props.modal;
+   openModal(props.modal);
 };
-
-const closeModal = () => (isOpenModal.value = "close");
 
 const handleAddBrand = async (data: PriceRangeSchema, type: "add" | "edit") => {
    if (!curCategory.value) return;
@@ -95,7 +105,7 @@ const mainClasses = inject("classes") as Record<string, string>;
 
 const classes = {
    priceRangeItem:
-      "flex border mt-[8px] bg-[#f1f1f1] border-black/15 items-center px-[16px] py-[8px] rounded-[8px]",
+      "flex border mt-[8px] bg-[#f4f6f8] border-black/15 items-center px-[16px] py-[8px] rounded-[8px]",
    cta: "text-[#3f3f3f] hover:scale-[1.1] hover:text-[#cd1818]",
 };
 </script>
@@ -128,6 +138,8 @@ const classes = {
             variant="push"
             :onClick="() => handleOpenModal({ modal: 'add' })"
          >
+
+         <PlusIcon class="w-5 mr-1" />
             Add price
          </Button>
       </div>
@@ -172,11 +184,11 @@ const classes = {
       </template>
    </div>
 
-   <Modal :close="closeModal" v-if="isOpenModal !== 'close'">
+   <Modal ref="modalRef" >
       <template v-slot:children>
          <AddPriceRange
-            v-if="isOpenModal === 'add' && curCategory"
-            :close="closeModal"
+            v-if="modal === 'add' && curCategory"
+            :closeModal="closeModal"
             :submit="(data) => handleAddBrand(data, 'add')"
             :loading="isFetching"
             :categoryID="curCategory.id"
@@ -184,8 +196,8 @@ const classes = {
          />
 
          <AddPriceRange
-            v-if="isOpenModal === 'edit' && curPriceRange && curCategory"
-            :close="closeModal"
+            v-if="modal === 'edit' && curPriceRange && curCategory"
+            :closeModal="closeModal"
             :submit="(value) => handleAddBrand(value, 'edit')"
             :loading="isFetching"
             :initValue="curPriceRange"
@@ -195,8 +207,8 @@ const classes = {
          />
 
          <ConfirmModal
-            v-if="isOpenModal === 'delete' && curPriceRange"
-            :close="closeModal"
+            v-if="modal === 'delete' && curPriceRange"
+            :closeModal="closeModal"
             :callback="handleDeleteBrand"
             :loading="isFetching"
             :title="`Delete price '${curPriceRange.label}'`"

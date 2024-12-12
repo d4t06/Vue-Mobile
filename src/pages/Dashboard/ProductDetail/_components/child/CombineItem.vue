@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Modal, ModalHeader } from "@/components/Modal";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 import { Button } from "@/components/ui";
 import MyInput from "@/components/ui/MyInput.vue";
 import { useProductDetailStore } from "@/stores/productDetail";
@@ -26,10 +27,20 @@ const { productDetail } = storeToRefs(p);
 const toastStore = useToastStore();
 
 const isFetching = ref(false);
-const openModal = ref(false);
+const isOpenModal = ref(false);
 
 const price = ref(0);
 const quantity = ref(0);
+
+const modalRef = ref<ModalRef>();
+const openModal = () => {
+   isOpenModal.value = true;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 const foundedCombineIndex = computed(() =>
    productDetail.value
@@ -56,11 +67,11 @@ const isDefaultCombine = computed(() => {
    return isDefaultStorage && isDefaultCombineOfStorage;
 });
 
-const closeModal = () => {
+const handleCloseModal = () => {
    price.value = 0;
    quantity.value = 0;
    isFetching.value = false;
-   openModal.value = false;
+   closeModal();
 };
 
 const handleOpenModal = () => {
@@ -68,7 +79,7 @@ const handleOpenModal = () => {
 
    price.value = foundedCombine.value?.price;
    quantity.value = foundedCombine.value?.quantity;
-   openModal.value = true;
+   openModal();
 };
 
 const priceInputAttrs: InputHTMLAttributes = {
@@ -204,22 +215,21 @@ const handleUpdateCombine = async () => {
       <td>{{ foundedCombine.quantity }}</td>
       <td>{{ moneyFormat(foundedCombine.price) }}</td>
       <td class="!text-right">
-         <Button :onClick="handleOpenModal" variant="push" colors="secondary">
-            <PencilSquareIcon class="w-[20px] mr-[6px]" />
-            Change
+         <Button size="clear" className="p-1" :onClick="handleOpenModal" variant="push" colors="secondary">
+            <PencilSquareIcon class="w-6" />
          </Button>
       </td>
    </tr>
 
-   <Modal v-if="openModal" :close="closeModal">
+   <Modal ref="modalRef">
       <template v-slot:children>
-         <div class="w-[300px] bg-[#fff]">
+         <div class="w-[400px] bg-[#fff]">
             <ModalHeader
-               :close="closeModal"
+               :closeModal="handleCloseModal"
                :title="`Edit '${storage.storage_name} / ${color.color_name}'`"
             />
-            <form class="space-y-[14px]" @submit.prevent="handleUpdateCombine">
-               <div class="space-y-[6px]">
+            <form class="space-y-3" @submit.prevent="handleUpdateCombine">
+               <div class="space-y-1">
                   <label for="">Quantity</label>
                   <MyInput
                      ref="childRef"
@@ -229,7 +239,7 @@ const handleUpdateCombine = async () => {
                   />
                </div>
 
-               <div class="space-y-[6px]">
+               <div class="space-y-1">
                   <label for="">Price</label>
 
                   <MyInput
@@ -240,8 +250,8 @@ const handleUpdateCombine = async () => {
                   />
                </div>
 
-               <p class="text-right mt-[20px]">
-                  <Button className="leading-[24px]" :loading="isFetching" type="submit">
+               <p class="text-right">
+                  <Button variant="push" className="leading-[24px]" :loading="isFetching" type="submit">
                      Save
                   </Button>
                </p>

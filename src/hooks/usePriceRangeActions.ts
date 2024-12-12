@@ -11,11 +11,11 @@ const PRICE_RANGE_URL = "/price_ranges";
 export type PriceRangeModal = "close" | "edit" | "add" | "delete";
 
 type Props = {
-   isOpenModal: Ref<PriceRangeModal>;
+   closeModal: () => void;
    curCategoryIndex: Ref<number | undefined>;
 };
 
-export default function usePriceRangeActions({ curCategoryIndex, isOpenModal }: Props) {
+export default function usePriceRangeActions({ curCategoryIndex, closeModal }: Props) {
    const isFetching = ref(false);
 
    const appStore = useAppStore();
@@ -24,7 +24,9 @@ export default function usePriceRangeActions({ curCategoryIndex, isOpenModal }: 
 
    const privateRequest = usePrivateRequest();
    const currentCategory = computed(() =>
-      curCategoryIndex.value === undefined ? undefined : categories.value[curCategoryIndex.value]
+      curCategoryIndex.value === undefined
+         ? undefined
+         : categories.value[curCategoryIndex.value]
    );
 
    type AddPriceRange = {
@@ -54,7 +56,10 @@ export default function usePriceRangeActions({ curCategoryIndex, isOpenModal }: 
 
                isFetching.value = true;
 
-               const res = await privateRequest.post(`${PRICE_RANGE_URL}`, props.priceRange);
+               const res = await privateRequest.post(
+                  `${PRICE_RANGE_URL}`,
+                  props.priceRange
+               );
 
                const newPriceRange = res.data.data as PriceRange;
 
@@ -76,7 +81,10 @@ export default function usePriceRangeActions({ curCategoryIndex, isOpenModal }: 
                await privateRequest.put(`${PRICE_RANGE_URL}/${id}`, updatePriceRange);
 
                if (import.meta.env.DEV) await sleep(500);
-               Object.assign(currentCategory.value.price_ranges[currentIndex], updatePriceRange);
+               Object.assign(
+                  currentCategory.value.price_ranges[currentIndex],
+                  updatePriceRange
+               );
 
                break;
 
@@ -90,7 +98,9 @@ export default function usePriceRangeActions({ curCategoryIndex, isOpenModal }: 
                await privateRequest.delete(`${PRICE_RANGE_URL}/${_id}`);
                // local update
                if (import.meta.env.DEV) await sleep(500);
-               const newBrands = currentCategory.value.price_ranges.filter((b) => b.id !== _id);
+               const newBrands = currentCategory.value.price_ranges.filter(
+                  (b) => b.id !== _id
+               );
                currentCategory.value.price_ranges = newBrands;
          }
          toastStore.setSuccessToast(`${props.type} price range successful`);
@@ -99,7 +109,7 @@ export default function usePriceRangeActions({ curCategoryIndex, isOpenModal }: 
          toastStore.setErrorToast(`${props.type} price range fail`);
       } finally {
          isFetching.value = false;
-         isOpenModal.value = "close";
+         closeModal();
       }
    };
 

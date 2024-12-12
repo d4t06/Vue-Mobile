@@ -7,19 +7,32 @@ import { generateId, inputClasses } from "@/utils/appHelper";
 import { storeToRefs } from "pinia";
 import { computed, inject, ref } from "vue";
 import AttributeItem from "./child/AttributeItem.vue";
+import { ModalRef } from "@/components/Modal/Modal.vue";
+import { PlusIcon } from "@heroicons/vue/16/solid";
+import dragProvider from "@/hooks/useDragItem";
 
 type Modal = "add";
+
+const { endIndex } = dragProvider();
 
 const appStore = useAppStore();
 const { categories } = storeToRefs(appStore);
 
 const curCategoryIndex = ref<number | null>(null);
-const openModal = ref<Modal | "">("");
-const isDrag = ref(false);
-const endIndex = ref(0);
+const modal = ref<Modal>("add");
+
+const modalRef = ref<ModalRef>();
+
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 // hooks
-const closeModal = () => (openModal.value = "");
 const { attributeActions, sortAttribute, curCategory, isFetching } = useAttributeActions({
    curCategoryIndex: curCategoryIndex,
    closeModal,
@@ -30,13 +43,6 @@ const attributeIdOrder = computed(() =>
       ? curCategory.value.attribute_order.split("_")
       : []
 );
-
-const setIsDrag = (value: boolean) => {
-   isDrag.value = value;
-};
-const setEndIndex = (index: number) => {
-   endIndex.value = index;
-};
 
 const handleSortAttribute = (startIndex: number) => {
    sortAttribute(startIndex, endIndex.value);
@@ -112,10 +118,7 @@ const classes = inject("classes") as Record<string, string>;
             <div class="bg-[#ccc] rounded-[12px]">
                <select
                   :class="`${inputClasses.input} min-w-[100px]`"
-                  :onChange="(e) => {
-                    if ((e.target as HTMLInputElement).value) curCategoryIndex = +(e.target as HTMLInputElement).value
-                    else curCategoryIndex = null                    
-                   }"
+                  v-model="curCategoryIndex"
                >
                   <option value="">---</option>
 
@@ -130,8 +133,9 @@ const classes = inject("classes") as Record<string, string>;
          <Button
             :disabled="curCategoryIndex === null"
             variant="push"
-            :onClick="() => (openModal = 'add')"
+            :onClick="() => openModal('add')"
          >
+            <PlusIcon class="w-5 mr-1" />
             Add attribute
          </Button>
       </div>
@@ -142,13 +146,10 @@ const classes = inject("classes") as Record<string, string>;
             <AttributeItem
                v-for="(attrId, index) in attributeIdOrder"
                :key="attrId + index"
-               :isDrag="isDrag"
                :index="index"
                :attributeId="+attrId"
                :curCategory="curCategory"
-               :setIsDrag="setIsDrag"
                :handleDragEnd="() => handleSortAttribute(index)"
-               :setEndIndex="setEndIndex"
                :actions="handleAttributeActions"
                :isFetching="isFetching"
             />
@@ -156,10 +157,10 @@ const classes = inject("classes") as Record<string, string>;
       </template>
    </div>
 
-   <Modal v-if="!!openModal" :close="closeModal">
+   <Modal ref="modalRef">
       <template v-slot:children>
          <AddItem
-            v-if="openModal === 'add'"
+            v-if="modal === 'add'"
             :close="closeModal"
             :title="'Add attribute_name'"
             :submit="(value) => handleAttributeActions({ variant: 'add', value })"

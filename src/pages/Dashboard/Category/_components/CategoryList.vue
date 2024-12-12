@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { CodeBracketIcon, PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
-import { generateId, inputClasses } from "@/utils/appHelper";
+import { generateId } from "@/utils/appHelper";
 import { computed, inject, ref } from "vue";
 
 import { Button, Box, OverlayCta } from "@/components/ui";
@@ -8,29 +8,32 @@ import { AddItem, ConfirmModal, Modal } from "@/components/Modal";
 import useCategory from "@/hooks/useCategory";
 import JsonInput from "@/components/Modal/JsonInput.vue";
 import useImportCategory from "@/hooks/useImportCategory";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 
 type Modal = "close" | "edit" | "add" | "delete" | "import";
 
 const modal = ref<Modal>("close");
 const curCategoryIndex = ref<number>();
+const modalRef = ref<ModalRef>();
 
 const { addOrEditCategory, categories, deleteCategory, isFetching } = useCategory();
 
 const { status, submit } = useImportCategory();
+
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 const curCategory = computed(() =>
    curCategoryIndex.value === undefined
       ? undefined
       : categories.value[curCategoryIndex.value]
 );
-
-const closeModal = () => (modal.value = "close");
-
-const closeImportModal = () => {
-   closeModal();
-
-   status.value = "input";
-};
 
 const handleAddCategory = async (value: string, type: "Add" | "Edit") => {
    if (!value.trim()) {
@@ -90,7 +93,7 @@ const handleOpenModal = ({ ...props }: OpenAddModal | OpenEditOrDeleteModal) => 
          break;
    }
 
-   modal.value = props.modal;
+   openModal(props.modal);
 };
 
 const mainClasses = inject("classes") as Record<string, string>;
@@ -113,7 +116,7 @@ const mainClasses = inject("classes") as Record<string, string>;
       <div :class="`${mainClasses.flexContainer} mt-[-16px]`">
          <template v-for="(category, index) in categories">
             <div v-if="!!category.is_show" :class="`w-1/6 ${mainClasses.flexCol}`">
-               <Box>
+               <Box className="bg-[#f4f6f8]">
                   <template v-slot:children>
                      <span class="font-[500] text-[#1f1f1f]">
                         {{ category.category_name }}</span
@@ -127,7 +130,7 @@ const mainClasses = inject("classes") as Record<string, string>;
                                     modal: 'edit',
                                  })
                            "
-                           :class="inputClasses.overlayButton"
+                           :class="'p-1'"
                         >
                            <PencilSquareIcon class="w-[24px]" />
                         </button>
@@ -139,7 +142,7 @@ const mainClasses = inject("classes") as Record<string, string>;
                                     modal: 'delete',
                                  })
                            "
-                           :class="inputClasses.overlayButton"
+                           :class="'p-1'"
                         >
                            <TrashIcon class="w-[24px]" />
                         </button>
@@ -155,11 +158,11 @@ const mainClasses = inject("classes") as Record<string, string>;
       </div>
    </div>
 
-   <Modal :close="closeModal" v-if="modal !== 'close'">
+   <Modal ref="modalRef" :on-close="() => (status = 'input')">
       <template v-slot:children>
          <AddItem
             v-if="modal === 'add'"
-            :close="closeModal"
+            :closeModal="closeModal"
             :submit="(value) => handleAddCategory(value, 'Add')"
             :loading="isFetching"
             title="Add category"
@@ -167,7 +170,7 @@ const mainClasses = inject("classes") as Record<string, string>;
 
          <AddItem
             v-if="modal === 'edit' && curCategory"
-            :close="closeModal"
+            :closeModal="closeModal"
             :submit="(value) => handleAddCategory(value, 'Edit')"
             :loading="isFetching"
             :initValue="curCategory.category_name"
@@ -176,7 +179,7 @@ const mainClasses = inject("classes") as Record<string, string>;
 
          <ConfirmModal
             v-if="modal === 'delete' && curCategory"
-            :close="closeModal"
+            :closeModal="closeModal"
             :callback="handleDeleteCategory"
             :loading="isFetching"
             :title="`Delete category '${curCategory.category_name}'`"
@@ -185,7 +188,7 @@ const mainClasses = inject("classes") as Record<string, string>;
          <JsonInput
             v-if="modal === 'import'"
             title="Import Category"
-            :close-modal="closeImportModal"
+            :close-modal="closeModal"
             :submit="submit"
             :status="status"
          />

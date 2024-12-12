@@ -19,21 +19,23 @@ type Props = {
    onClick?: () => void;
    className?: string;
    pushAble?: "primary" | "clear" | null | undefined;
+   paddingTop?: string;
 };
 
-const { className, onClick, pushAble } = withDefaults(defineProps<Props>(), {
-   className: "pt-[100%]",
-});
+const { className, onClick, pushAble, paddingTop } = defineProps<Props>();
 
 const classes = {
-   container: `group relative overflow-hidden`,
+   container: `group relative overflow-hidden pt-[100%]`,
    font: "absolute overflow-hidden border-[2px] border-b-[4px] border-[#ccc] inset-0 flex rounded-[12px] items-center justify-center",
 };
 </script>
 
 <template>
-   <div :onClick="onClick && onClick" :class="`${classes.container} ${className}`">
-      <div :class="`${classes.font} ${BoxVariant({ pushAble })}`">
+   <div
+      :onClick="onClick && onClick"
+      :class="`${classes.container} ${paddingTop || 'pt-[100%]'}`"
+   >
+      <div :class="`${classes.font} ${BoxVariant({ pushAble, className })}`">
          <template v-if="$slots['children']">
             <slot name="children" />
          </template>

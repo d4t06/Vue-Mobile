@@ -14,5 +14,5 @@ defineExpose({ inputRef });
 </script>
 
 <template>
-      <input :class="`${inputClasses.input} ${className} `" v-bind="attrs" ref="inputRef" />
+   <input :class="`${inputClasses.input} ${className} `" v-bind="attrs" ref="inputRef" />
 </template>

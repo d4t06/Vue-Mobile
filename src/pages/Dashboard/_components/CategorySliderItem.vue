@@ -2,11 +2,11 @@
 import AddSliderImage from "@/components/Form/AddSliderImage.vue";
 import Gallery from "@/components/Gallery.vue";
 import { ConfirmModal, Modal } from "@/components/Modal";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 import { Box, OverlayCta } from "@/components/ui";
 import useSliderActions from "@/hooks/useSliderActions";
-import { inputClasses } from "@/utils/appHelper";
 import { ArrowPathIcon, TrashIcon } from "@heroicons/vue/24/outline";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 
 type Props = {
    categoryIndex: number;
@@ -17,21 +17,23 @@ type Modal = "edit" | "add" | "delete";
 
 const mainProps = defineProps<Props>();
 
-const openModal = ref<Modal | "">("");
-
+const modal = ref<Modal>("add");
 const currentSliderImageIndex = ref<number>();
-const currentSliderImage = computed(() =>
-   currentSliderImageIndex.value
-      ? mainProps.category.category_slider.slider.slider_images[
-           currentSliderImageIndex.value
-        ]
-      : undefined
-);
+const currentSliderImage = ref<SliderImage>();
+
+const modalRef = ref<ModalRef>();
+
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 // hooks
 const { isFetching, actions } = useSliderActions();
-
-const closeModal = () => (openModal.value = "");
 
 type Edit = {
    type: "Edit";
@@ -100,20 +102,20 @@ const handleSliderActions = async (props: Add | Edit | Delete) => {
       <h5 class="text-[18px] mb-[10px]">{{ category.category_name }}</h5>
       <div class="flex flex-wrap mx-[-8px] mt-[-8px]">
          <template
-            v-for="(currentSliderImage, index) in category.category_slider.slider
-               .slider_images"
+            v-for="(sliderImage, index) in category.category_slider.slider.slider_images"
          >
             <div class="w-1/2 px-[8px] flex-shrink-0 mt-[8px]">
-               <Box className="pt-[25%]" pushAble="clear">
+               <Box padding-top="pt-[25%]" pushAble="clear">
                   <template v-slot:children>
-                     <img :src="currentSliderImage.image.image_url || ''" alt="asd" />
+                     <img :src="sliderImage.image.image_url || ''" alt="asd" />
                      <OverlayCta>
                         <button
-                           :class="`rounded-[8px] ${inputClasses.overlayButton}`"
+                           class="p-1"
                            :onClick="
                               () => {
                                  currentSliderImageIndex = index;
-                                 openModal = 'edit';
+                                 currentSliderImage = sliderImage;
+                                 openModal('edit');
                               }
                            "
                         >
@@ -121,11 +123,11 @@ const handleSliderActions = async (props: Add | Edit | Delete) => {
                         </button>
 
                         <button
-                           :class="`rounded-[8px] ${inputClasses.overlayButton}`"
+                           class="p-1"
                            :onClick="
                               () => {
                                  currentSliderImageIndex = index;
-                                 openModal = 'delete';
+                                 openModal('delete');
                               }
                            "
                         >
@@ -139,11 +141,11 @@ const handleSliderActions = async (props: Add | Edit | Delete) => {
 
          <div class="w-1/2 px-[8px] flex-shrink-0 mt-[8px]">
             <Box
-               className="pt-[25%]"
+               padding-top="pt-[25%]"
                :onClick="
                   () => {
                      currentSliderImageIndex = undefined;
-                     openModal = 'add';
+                     openModal('add');
                   }
                "
             >
@@ -155,20 +157,20 @@ const handleSliderActions = async (props: Add | Edit | Delete) => {
       </div>
    </div>
 
-   <Modal v-if="openModal" :close="closeModal">
+   <Modal ref="modalRef">
       <template v-slot:children>
          <Gallery
             variant="multiple"
-            v-if="openModal === 'add'"
+            v-if="modal === 'add'"
             :close="closeModal"
             :handleChose="(images) => handleSliderActions({ type: 'Add', images })"
          />
 
          <AddSliderImage
-            v-if="currentSliderImage && openModal === 'edit'"
+            v-if="currentSliderImage && modal === 'edit'"
             :props="{
                type: 'edit',
-               close: closeModal,
+               closeModal: closeModal,
                loading: isFetching,
                submit: (schema, image) =>
                   handleSliderActions({ type: 'Edit', image, schema }),
@@ -177,8 +179,8 @@ const handleSliderActions = async (props: Add | Edit | Delete) => {
          />
 
          <ConfirmModal
-            v-if="openModal === 'delete'"
-            :close="closeModal"
+            v-if="modal === 'delete'"
+            :close-modal="closeModal"
             :callback="() => handleSliderActions({ type: 'Delete' })"
             :loading="isFetching"
             :title="`Delete  :v`"

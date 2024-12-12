@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import ModalHeader from "../Modal/ModalHeader.vue";
-import Modal from "../Modal/Modal.vue";
+import Modal, { ModalRef } from "../Modal/Modal.vue";
 import Gallery from "../Gallery.vue";
 import { computed, reactive, ref, watch } from "vue";
 
 import MyInput from "../ui/MyInput.vue";
 import Button from "../ui/Button.vue";
 import Box from "../ui/Box.vue";
-import { inputClasses } from "@/utils/appHelper";
 import OverlayCta from "../ui/OverlayCta.vue";
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 
 type BaseProps = {
    submit: (data: SliderImageSchema, image: ImageType) => void;
-   close: () => void;
+   closeModal: () => void;
    loading: boolean;
 };
 
@@ -34,6 +33,16 @@ type Props = {
 const p = defineProps<Props>();
 
 const isOpenModal = ref(false);
+const modalRef = ref<ModalRef>();
+
+const openModal = () => {
+   isOpenModal.value = true;
+   modalRef.value?.open();
+};
+
+const closeModalSelf = () => {
+   modalRef.value?.close();
+};
 
 const chosenImage = ref<ImageType>();
 const sliderImageData = reactive<{
@@ -52,8 +61,6 @@ const isSameImage = computed(
       sliderImageData.image?.id === p.props.sliderImage.image_id
 );
 
-const closeModalSelf = () => (isOpenModal.value = false);
-
 const handleSubmit = () => {
    if (!sliderImageData.image || !chosenImage.value) return;
    if (isSameImage.value) return;
@@ -62,8 +69,6 @@ const handleSubmit = () => {
       if (!p.props.currentSlider) return;
       sliderImageData.slider_id = p.props.currentSlider.id;
    }
-
-   console.log("check sliderImageData", sliderImageData);
 
    if (sliderImageData.slider_id === null) return;
 
@@ -78,7 +83,7 @@ const handleSubmit = () => {
 
 // run init slider data when edit
 watch(
-   () => 0,
+   [p],
    () => {
       if (p.props.type === "edit") {
          Object.assign(sliderImageData, p.props.sliderImage);
@@ -94,22 +99,19 @@ const titleMaps = {
 </script>
 <template>
    <div class="w-[700px] max-w-[80vw]">
-      <ModalHeader :close="p.props.close" :title="titleMaps[p.props.type]" />
+      <ModalHeader :closeModal="p.props.closeModal" :title="titleMaps[p.props.type]" />
       <div class="w-full">
-         <Box v-if="sliderImageData.image?.image_url" className="pt-[25%]">
+         <Box v-if="sliderImageData.image?.image_url" padding-top="pt-[25%]">
             <template v-slot:children>
                <img :src="sliderImageData.image.image_url" alt="asd" />
                <OverlayCta>
-                  <button
-                     :class="`${inputClasses.overlayButton} rounded-[8px]`"
-                     :onClick="() => (isOpenModal = true)"
-                  >
+                  <button class="p-1" :onClick="openModal">
                      <ArrowPathIcon class="w-[24px]" />
                   </button>
                </OverlayCta>
             </template>
          </Box>
-         <Box v-else className="pt-[25%]" :onClick="() => (isOpenModal = true)" />
+         <Box v-else padding-top="pt-[25%]" :onClick="() => (isOpenModal = true)" />
       </div>
 
       <MyInput
@@ -131,7 +133,7 @@ const titleMaps = {
       </div>
    </div>
 
-   <Modal zIndex="z-[199]" v-if="isOpenModal" :close="closeModalSelf">
+   <Modal ref="modalRef">
       <template v-slot:children>
          <Gallery
             :handleChose="

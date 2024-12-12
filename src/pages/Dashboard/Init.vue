@@ -116,19 +116,6 @@ const finish = () => {
                      v-model="password"
                   />
                </div>
-               <div :class="loginClasses.inputGroup">
-                  <label :class="loginClasses.label" htmlFor="confirm-password"
-                     >Confirm password</label
-                  >
-                  <input
-                     :class="loginClasses.input"
-                     type="text"
-                     id="confirm-password"
-                     autoComplete="off"
-                     required
-                     v-model="confirmPassword"
-                  />
-               </div>
             </div>
          </form>
       </div>

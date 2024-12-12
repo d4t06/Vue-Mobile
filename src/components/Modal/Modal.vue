@@ -1,19 +1,84 @@
 <script lang="ts" setup>
+import { ref, watch } from "vue";
+
 type Props = {
    zIndex?: string;
+   className?: string;
+   onClose?: () => void;
+};
+
+export type ModalRef = {
+   open: () => void;
    close: () => void;
 };
-const { zIndex, close } = withDefaults(defineProps<Props>(), { zIndex: "z-[99]" });
+
+const props = withDefaults(defineProps<Props>(), {
+   zIndex: "z-[99]",
+   className: "py-3 px-5 rounded-lg bg-white",
+});
+
+const isOpen = ref(false);
+const isMounted = ref(false);
+
+const open = () => (isOpen.value = true);
+const close = () => (isMounted.value = false);
+
+defineExpose<ModalRef>({ open, close });
+
+watch(
+   [isMounted],
+   () => {
+      if (!isMounted.value) {
+         setTimeout(() => {
+            isOpen.value = false;
+
+            props.onClose ? props.onClose() : "";
+         }, 400);
+      }
+   },
+   {}
+);
+watch(
+   [isOpen],
+   () => {
+      if (isOpen.value) {
+         setTimeout(() => {
+            isMounted.value = true;
+         }, 100);
+      }
+   },
+   {}
+);
+
+const classes = {
+   unMountedContent: "opacity-0 scale-[.95]",
+   mountedContent: "opacity-100 scale-[1]",
+   unMountedLayer: "opacity-0",
+   mountedLayer: "opacity-60",
+};
 </script>
 <template>
-   <Teleport to="#portal">
-      <div :class="`fixed inset-0 bg-black/60 ${zIndex}`" :onClick="close"></div>
+   <Teleport v-if="isOpen" to="#portal">
+      <div
+         :class="`transition-opacity duration-300 absolute bg-black/60 inset-0 z-[90]
+                             ${isMounted ? classes.mountedLayer : classes.unMountedLayer}
+                        `"
+         :onClick="close"
+      ></div>
 
       <div
          v-if="$slots['children']"
-         :class="`fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] ${zIndex}`"
+         :class="`absolute ${
+            props.zIndex || 'z-[99]'
+         }  duration-300 transition-[transform,opacity] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                            ${
+                               isMounted
+                                  ? classes.mountedContent
+                                  : classes.unMountedContent
+                            }
+                        `"
       >
-         <div class="py-[12px] px-[16px] rounded-[8px] bg-white">
+         <div :class="props.className">
             <slot name="children" />
          </div>
       </div>

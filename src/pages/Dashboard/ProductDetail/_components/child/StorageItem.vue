@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { AddItem, ConfirmModal, Modal } from "@/components/Modal";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 import { Box, Button, OverlayCta } from "@/components/ui";
 import useStorageActions from "@/hooks/useStorageActions";
-import { inputClasses } from "@/utils/appHelper";
 import { PencilIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
@@ -15,8 +15,17 @@ const { index, storage } = defineProps<Props>();
 
 type Modal = "edit" | "delete";
 
-const openModal = ref<Modal | "">("");
-const closeModal = () => (openModal.value = "");
+const modal = ref<Modal>("edit");
+
+const modalRef = ref<ModalRef>();
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 // hooks
 const { isFetching, storageActions } = useStorageActions({ closeModal });
@@ -58,27 +67,21 @@ const handleStorageActions = async (props: Delete | Edit) => {
       <template v-slot:children>
          <p>{{ storage.storage_name }}</p>
          <OverlayCta>
-            <button
-               :class="inputClasses.overlayButton"
-               :onClick="() => (openModal = 'edit')"
-            >
-               <PencilIcon class="w-[24px]" />
+            <button class="p-1" :onClick="() => openModal('edit')">
+               <PencilIcon class="w-6" />
             </button>
-            <button
-               :class="inputClasses.overlayButton"
-               :onClick="() => (openModal = 'delete')"
-            >
-               <TrashIcon class="w-[24px]" />
+            <button class="p-1" :onClick="() => openModal('delete')">
+               <TrashIcon class="w-6" />
             </button>
          </OverlayCta>
       </template>
    </Box>
 
-   <Modal v-if="!!openModal" :close="closeModal">
+   <Modal ref="modalRef">
       <template v-slot:children>
          <AddItem
-            v-if="openModal === 'edit'"
-            :close="closeModal"
+            v-if="modal === 'edit'"
+            :close-modal="closeModal"
             :submit="(value) => handleStorageActions({ variant: 'edit', value })"
             :loading="isFetching"
             :initValue="storage.storage_name"
@@ -86,11 +89,11 @@ const handleStorageActions = async (props: Delete | Edit) => {
          />
 
          <ConfirmModal
-            v-if="openModal === 'delete'"
-            :close="closeModal"
+            v-if="modal === 'delete'"
+            :close-modal="closeModal"
             :callback="() => handleStorageActions({ variant: 'delete' })"
             :loading="isFetching"
-            :title="`Delete storage ' ' :v`"
+            :title="`Delete ' ${storage.storage_name} ' :v`"
          />
       </template>
    </Modal>

@@ -10,7 +10,7 @@ const DEV = import.meta.env.DEV;
 
 type Props = {
    curCategoryIndex: Ref<number | null>;
-   closeModal: () => {};
+   closeModal: () => void;
 };
 
 export default function useAttributeActions({ curCategoryIndex, closeModal }: Props) {

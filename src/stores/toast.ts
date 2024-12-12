@@ -1,4 +1,3 @@
-
 import { nanoid } from "nanoid";
 import { defineStore } from "pinia";
 
@@ -10,10 +9,10 @@ const initToastStore: StateType = {
    toasts: [],
 };
 
-const initToastObject = ({ title, desc }: Partial<Toast>) => {
+const initToastObject = ({ variant, desc }: Partial<Toast>) => {
    return {
       desc,
-      title,
+      variant,
       id: nanoid(4),
    } as Toast;
 };
@@ -26,12 +25,18 @@ export const useToastStore = defineStore("toast", {
       setToasts(toasts: Toast[]) {
          this.toasts = toasts;
       },
-      setSuccessToast(msg: string) {
-         const toast: Toast = initToastObject({ desc: msg, title: "success" });
+      setSuccessToast(msg?: string) {
+         const toast: Toast = initToastObject({
+            desc: msg || "Successful",
+            variant: "success",
+         });
          this.toasts = [...this.toasts, toast];
       },
-      setErrorToast(msg: string) {
-         const toast: Toast = initToastObject({ desc: msg || "Some things went wrong", title: "error" });
+      setErrorToast(msg?: string) {
+         const toast: Toast = initToastObject({
+            desc: msg || "Some things went wrong",
+            variant: "error",
+         });
          this.toasts = [...this.toasts, toast];
       },
    },

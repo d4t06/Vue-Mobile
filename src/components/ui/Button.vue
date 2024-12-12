@@ -1,11 +1,10 @@
 <script lang="ts" setup>
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
-import { cva } from "class-variance-authority";
-import { type ButtonHTMLAttributes } from "vue";
+import { cva, VariantProps } from "class-variance-authority";
+import { type ButtonHTMLAttributes, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 const classes = {
-   primary: "text-white rounded-[6px]  hover:brightness-90 bg-[#cd1818]",
    push: 'active:translate-y-[2px] active:before:shadow-none before:z-[-1]  before:absolute before:content-[""]  before:inset-0 ',
    active: "translate-y-[2px] before:shadow-none text-[#cd1818] font-[500]",
 };
@@ -15,7 +14,7 @@ const ButtonVariant = cva(
    {
       variants: {
          variant: {
-            primary: classes.primary,
+            primary: "",
             push: classes.push,
             clear: "",
          },
@@ -59,36 +58,43 @@ const ButtonVariant = cva(
          hover: "clear",
          border: "primary",
       },
-   }
+   },
 );
 
-interface ButtonProps {
+type ButtonVariantType = VariantProps<typeof ButtonVariant>;
+
+export type ButtonProps = {
    href?: string;
    active?: boolean;
    loading?: boolean;
    disabled?: boolean;
    className?: string;
-   variant?: "primary" | "push" | "clear" | null | undefined;
-   size?: "primary" | "full" | "clear" | null | undefined;
-   rounded?: "primary" | "lg" | "max" | "clear" | null | undefined;
-   hover?: "brightness" | "scale" | "clear" | null | undefined;
-   colors?: "primary" | "clear" | "secondary" | "third" | null | undefined;
-   border?: "primary" | "clear" | "thin" | null | undefined;
+   variant?: ButtonVariantType["variant"];
+   size?: ButtonVariantType["size"];
+   colors?: ButtonVariantType["colors"];
+   border?: ButtonVariantType["border"];
+   hover?: ButtonVariantType["hover"];
+   rounded?: ButtonVariantType["rounded"];
    rest?: Partial<ButtonHTMLAttributes>;
-}
+};
 
 const {
    href,
    variant,
-   colors,
    size,
    className,
    disabled = false,
    loading = false,
+   colors,
    border,
    hover,
    rounded,
+   ...rest
 } = defineProps<ButtonProps>();
+
+const inner = ref<HTMLButtonElement | null>(null);
+
+defineExpose({ inner });
 </script>
 
 <template>
@@ -96,15 +102,14 @@ const {
       v-if="href"
       v-bind="rest"
       :to="href"
-      :class="
-         ButtonVariant({ variant, size, rounded, colors, border, className })
-      "
+      :class="ButtonVariant({ variant, size, rounded, colors, border, className })"
    >
       <slot />
    </RouterLink>
 
    <template v-else>
       <button
+         ref="inner"
          :disabled="loading || disabled"
          :class="`${ButtonVariant({
             variant,

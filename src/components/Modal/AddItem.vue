@@ -4,14 +4,14 @@ import ModalHeader from "./ModalHeader.vue";
 import { MyInput, Button } from "../ui";
 
 type Props = {
-   close: () => void;
+   closeModal: () => void;
    submit: (value: string) => void;
    title: string;
    initValue?: string;
    loading?: boolean;
 };
 
-const { submit, close, initValue, loading, title } = defineProps<Props>();
+const { submit, closeModal, initValue, loading, title } = defineProps<Props>();
 
 const value = ref(initValue ?? "");
 const childRef = ref<{ inputRef: HTMLInputElement } | null>(null);
@@ -25,7 +25,7 @@ watch(childRef, () => childRef.value?.inputRef.focus(), { once: true });
 
 <template>
    <div class="w-[400px] max-w-[80vw] bg-[#fff]">
-      <ModalHeader :close="close" :title="title" />
+      <ModalHeader :closeModal="closeModal" :title="title" />
       <form @submit.prevent="handleSubmit">
          <MyInput
             ref="childRef"

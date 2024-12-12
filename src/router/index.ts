@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, type RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Home from "@/pages/Home.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
@@ -68,7 +68,7 @@ const routeList = [
    },
 
    {
-      path: "/dashboard/init",
+      path: "/dashboard/welcome",
       component: Init,
       layout: CenterLayout,
    },
@@ -107,7 +107,7 @@ routeList.map((r) => {
 });
 
 const router = createRouter({
-   history: createWebHashHistory(import.meta.env.BASE_URL),
+   history: createWebHistory(import.meta.env.BASE_URL),
    routes,
 });
 

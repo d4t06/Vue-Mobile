@@ -8,7 +8,7 @@ import { ref } from "vue";
 const PRODUCT_ATTRIBUTE_URL = "/product-management/attributes";
 
 type Props = {
-   closeModal: () => {};
+   closeModal: () => void;
 };
 
 export default function useSpecActions({ closeModal }: Props) {

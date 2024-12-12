@@ -1,19 +1,26 @@
-import { HTMLAttributes } from "vue";
+import { HTMLAttributes, inject, provide, ref } from "vue";
 
 type Props = {
    index: number;
-   // endIndexRef: number;
    handleDragEnd: () => void;
-   setIsDrag: (x: boolean) => void;
-   setEndIndex: (y: number) => void;
 };
 
-const activeStyles: Partial<CSSStyleDeclaration> = {
-   border: "1px solid #cd1818",
+const useDragState = () => {
+   const isDrag = ref(false);
+   const endIndex = ref(0);
+   const startIndex = ref(0);
+
+   return {
+      isDrag,
+      startIndex,
+      endIndex,
+   };
 };
+
+type ProviderType = ReturnType<typeof useDragState>;
 
 const inActiveStyles: Partial<CSSStyleDeclaration> = {
-
+   borderColor: "rgba(0,0,0,0.15)",
 };
 
 const findDraggableItem = (el: HTMLDivElement) => {
@@ -29,20 +36,45 @@ const findDraggableItem = (el: HTMLDivElement) => {
    return parent;
 };
 
-export default function useDrag({ index, handleDragEnd, setIsDrag, setEndIndex }: Props) {
+export default function dragProvider() {
+   const state = useDragState();
+   provide("drag_provider", state);
+
+   return state;
+}
+
+export function injectDrag() {
+   const state = inject<ProviderType>("drag_provider");
+   if (!state) throw new Error("Drag not provided");
+
+   return state;
+}
+
+export function useDrag({ index, handleDragEnd }: Props) {
+   const { endIndex, startIndex, isDrag } = injectDrag();
+
    const handleDragStart = () => {
-      setIsDrag(true);
+      isDrag.value = true;
+      startIndex.value = index;
    };
 
    const handleDragEnter = (e: DragEvent) => {
       // endIndexRef = index;
-      setEndIndex(index);
+      endIndex.value = index;
       const el = e.target as HTMLDivElement;
-      setIsDrag(true);
+      isDrag.value = true;
       const parentEl = findDraggableItem(el);
 
       if (parentEl) {
-         Object.assign((parentEl.childNodes[0] as HTMLDivElement).style, activeStyles);
+         if (startIndex.value === index) return;
+         const moveDir = startIndex.value > index ? "up" : "down";
+
+         Object.assign(
+            (parentEl.childNodes[0] as HTMLDivElement).style,
+            moveDir === "up"
+               ? { borderLeftColor: "#cd1818" }
+               : { borderRightColor: "#cd1818" }
+         );
          parentEl.classList.add("active");
       }
    };
@@ -52,6 +84,8 @@ export default function useDrag({ index, handleDragEnd, setIsDrag, setEndIndex }
       const parentEl = findDraggableItem(el);
 
       if (parentEl) {
+         console.log("adas");
+
          Object.assign((parentEl.childNodes[0] as HTMLDivElement).style, inActiveStyles);
          parentEl.classList.remove("active");
       }
@@ -68,7 +102,7 @@ export default function useDrag({ index, handleDragEnd, setIsDrag, setEndIndex }
          }
       }
 
-      setIsDrag(false);
+      isDrag.value = false;
       handleDragEnd();
    };
 
@@ -84,5 +118,5 @@ export default function useDrag({ index, handleDragEnd, setIsDrag, setEndIndex }
       onDragstart: handleDragStart,
    };
 
-   return { parentProps };
+   return { parentProps, isDrag };
 }

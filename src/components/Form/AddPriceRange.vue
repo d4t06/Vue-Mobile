@@ -5,7 +5,7 @@ import { MyInput, Button } from "../ui";
 import ModalHeader from "../Modal/ModalHeader.vue";
 
 type Props = {
-   close: () => void;
+   closeModal: () => void;
    submit: (data: PriceRangeSchema) => void;
    categoryID: number;
    title: string;
@@ -13,7 +13,8 @@ type Props = {
    loading: boolean;
 };
 
-const { submit, close, initValue, loading, categoryID, title } = defineProps<Props>();
+const { submit, closeModal, initValue, loading, categoryID, title } =
+   defineProps<Props>();
 
 const initPriceRangeData: PriceRangeSchema = {
    category_id: categoryID,
@@ -64,7 +65,7 @@ watch(
 <template>
    {{ console.log("check props", initValue) }}
    <div class="w-[300px] bg-[#fff]">
-      <ModalHeader :close="close" :title="title" />
+      <ModalHeader :closeModal="closeModal" :title="title" />
       <form @submit.prevent="handleSubmit" class="space-y-[16px]">
          <MyInput
             ref="childRef"
@@ -72,12 +73,22 @@ watch(
             @input="(e) => handleInput('label',(e.target as HTMLInputElement).value)"
          />
          <MyInput
-            :attrs="{ placeholder: 'From', value: priceRangeData.from_price }"
+            :attrs="{
+               placeholder: 'From',
+               value: priceRangeData.from_price,
+               type: 'number',
+               min: 0,
+            }"
             @input="(e) => handleInput('from_price',(e.target as HTMLInputElement).value)"
          />
 
          <MyInput
-            :attrs="{ placeholder: 'To', value: priceRangeData.to_price }"
+            :attrs="{
+               placeholder: 'To',
+               value: priceRangeData.to_price,
+               type: 'number',
+               min: 0,
+            }"
             @input="(e) => handleInput('to_price',(e.target as HTMLInputElement).value)"
          />
 

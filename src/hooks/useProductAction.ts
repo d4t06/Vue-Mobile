@@ -1,4 +1,4 @@
-import { ref, type Ref } from "vue";
+import { ref } from "vue";
 import usePrivateRequest from "./usePrivateRequest";
 import { useToastStore } from "@/stores/toast";
 import { storeToRefs } from "pinia";
@@ -9,11 +9,7 @@ const PRODUCT_URL = "/products";
 
 export type ProductModal = "gallery" | "delete" | "close";
 
-type Props = {
-   isOpenModal?: Ref<ProductModal>;
-};
-
-export default function useProductAction({ isOpenModal }: Props) {
+export default function useProductAction() {
    const isFetching = ref<"add" | "edit" | "delete" | "">("");
 
    const productStore = useProductStore();
@@ -86,7 +82,6 @@ export default function useProductAction({ isOpenModal }: Props) {
          toastStore.setErrorToast(`${props.type} product fail`);
       } finally {
          isFetching.value = "";
-         isOpenModal ? (isOpenModal.value = "close") : {};
       }
    };
 

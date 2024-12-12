@@ -12,6 +12,7 @@ import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 import { Modal, ModalHeader } from "@/components/Modal";
 import StorageItem from "./child/StorageItem.vue";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 
 type Props = {
    loading: boolean;
@@ -25,7 +26,17 @@ const { user } = storeToRefs(authStore);
 
 const storage = ref<ProductStorage>();
 const color = ref<ProductColor>();
-const openModal = ref(false);
+const isOpenModal = ref(false);
+
+const modalRef = ref<ModalRef>();
+const openModal = () => {
+   isOpenModal.value = true;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 const productRef = toRef(props, "product");
 
@@ -43,35 +54,28 @@ const curCombine = computed(() => {
    if (!color.value || !storage.value || !props.product) return;
 
    return props.product.combines.find(
-      (c) =>
-         c.color_id === color.value!.id && c.storage_id === storage.value!.id
+      (c) => c.color_id === color.value!.id && c.storage_id === storage.value!.id
    );
 });
-
-const closeModal = () => (openModal.value = false);
 
 const findDefaultCombineOfStorage = (storage: ProductStorage) => {
    if (!props.product) return;
 
-   return props.product.combines.find(
-      (c) => c.id === storage.default_combine.combine_id
-   );
+   return props.product.combines.find((c) => c.id === storage.default_combine.combine_id);
 };
 
 const handleChoseStorage = (s: ProductStorage) => {
    if (!props.product) return;
 
    const defaultCombine = findDefaultCombineOfStorage(s);
-   const c = props.product.colors.find(
-      (c) => c.id === defaultCombine?.color_id
-   );
+   const c = props.product.colors.find((c) => c.id === defaultCombine?.color_id);
 
    storage.value = s;
    if (c) color.value = c;
 };
 
 const handleAddCartItem = async () => {
-   if (!user.value) return (openModal.value = true);
+   if (!user.value) return openModal();
 
    if (!color.value || !storage.value || !user.value || !props.product) return;
 
@@ -142,9 +146,7 @@ const classes = {
                            <Button
                               :className="`w-full ${classes.variantButton}`"
                               :active="c.id === color?.id"
-                              :onClick="
-                                 () => (c.id !== color?.id ? (color = c) : {})
-                              "
+                              :onClick="() => (c.id !== color?.id ? (color = c) : {})"
                               variant="push"
                               colors="secondary"
                            >
@@ -158,11 +160,7 @@ const classes = {
                <div class="mt-[20px]">
                   <h5 :class="classes.label">Price</h5>
                   <h1 :class="classes.price">
-                     {{
-                        curCombine?.price
-                           ? moneyFormat(curCombine.price)
-                           : "Contact"
-                     }}
+                     {{ curCombine?.price ? moneyFormat(curCombine.price) : "Contact" }}
                   </h1>
                </div>
             </PushFrame>
@@ -180,10 +178,10 @@ const classes = {
       </div>
    </div>
 
-   <Modal zIndex="z-[199]" v-if="openModal" :close="closeModal">
+   <Modal zIndex="z-[199]" ref="modalRef">
       <template v-slot:children>
          <div class="w-[300px] max-w-[80vw]">
-            <ModalHeader title="" :close="closeModal" />
+            <ModalHeader title="" :closeModal="closeModal" />
             <img
                class="mx-auto"
                src="https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=46989&size=130"

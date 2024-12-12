@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import { CheckIcon } from "@heroicons/vue/16/solid";
+import { XMarkIcon } from "@heroicons/vue/24/outline";
+import { ref, watchEffect } from "vue";
 
-import { CheckIcon, XMarkIcon } from "@heroicons/vue/24/outline";
-
+const isOpen = ref(false);
 
 type Props = {
    toast: Toast;
@@ -10,21 +12,43 @@ type Props = {
 
 const { toast, onClick } = defineProps<Props>();
 
-const classes = {
-   container: "flex items-center font-[500] px-[12px] py-[6px] rounded-[8px]",
+const getColor = () => {
+   switch (toast.variant) {
+      case "error":
+         return "text-red-500";
+      case "success":
+         return "text-green-500";
+   }
 };
+
+const classes = {
+   icon: `w-6`,
+   container: `bg-white transition-[transform,opacity] border-[1px] shadow-lg rounded-md overflow-hidden min-w-[150px] max-w-[250px]`,
+   text: `text-sm p-2`,
+   open: "opacity-[1] translate-x-0",
+   close: "opacity-0 translate-x-10",
+   header: "border-b-[1px] bg-gray-100 px-2 py-1 flex space-x-1",
+};
+
+watchEffect(() => {
+   setTimeout(() => {
+      isOpen.value = true;
+   }, 100);
+});
 </script>
 
 <template>
    <div
       :onClick="() => onClick(toast.id)"
-      :class="`${classes.container} ${toast.title === 'error' && 'bg-red-500 text-white'} ${
-         toast.title === 'success' && 'bg-emerald-500 text-white'
-      } `"
+      :class="`${classes.container} ${isOpen ? classes.open : classes.close} `"
    >
-      <CheckIcon v-if="toast.title === 'success'" class="w-[24px]" />
-      <XMarkIcon v-if="toast.title === 'error'" class="w-[24px]" />
+      <div :class="`${classes.header} ${getColor()}`">
+         <CheckIcon v-if="toast.variant === 'success'" :class="classes.icon" />
+         <XMarkIcon v-if="toast.variant === 'error'" :class="classes.icon" />
 
-      <p class="text-[16px] ml-[8px]">{{ toast.desc }}</p>
+         <span>{{ toast.variant.toUpperCase() }}</span>
+      </div>
+
+      <p :class="classes.text">{{ toast.desc }}</p>
    </div>
 </template>

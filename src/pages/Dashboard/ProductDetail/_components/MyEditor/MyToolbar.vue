@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Gallery from "@/components/Gallery.vue";
 import { ConfirmModal, Modal } from "@/components/Modal";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 import { useToastStore } from "@/stores/toast";
 import { privateRequest } from "@/utils/request";
 import { ArrowPathIcon, LockClosedIcon, LockOpenIcon } from "@heroicons/vue/24/outline";
@@ -24,8 +25,19 @@ const { editor, lock, isChange, setLock, productId, setIsChange } = defineProps<
 
 const toastStore = useToastStore();
 
-const openModal = ref<Modal | "">("");
-const closeModal = () => (openModal.value = "");
+const modal = ref<Modal>("gallery");
+
+const modalRef = ref<ModalRef>();
+
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
+
 const isFetching = ref<"toolbar" | "modal" | "">("");
 
 const handleToggleLock = (v: boolean, isChange: boolean) => {
@@ -43,7 +55,7 @@ const handleToggleLock = (v: boolean, isChange: boolean) => {
       } else dashContent.style.overflow = "auto";
    }
 
-   if (isChange && newLock === true) openModal.value = "prompt";
+   if (isChange && newLock === true) openModal("prompt");
 };
 
 const handleAddImages = (imageList: ImageType[]) => {
@@ -102,7 +114,7 @@ const handleSubmit = async (variant: "toolbar" | "modal") => {
             </button>
 
             <button
-               :onClick="() => (openModal = 'gallery')"
+               :onClick="() => openModal('gallery')"
                :className="editor.isActive('blockquote') ? 'active' : ''"
             >
                image
@@ -111,7 +123,10 @@ const handleSubmit = async (variant: "toolbar" | "modal") => {
 
          <div class="flex items-center space-x-[10px]">
             <button :onClick="() => handleSubmit('toolbar')" :disabled="!isChange">
-               <ArrowPathIcon v-if="isFetching === 'toolbar'" class="w-[22px] animate-spin" />
+               <ArrowPathIcon
+                  v-if="isFetching === 'toolbar'"
+                  class="w-[22px] animate-spin"
+               />
                <span v-else> save </span>
             </button>
             <button :onClick="() => handleToggleLock(lock, isChange)">
@@ -121,18 +136,18 @@ const handleSubmit = async (variant: "toolbar" | "modal") => {
          </div>
       </div>
 
-      <Modal v-if="openModal" :close="closeModal">
+      <Modal ref="modalRef">
          <template v-slot:children>
             <Gallery
-               v-if="openModal === 'gallery'"
+               v-if="modal === 'gallery'"
                variant="multiple"
                :close="closeModal"
                :handleChose="(images) => handleAddImages(images)"
             />
 
             <ConfirmModal
-               v-if="openModal === 'prompt'"
-               :close="closeModal"
+               v-if="modal === 'prompt'"
+               :closeModal="closeModal"
                :callback="() => handleSubmit('modal')"
                title="'Do you want to save changes'"
                desc="Your change will no lost"

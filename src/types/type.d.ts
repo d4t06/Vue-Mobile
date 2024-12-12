@@ -210,7 +210,7 @@ type cartItemDetail = {
 type CartItemSchema = Omit<CartItem, "id" | "product">;
 
 type Toast = {
-   title?: "success" | "error" | "warning";
+   variant: "success" | "error";
    desc: string;
    id: string;
 };

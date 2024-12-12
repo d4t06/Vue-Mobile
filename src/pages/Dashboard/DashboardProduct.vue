@@ -1,74 +1,47 @@
 <script lang="ts" setup>
-import AddProduct from "@/components/Form/AddProduct.vue";
-import JsonInput from "@/components/Modal/JsonInput.vue";
-import Modal from "@/components/Modal/Modal.vue";
+import { ref } from "vue";
 import Button from "@/components/ui/Button.vue";
 import MyInput from "@/components/ui/MyInput.vue";
 import Table from "@/components/ui/Table/Table.vue";
 import useCategory from "@/hooks/useCategory";
-import useGetProduct from "@/hooks/useGetProduct";
-import useProduct from "@/hooks/useProducts";
-import useImportProduct from "@/hooks/useImportProduct";
-import router from "@/router";
-import { getHidden } from "@/utils/appHelper";
+import AddProductBtn from "./_components/AddProductBtn.vue";
+import Modal, { ModalRef } from "@/components/Modal/Modal.vue";
+import AddProduct from "@/components/Form/AddProduct.vue";
+import { MagnifyingGlassIcon } from "@heroicons/vue/16/solid";
+import useGetProductDashboard from "./_hooks/useGetProductDashboard";
+import useSearchProductDashboard from "./_hooks/useSearchProductDashboard";
+import { ArrowPathIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
+import DashboardProductSetting from "./_components/DashboardProductSetting.vue";
 
-import { inputClasses } from "@/utils/appHelper";
-import { PlusIcon } from "@heroicons/vue/16/solid";
-import {
-   ArrowPathIcon,
-   CodeBracketIcon,
-   Cog6ToothIcon,
-   MagnifyingGlassIcon,
-   PencilSquareIcon,
-} from "@heroicons/vue/24/outline";
-import { ref, watch } from "vue";
+type Modal = "edit" | "delete";
 
-type Tab = "all" | "add" | "edit";
-
-const { products, status, page, isLast } = useProduct();
-
-const currentTab = ref<Tab>("all");
 const currentProduct = ref<ProductList>();
 const currentProductIndex = ref<number>();
 
-const curCategory = ref<Category>();
-const modalRef = ref<"json-import" | "">("");
+const tab = ref("");
+const modal = ref<Modal>("edit");
 
-const { getProduct } = useGetProduct();
-const { categories } = useCategory({ autoGetCategories: true });
-const { currentIndex, status: importStatus, submit, jsonProducts } = useImportProduct();
+const modalRef = ref<ModalRef>();
 
-const handleGetMore = () => {
-   getProduct({ page: page.value + 1 }, { more: true });
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
 };
 
 const closeModal = () => {
-   modalRef.value = "";
-   importStatus.value = "input";
+   modalRef.value?.close();
 };
+
+const { categories } = useCategory({ autoGetCategories: true });
+const { search, value, isFetching } = useSearchProductDashboard({ tab });
+const { products, status, getMore, isLast, count } = useGetProductDashboard({ tab });
 
 const handleOpenEdit = (index: number) => {
    currentProductIndex.value = index;
    currentProduct.value = products.value[index];
-   currentTab.value = "edit";
+
+   openModal("edit");
 };
-
-const handleAfterDeleteProduct = () => {
-   currentTab.value = "all";
-
-   // currentProductIndex.value = undefined;
-   // currentProduct.value = undefined;
-};
-
-watch(
-   curCategory,
-   () => {
-      getProduct({ category_id: curCategory.value?.id, size: 2 }, { replace: true });
-   },
-   {
-      immediate: true,
-   }
-);
 
 const classes = {
    hide: "hidden",
@@ -79,54 +52,30 @@ const classes = {
 
 <template>
    <div class="mb-5">
-      <div :class="`${getHidden(currentTab != 'all')} flex justify-between`">
+      <div :class="` flex justify-between`">
          <div :class="`flex space-x-[10px]`">
-            <MyInput :attrs="{ placeholder: 'iPhone thirteen' }" class="" />
-            <Button variant="push" border="clear">
-               <MagnifyingGlassIcon class="w-[24px]" />
+            <MyInput
+               :attrs="{ placeholder: 'iPhone thirteen', value: value }"
+               @input="(e) => (value = e.target.value)"
+            />
+            <Button
+               :onclick="!isFetching && !!value ? search : ''"
+               variant="push"
+               border="clear"
+            >
+               <ArrowPathIcon class="w-6 animate-spin" v-if="isFetching" />
+               <MagnifyingGlassIcon class="w-6" v-else />
             </Button>
          </div>
 
-         <Button
-            v-if="currentTab === 'all'"
-            :onClick="() => (currentTab = 'add')"
-            variant="push"
-            border="clear"
-            class="ml-auto"
-         >
-            <PlusIcon class="w-[20px] mr-[4px]" />
-            Add product
-         </Button>
-      </div>
-
-      <div :class="`${getHidden(currentTab !== 'add')} flex justify-end space-x-2 h-[38px]`">
-         <Button
-            :onClick="() => (modalRef = 'json-import')"
-            variant="push"
-            border="clear"
-            class="ml-auto"
-         >
-            <CodeBracketIcon class="w-[20px] mr-[4px]" />
-            Import
-         </Button>
-
-         <Button
-            colors="secondary"
-            :onClick="() => (currentTab = 'all')"
-            variant="push"
-            class="ml-auto"
-         >
-            Close
-         </Button>
+         <AddProductBtn />
       </div>
    </div>
-   <div :class="`${currentTab != 'all' ? classes.hide : ''}`">
+   <div :class="``">
       <div class="flex mt-[20px] border-b border-black/10">
          <button
-            :onClick="() => (curCategory = undefined)"
-            :class="`${classes.tab} ${
-               curCategory === undefined ? classes.activeTab : ''
-            }`"
+            :onClick="() => (tab = '')"
+            :class="`${classes.tab} ${!tab ? classes.activeTab : ''}`"
          >
             All
          </button>
@@ -135,9 +84,9 @@ const classes = {
             <button
                v-if="category.is_show"
                :class="`${classes.tab} ${
-                  curCategory?.id === category.id ? classes.activeTab : ''
+                  tab === category.category_name_ascii ? classes.activeTab : ''
                }`"
-               :onClick="() => (curCategory = category)"
+               :onClick="() => (tab = category.category_name_ascii)"
             >
                {{ category.category_name }}
             </button>
@@ -145,42 +94,54 @@ const classes = {
       </div>
 
       <div class="mt-[30px]">
-         <ArrowPathIcon v-if="status === 'loading'" class="w-[24px] animate-spin" />
+         <Table
+            :col-list="[
+               `Result ${status === 'successful' ? '(' + count + ')' : '--'}`,
+               '',
+            ]"
+         >
+            <tr v-if="status === 'loading'">
+               <td colspan="2">
+                  <p class="text-center">
+                     <ArrowPathIcon class="w-6 inline-block animate-spin" />
+                  </p>
+               </td>
+            </tr>
 
-         <template v-else>
-            <Table v-if="!!products.length" :col-list="['Name', 'Price', '']">
+            <template v-else-if="!!products.length">
                <template v-for="(product, index) in products">
                   <tr>
                      <td>{{ product.product_name }}</td>
-                     <td>---</td>
                      <td class="!text-right space-x-[8px]">
-                        <button
+                        <Button
+                           variant="push"
+                           colors="secondary"
+                           size="clear"
+                           class-name="p-1"
                            :onClick="() => handleOpenEdit(index)"
-                           :class="`${inputClasses.overlayButton}`"
                         >
                            <PencilSquareIcon class="w-[24px]" />
-                        </button>
-                        <button
-                           class="rounded-[8px]"
-                           :onClick="() => router.push(`product/${product.id}`)"
-                           :class="`${inputClasses.overlayButton}`"
-                        >
-                           <Cog6ToothIcon class="w-[24px]" />
-                        </button>
+                        </Button>
+
+                        <DashboardProductSetting :index="index" :product="product" />
                      </td>
                   </tr>
                </template>
-            </Table>
-            <p v-else class="text-center">¯\_(ツ)_/¯</p>
-         </template>
+            </template>
+            <tr v-else>
+               <td colspan="2">
+                  <p class="text-center">¯\_(ツ)_/¯</p>
+               </td>
+            </tr>
+         </Table>
 
          <p class="text-center mt-[20px]">
             <Button
-               v-if="status !== 'loading' && status !== 'error'"
+               v-if="status !== 'loading' && status !== 'error' && !!products.length"
                border="clear"
                :loading="status === 'more-loading'"
                variant="push"
-               :onClick="handleGetMore"
+               :onClick="getMore"
                :disabled="isLast"
             >
                More
@@ -189,37 +150,19 @@ const classes = {
       </div>
    </div>
 
-   <div :class="`${currentTab === 'add' ? '' : classes.hide}`">
-      <AddProduct :props="{ type: 'add' }" />
-   </div>
-   <div :class="`${currentTab == 'edit' ? '' : classes.hide}`">
-      <AddProduct
-         v-if="currentProduct != null && currentProductIndex != undefined"
-         :props="{
-            type: 'edit',
-            product: currentProduct,
-            currentIndex: currentProductIndex,
-            cbAfterDelete: handleAfterDeleteProduct,
-         }"
-      />
-   </div>
-
-   <Modal :close="closeModal" v-if="modalRef">
+   <Modal ref="modalRef">
       <template v-slot:children>
-         <JsonInput title="Import product" :submit="submit" :status="importStatus" :close-modal="closeModal">
-            <div
-               v-if="importStatus === 'fetching' && jsonProducts.length"
-               class="text-[#333]"
-            >
-               <p class="font-[500] text-[#333]">
-                  {{ currentIndex + 1 }} of {{ jsonProducts?.length }}
-               </p>
-               <div class="flex justify-between mt-1">
-                  <p>{{ jsonProducts[currentIndex].name }}</p>
-                  <ArrowPathIcon class="w-6 animate-spin" />
-               </div>
-            </div>
-         </JsonInput>
+         <AddProduct
+            v-if="
+               modal === 'edit' && !!currentProduct && currentProductIndex !== undefined
+            "
+            :props="{
+               type: 'edit',
+               closeModal: closeModal,
+               product: currentProduct,
+               currentIndex: currentProductIndex,
+            }"
+         />
       </template>
    </Modal>
 </template>

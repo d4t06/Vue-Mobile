@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Gallery from "@/components/Gallery.vue";
 import ConfirmModal from "@/components/Modal/ConfirmModal.vue";
-import Modal from "@/components/Modal/Modal.vue";
+import Modal, { ModalRef } from "@/components/Modal/Modal.vue";
 import { Box, Button } from "@/components/ui";
 import OverlayCta from "@/components/ui/OverlayCta.vue";
 import { useProductDetailStore } from "@/stores/productDetail";
 import { useToastStore } from "@/stores/toast";
-import { inputClasses, sleep } from "@/utils/appHelper";
+import { sleep } from "@/utils/appHelper";
 import { privateRequest } from "@/utils/request";
 import { ArrowPathIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
@@ -28,14 +28,20 @@ const toastStore = useToastStore();
 const p = useProductDetailStore();
 const { productDetail } = storeToRefs(p);
 
-const openModal = ref<Modal | "">("");
+const modal = ref<Modal>("add");
 const isFetching = ref<"add" | "delete" | "update" | "">("");
 const currentIndex = ref<number | null>(null);
+const currentSliderImage = ref<SliderImage>();
 
-// hooks
-// const { isFetching, sliderActions } = useSliderActions({ close: closeModal });
+const modalRef = ref<ModalRef>();
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
 
-const closeModal = () => (openModal.value = "");
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 type AddImages = {
    variant: "add";
@@ -112,33 +118,30 @@ const sliderActions = async (props: AddImages | DeleteImages) => {
       <div class="w-2/12 text-center">{{ color.color_name }}</div>
       <div :class="`${classes.flexContainer} flex-grow mt-[-16px]`">
          <div
-            v-for="(sliderImage, sliderIndex) in color.product_slider.slider
-               .slider_images"
+            v-for="(sliderImage, index) in color.product_slider.slider.slider_images"
             :class="`${classes.flexCol} w-1/3 `"
          >
             <Box
-               :className="`pt-[75%] ${
-                  isFetching === 'delete' && currentIndex === sliderIndex ? 'disable' : ''
+               :class-name="`${
+                  isFetching === 'delete' && currentIndex === index ? 'disable' : ''
                }`"
+               padding-top="pt-[75%]"
             >
                <template v-slot:children>
                   <img :src="sliderImage.image.image_url" alt="" />
                   <OverlayCta>
-                     <button
-                        :class="inputClasses.overlayButton"
-                        :onClick="() => {}"
-                     >
+                     <button class="p-1" :onClick="() => {}">
                         <ArrowPathIcon class="w-[24px]" />
                      </button>
                      <button
-                        :class="inputClasses.overlayButton"
+                        class="p-1"
                         :onClick="
-                           () =>
-                              sliderActions({
-                                 variant: 'delete',
-                                 sliderImage,
-                                 index: sliderIndex,
-                              })
+                           () => {
+                              openModal('delete');
+
+                              currentIndex = index;
+                              currentSliderImage = sliderImage;
+                           }
                         "
                      >
                         <TrashIcon class="w-[24px]" />
@@ -149,8 +152,9 @@ const sliderActions = async (props: AddImages | DeleteImages) => {
          </div>
          <div :class="`${classes.flexCol} w-1/3 `">
             <Box
-               :onClick="() => (openModal = 'add')"
-               :className="`pt-[75%] ${isFetching === 'add' ? 'disable' : ''}`"
+               :onClick="() => openModal('add')"
+               :className="`${isFetching === 'add' ? 'disable' : ''}`"
+               padding-top="pt-[75%]"
             >
                <template v-if="isFetching === 'add'" v-slot:children>
                   <ArrowPathIcon class="w-[24px] animate-spin" />
@@ -160,18 +164,26 @@ const sliderActions = async (props: AddImages | DeleteImages) => {
       </div>
    </div>
 
-   <Modal v-if="!!openModal" :close="closeModal">
+   <Modal ref="modalRef">
       <template v-slot:children>
          <Gallery
+            v-if="modal === 'add' || modal === 'change'"
             variant="multiple"
             :close="closeModal"
             :handleChose="(images) => sliderActions({ variant: 'add', images })"
          />
 
          <ConfirmModal
-            v-if="openModal === 'delete'"
-            :close="closeModal"
-            :callback="() => {}"
+            v-if="modal === 'delete' && currentIndex !== null && currentSliderImage"
+            :closeModal="closeModal"
+            :callback="
+               () =>
+                  sliderActions({
+                     variant: 'delete',
+                     index: currentIndex!,
+                     sliderImage: currentSliderImage!,
+                  })
+            "
             :loading="false"
             :title="`Delete  :v`"
          />

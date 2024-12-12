@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { AddItemTextArea, Modal } from "@/components/Modal";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 import { Button } from "@/components/ui";
 import useSpecActions from "@/hooks/useSpecActions";
 import { useProductDetailStore } from "@/stores/productDetail";
@@ -16,8 +17,17 @@ const { orderId } = defineProps<Props>();
 const p = useProductDetailStore();
 const { productDetail } = storeToRefs(p);
 
-const openModal = ref(false);
-const closeModal = () => (openModal.value = false);
+const isOpenModal = ref(false);
+
+const modalRef = ref<ModalRef>();
+const openModal = () => {
+   isOpenModal.value = true;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 // hooks
 const { isFetching, specActions } = useSpecActions({ closeModal });
@@ -78,17 +88,16 @@ const handleSpecActions = async (value: string) => {
             </p>
          </td>
          <td class="text-right">
-            <Button variant="push" colors="secondary" :onClick="() => (openModal = true)">
-               <PencilSquareIcon class="w-[22px] mr-[6px]" />
-               Change
+            <Button variant="push" size="clear" class-name="p-1" colors="secondary" :onClick="openModal">
+               <PencilSquareIcon class="w-6" />
             </Button>
          </td>
       </tr>
 
-      <Modal v-if="openModal" :close="closeModal">
+      <Modal ref="modalRef">
          <template v-slot:children>
             <AddItemTextArea
-               :close="closeModal"
+               :closeModal="closeModal"
                :loading="isFetching"
                :title="`Edit '${foundedCatAttribute.attribute_name}''`"
                :initValue="foundedAttribute.attribute?.value || ''"

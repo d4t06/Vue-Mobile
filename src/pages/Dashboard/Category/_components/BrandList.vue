@@ -4,12 +4,23 @@ import { computed, inject, ref } from "vue";
 import { generateId, inputClasses } from "@/utils/appHelper";
 import { Button, Box, OverlayCta } from "@/components/ui";
 import useBrandAction, { type BrandModal } from "@/hooks/useBrandAction";
-import Modal from "@/components/Modal/Modal.vue";
+import Modal, { ModalRef } from "@/components/Modal/Modal.vue";
 import { AddItem, ConfirmModal } from "@/components/Modal";
 
-const isOpenModal = ref<BrandModal>("close");
+const modal = ref<BrandModal>("close");
 const curCategoryIndex = ref<number>();
 const curBrandIndex = ref<number>();
+
+const modalRef = ref<ModalRef>();
+
+const openModal = (m: BrandModal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 // hooks
 const curCategory = computed(() =>
@@ -28,7 +39,7 @@ const curBrand = computed(() =>
 
 const { brandActions, categories, isFetching } = useBrandAction({
    curCategoryIndex: curCategoryIndex,
-   isOpenModal: isOpenModal,
+   isOpenModal: modal,
 });
 
 type OpenModal = {
@@ -51,18 +62,9 @@ const handleOpenModal = ({ ...props }: OpenAddModal | OpenEditOrDeleteModal) => 
          break;
    }
 
-   isOpenModal.value = props.modal;
+   openModal(props.modal);
 };
 
-const closeModal = () => (isOpenModal.value = "close");
-
-// type AddBrand = {
-//    type: "add";
-// };
-
-// type EditBrand = {
-//    type: "edit";
-// };
 
 const handleAddBrand = async (value: string, type: "add" | "edit") => {
    if (!value.trim() || !curCategory.value) return;
@@ -98,7 +100,7 @@ const mainClasses = inject("classes") as Record<string, string>;
 
 const classes = {
    button:
-      "rounded-[50%] bg-[#ccc] p-[4px] text-[#333] hover:text-white hover:bg-[#cd1818] hover:scale-[1.1] transition-transform",
+      "p-1",
 };
 </script>
 
@@ -133,7 +135,7 @@ const classes = {
          >
             <template v-for="(brand, index) in brandsByCategory">
                <div :class="`col w-2/12 ${mainClasses.flexCol}`">
-                  <Box class="bg-[#f1f1f1]">
+                  <Box className="bg-[#f4f6f8]">
                      <template v-slot:children>
                         <div class="">
                            <p class="font-[500] text-[#1f1f1f] text-center">
@@ -142,7 +144,7 @@ const classes = {
                            <img :src="brand.image_url" alt="" />
                         </div>
                         <OverlayCta>
-                           <Button
+                           <button
                               :onClick="
                                  () =>
                                     handleOpenModal({
@@ -151,13 +153,10 @@ const classes = {
                                     })
                               "
                               :class="classes.button"
-                              variant="clear"
-                              size="clear"
-                              colors="clear"
                            >
-                              <PencilSquareIcon class="w-[22px]" />
-                           </Button>
-                           <Button
+                              <PencilSquareIcon class="w-6" />
+                           </button>
+                           <button
                               :onClick="
                                  () =>
                                     handleOpenModal({
@@ -166,12 +165,9 @@ const classes = {
                                     })
                               "
                               :class="classes.button"
-                              variant="clear"
-                              size="clear"
-                              colors="clear"
                            >
-                              <TrashIcon class="w-[22px]" />
-                           </Button>
+                              <TrashIcon class="w-6" />
+                           </button>
                         </OverlayCta>
                      </template>
                   </Box>
@@ -185,19 +181,19 @@ const classes = {
       </template>
    </div>
 
-   <Modal :close="closeModal" v-if="isOpenModal !== 'close'">
+   <Modal ref="modalRef">
       <template v-slot:children>
          <AddItem
-            v-if="isOpenModal === 'add'"
-            :close="closeModal"
+            v-if="modal === 'add'"
+            :close-modal="closeModal"
             :submit="(value) => handleAddBrand(value, 'add')"
             :loading="isFetching"
             title="Add brand"
          />
 
          <AddItem
-            v-if="isOpenModal === 'edit' && curBrand"
-            :close="closeModal"
+            v-if="modal === 'edit' && curBrand"
+            :close-modal="closeModal"
             :submit="(value) => handleAddBrand(value, 'edit')"
             :loading="isFetching"
             :initValue="curBrand.brand_name"
@@ -205,8 +201,8 @@ const classes = {
          />
 
          <ConfirmModal
-            v-if="isOpenModal === 'delete' && curBrand"
-            :close="closeModal"
+            v-if="modal === 'delete' && curBrand"
+            :closeModal="closeModal"
             :callback="handleDeleteBrand"
             :loading="isFetching"
             :title="`Delete brand '${curBrand.brand_name}'`"

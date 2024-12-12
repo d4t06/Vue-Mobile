@@ -1,18 +1,19 @@
 <script lang="ts" setup>
-
-
 type Props = {
    colList: string[];
+   className?: string;
 };
 
-const { colList } = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+   className: "[&_th]:text-left",
+});
 </script>
 
 <template>
-   <table className="table">
+   <table :class="`table ${props.className}`">
       <thead>
          <tr>
-            <th v-for="item in colList" key="{index}">{{ item }}</th>
+            <th v-for="item in props.colList" key="{index}">{{ item }}</th>
          </tr>
       </thead>
 

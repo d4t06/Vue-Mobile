@@ -5,20 +5,20 @@ import ModalHeader from "./ModalHeader.vue";
 type Props = {
    callback: () => void;
    loading: boolean;
-   close: () => void;
+   closeModal: () => void;
    title?: string;
    desc?: string;
 };
 
-const { callback, close, desc, title, loading } = defineProps<Props>();
+const { callback, closeModal, desc, title, loading } = defineProps<Props>();
 </script>
 
 <template>
    <div
-      :class="`w-[400px] max-w-[calc(90vw-40px)] 
+      :class="`min-w-[400px] max-w-[calc(90vw-40px)] 
       ${loading ? 'opacity-60 pointer-events-none' : ''}`"
    >
-      <ModalHeader :close="close" :title="title || 'Wait a minute'" />
+      <ModalHeader :closeModal="closeModal" :title="title || 'Wait a minute'" />
 
       <slot />
 
@@ -26,7 +26,7 @@ const { callback, close, desc, title, loading } = defineProps<Props>();
          {{ desc || "This action can not be undone" }}
       </p>
       <div class="flex gap-[10px] mt-[20px]">
-         <Button variant="push" colors="secondary" :onClick="close"> Close </Button>
+         <Button variant="push" colors="secondary" :onClick="closeModal"> Close </Button>
          <Button
             className="leading-[24px] w-[120px]"
             :loading="loading"

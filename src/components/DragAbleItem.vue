@@ -1,29 +1,23 @@
 <script setup lang="ts">
-import useDrag from "@/hooks/useDragItem";
+import { useDrag } from "@/hooks/useDragItem";
 
 type Props = {
    className?: string;
    index: number;
    handleDragEnd: () => void;
-   setIsDrag: (x: boolean) => void;
-   isDrag: boolean;
-   setEndIndex: (y: number) => void;
 };
 
-const { className, handleDragEnd, index, isDrag, setIsDrag, setEndIndex } =
-   defineProps<Props>();
+const { className, handleDragEnd, index } = defineProps<Props>();
 
-const { parentProps } = useDrag({
-   setEndIndex,
+const { parentProps, isDrag } = useDrag({
    handleDragEnd,
    index,
-   setIsDrag,
 });
 </script>
 
 <template>
    <div
-      :class="`draggable transition-[padding_margin]`"
+      :class="`draggable`"
       draggable="true"
       v-bind="parentProps"
    >
@@ -37,4 +31,3 @@ const { parentProps } = useDrag({
       </div>
    </div>
 </template>
-@/hooks/useDragItem

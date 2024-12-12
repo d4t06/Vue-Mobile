@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { AddItem, Modal } from "@/components/Modal";
+import ConfirmModal from "@/components/Modal/ConfirmModal.vue";
+import { ModalRef } from "@/components/Modal/Modal.vue";
 import { Box, Button, OverlayCta } from "@/components/ui";
 import useColorActions from "@/hooks/useColorActions";
-import { inputClasses } from "@/utils/appHelper";
 import { PencilIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { ref } from "vue";
 
@@ -15,8 +16,17 @@ type Props = {
 
 const { index, color } = defineProps<Props>();
 
-const openModal = ref<Modal | "">("");
-const closeModal = () => (openModal.value = "");
+const modal = ref<Modal>("edit");
+
+const modalRef = ref<ModalRef>();
+const openModal = (m: Modal) => {
+   modal.value = m;
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 const { colorActions, isFetching } = useColorActions({ closeModal });
 
@@ -49,27 +59,21 @@ const handleColorActions = async (props: Edit | Delete) => {
       <template v-slot:children>
          <p>{{ color.color_name }}</p>
          <OverlayCta>
-            <button
-               :class="inputClasses.overlayButton"
-               :onClick="() => (openModal = 'edit')"
-            >
-               <PencilIcon class="w-[24px]" />
+            <button class="p-1" :onClick="() => openModal('edit')">
+               <PencilIcon class="w-6" />
             </button>
-            <button
-               :class="inputClasses.overlayButton"
-               :onClick="() => (openModal = 'delete')"
-            >
-               <TrashIcon class="w-[24px]" />
+            <button class="p-1" :onClick="() => openModal('delete')">
+               <TrashIcon class="w-6" />
             </button>
          </OverlayCta>
       </template>
    </Box>
 
-   <Modal v-if="!!openModal" :close="closeModal">
+   <Modal ref="modalRef">
       <template v-slot:children>
          <AddItem
-            v-if="openModal === 'edit'"
-            :close="closeModal"
+            v-if="modal === 'edit'"
+            :close-modal="closeModal"
             :submit="(value) => handleColorActions({ variant: 'edit', value })"
             :loading="isFetching"
             :initValue="color.color_name"
@@ -77,13 +81,12 @@ const handleColorActions = async (props: Edit | Delete) => {
          />
 
          <ConfirmModal
-            v-if="openModal === 'delete'"
-            :close="closeModal"
+            v-if="modal === 'delete'"
+            :closeModal="closeModal"
             :callback="() => handleColorActions({ variant: 'delete' })"
             :loading="isFetching"
-            :title="`Delete color ' ' :v`"
+            :title="`Delete '${color.color_name}' :v`"
          />
       </template>
    </Modal>
 </template>
-@/hooks/useColorActions

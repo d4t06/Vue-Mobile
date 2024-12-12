@@ -4,17 +4,23 @@ import Button from "../ui/Button.vue";
 
 type Props = {
    title: string;
-   close: () => void;
+   closeModal: () => void;
 };
 
-const { close, title } = defineProps<Props>();
+const props = defineProps<Props>();
 </script>
 
 <template>
-   <div className="flex justify-between items-start mb-[20px]">
-      <h2 className="text-[20px] text-[#333] font-[500] mr-[30px]">{{ title }}</h2>
-      <Button size="clear" colors="secondary" variant="push" class="p-[4px]" :onClick="close">
-         <XMarkIcon class="w-[20px]" />
+   <div className="flex justify-between center mb-5 space-x-3">
+      <h1 className="text-2xl">{{ props.title }}</h1>
+      <Button
+         size="clear"
+         colors="secondary"
+         variant="push"
+         class="p-1 flex-shrink-0"
+         :onClick="props.closeModal"
+      >
+         <XMarkIcon class="w-6" />
       </Button>
    </div>
 </template>

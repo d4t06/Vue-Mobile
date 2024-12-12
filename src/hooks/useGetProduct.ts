@@ -4,6 +4,7 @@ import { useSortStore, type SortStoreType } from "@/stores/sort";
 import { sleep } from "@/utils/appHelper";
 import { publicRequest } from "@/utils/request";
 import { useFiltersStore } from "@/stores/filter";
+import { useToastStore } from "@/stores/toast";
 
 type Filter = {
    category_id: number | null;
@@ -32,6 +33,8 @@ export default function useGetProduct() {
    const filterStore = useFiltersStore();
    const sortStore = useSortStore();
 
+   const { setErrorToast } = useToastStore();
+
    const PRODUCT_URL = "/products/search";
 
    type PageParams = {
@@ -42,7 +45,7 @@ export default function useGetProduct() {
 
    const getProduct = async (
       params: Partial<GetProductParams>,
-      option?: { replace?: boolean; more?: boolean }
+      option?: { replace?: boolean; more?: boolean; less?: boolean },
    ) => {
       try {
          if (option?.more) productStore.storingProducts({ status: "more-loading" });
@@ -62,18 +65,22 @@ export default function useGetProduct() {
 
          const getProductParams: PageParams = {
             page: params.page || 0,
-            size: params.size || 2  ,
+            size: params.size || 2,
             // for search page
             sort: sortStore.column ? `${sortStore.column + "," + sortStore.type}` : null,
          };
 
          if (import.meta.env.DEV) await sleep(1000);
-         const res = await publicRequest.post(PRODUCT_URL, getProductFilter, {
-            params: getProductParams,
-            paramsSerializer: {
-               indexes: false,
+         const res = await publicRequest.post(
+            PRODUCT_URL + (option?.less ? "/less" : ""),
+            getProductFilter,
+            {
+               params: getProductParams,
+               paramsSerializer: {
+                  indexes: false,
+               },
             },
-         });
+         );
 
          const data = res.data.data as ProductResponse;
          productStore.storingProducts({
@@ -93,8 +100,9 @@ export default function useGetProduct() {
             q: data.q,
          });
       } catch (error) {
-         productStore.storingProducts({ status: "error" });
+         productStore.storingProducts({ status: "error", products: [] });
          console.log({ message: error });
+         setErrorToast();
       }
    };
 

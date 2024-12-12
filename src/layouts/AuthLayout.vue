@@ -12,7 +12,7 @@ const classes = {
       <div class="flex h-full">
          <RouterView />
       </div>
-      <Button colors="third" href="/" :className="classes.btnContainer" variant="push" size="clear">
+      <Button colors="third" variant="push" href="/" :className="classes.btnContainer" size="clear">
          <HomeIcon class="w-[22px]" />
       </Button>
    </div>

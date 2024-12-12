@@ -7,15 +7,25 @@ import PushFrame from "../ui/PushFrame.vue";
 import { moneyFormat } from "@/utils/appHelper";
 import { useRouter } from "vue-router";
 import { Modal } from "../Modal";
+import { ModalRef } from "../Modal/Modal.vue";
 
 const searchKey = ref("");
 const show = ref(false);
-const openModal = ref(false);
 
 // hooks
 const router = useRouter();
 const { outValue, clear } = useDebounced({ inValue: searchKey, time: 800 });
 const { isFetching, searchResult } = useSearchProduct({ searchKey: outValue });
+
+const modalRef = ref<ModalRef>();
+
+const openModal = () => {
+   modalRef.value?.open();
+};
+
+const closeModal = () => {
+   modalRef.value?.close();
+};
 
 const isShowResult = computed(
    () => !!searchResult.value.length && !!searchKey.value && show.value
@@ -23,7 +33,7 @@ const isShowResult = computed(
 
 const toggleModal = (v: boolean) => {
    show.value = v;
-   openModal.value = v;
+   v ? openModal() : closeModal();
 };
 
 const handleSubmit = (e: Event) => {
@@ -106,7 +116,7 @@ const handleClickProduct = (id: number) => {
       </div>
    </div>
 
-   <Modal v-if="openModal" :close="() => toggleModal(false)"> </Modal>
+   <Modal ref="modalRef" />
 </template>
 
 <style lang="scss" scoped>
