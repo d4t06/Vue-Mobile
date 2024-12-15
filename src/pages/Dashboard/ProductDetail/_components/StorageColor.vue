@@ -56,33 +56,33 @@ const handleAddColor = async (props: AddColor) => {
 </script>
 <template>
    <div v-if="productDetail" :class="classes.flexContainer">
-      <div :class="`${classes.flexCol} w-[50%] `">
+      <div :class="`${classes.flexCol} w-full md:w-[50%] `">
          <h5 :class="classes.label">Storage</h5>
          <div :class="`${classes.group}`">
             <div :class="`${classes.flexContainer} mt-[-16px]`">
                <div
                   v-for="(storage, index) in productDetail.storages"
-                  :class="`${classes.flexCol} w-1/3 `"
+                  :class="`${classes.flexCol} w-1/2  md:w-1/3 `"
                >
                   <StorageItem :storage="storage" :index="index" />
                </div>
-               <div :class="`${classes.flexCol} w-1/3 `">
+               <div :class="`${classes.flexCol} w-1/2  md:w-1/3 `">
                   <Box :onClick="() => openModal('add-storage')" />
                </div>
             </div>
          </div>
       </div>
-      <div :class="`${classes.flexCol} w-[50%]`">
+      <div :class="`${classes.flexCol} w-full md:w-[50%]`">
          <h5 :class="classes.label">Color</h5>
          <div :class="`${classes.group}`">
             <div :class="`${classes.flexContainer} mt-[-16px]`">
                <div
                   v-for="(color, index) in productDetail.colors"
-                  :class="`${classes.flexCol} w-1/3 `"
+                  :class="`${classes.flexCol} w-1/2 md:w-1/3 `"
                >
                   <ColorItem :color="color" :index="index" />
                </div>
-               <div :class="`${classes.flexCol} w-1/3 `">
+               <div :class="`${classes.flexCol} w-1/2 md:w-1/3 `">
                   <Box :onClick="() => openModal('add-color')" />
                </div>
             </div>

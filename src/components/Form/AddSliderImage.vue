@@ -58,7 +58,7 @@ const sliderImageData = reactive<{
 const isSameImage = computed(
    () =>
       p.props.type === "edit" &&
-      sliderImageData.image?.id === p.props.sliderImage.image_id
+      sliderImageData.image?.id === p.props.sliderImage.image_id,
 );
 
 const handleSubmit = () => {
@@ -89,7 +89,7 @@ watch(
          Object.assign(sliderImageData, p.props.sliderImage);
       }
    },
-   { immediate: true }
+   { immediate: true },
 );
 
 const titleMaps = {
@@ -116,8 +116,8 @@ const titleMaps = {
 
       <MyInput
          class="mt-[20px]"
-         :attrs="{ value: sliderImageData.link_to, placeholder: 'Link to some thing' }"
-         @input="sliderImageData.link_to"
+         :attrs="{ placeholder: 'Link to some thing' }"
+         v-model="sliderImageData.link_to"
       />
 
       <div class="text-right">

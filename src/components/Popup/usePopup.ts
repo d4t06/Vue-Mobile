@@ -1,6 +1,6 @@
 import { inject, provide, ref } from "vue";
 
-const usePopup = () => {
+const usePopup = ({ appendTo }: { appendTo?: "parent" | "portal" }) => {
    const isOpen = ref(false);
    const isMounted = ref(false);
 
@@ -24,13 +24,14 @@ const usePopup = () => {
       state: { isMounted, isOpen },
       close,
       toggle,
+      appendTo
    };
 };
 
 export type ProviderType = ReturnType<typeof usePopup>;
 
-export default function PopupProvider() {
-   const state = usePopup();
+export default function PopupProvider(props: { appendTo?: "parent" | "portal" }) {
+   const state = usePopup(props);
    provide("popup_state", state);
 
    return state;

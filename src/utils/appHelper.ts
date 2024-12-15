@@ -1,5 +1,5 @@
 export const inputClasses = {
-   input: "p-[6px] pl-[12px] font-[500] bg-[#fff] w-full h-full rounded-[8px] placeholder:text-[#808080] outline-none text-[#333] border border-black/10 text-[16px] translate-y-[0] h-[calc(100%-4px)]",
+   input: "p-1 sm:p-[6px] pl-[12px] font-[500] bg-[#fff] w-full h-full rounded-[8px] placeholder:text-[#808080] outline-none text-[#333] border border-black/10 text-[16px] translate-y-[0] h-[calc(100%-4px)]",
 };
 
 export const loginClasses = {

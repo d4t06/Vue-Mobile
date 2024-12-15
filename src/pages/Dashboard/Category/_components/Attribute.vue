@@ -41,7 +41,7 @@ const { attributeActions, sortAttribute, curCategory, isFetching } = useAttribut
 const attributeIdOrder = computed(() =>
    curCategory.value && curCategory.value.attribute_order
       ? curCategory.value.attribute_order.split("_")
-      : []
+      : [],
 );
 
 const handleSortAttribute = (startIndex: number) => {
@@ -114,7 +114,7 @@ const classes = inject("classes") as Record<string, string>;
    <div v-if="!!categories.length" :class="classes.group">
       <div class="mb-[15px] flex items-center justify-between">
          <div class="flex items-center">
-            <p class="mr-[10px]">Category:</p>
+            <p class="mr-[10px] hidden sm:block">Category:</p>
             <div class="bg-[#ccc] rounded-[12px]">
                <select
                   :class="`${inputClasses.input} min-w-[100px]`"
@@ -134,9 +134,11 @@ const classes = inject("classes") as Record<string, string>;
             :disabled="curCategoryIndex === null"
             variant="push"
             :onClick="() => openModal('add')"
+            size="clear"
+            class="space-x-1 p-1 sm:px-3"
          >
-            <PlusIcon class="w-5 mr-1" />
-            Add attribute
+            <PlusIcon class="w-6" />
+            <span class="hidden sm:block"> Add attribute </span>
          </Button>
       </div>
       <template v-if="curCategory">
@@ -161,7 +163,7 @@ const classes = inject("classes") as Record<string, string>;
       <template v-slot:children>
          <AddItem
             v-if="modal === 'add'"
-            :close="closeModal"
+            :closeModal="closeModal"
             :title="'Add attribute_name'"
             :submit="(value) => handleAttributeActions({ variant: 'add', value })"
             :loading="isFetching"

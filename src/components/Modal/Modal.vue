@@ -36,7 +36,7 @@ watch(
          }, 400);
       }
    },
-   {}
+   {},
 );
 watch(
    [isOpen],
@@ -47,7 +47,7 @@ watch(
          }, 100);
       }
    },
-   {}
+   {},
 );
 
 const classes = {
@@ -59,27 +59,29 @@ const classes = {
 </script>
 <template>
    <Teleport v-if="isOpen" to="#portal">
-      <div
-         :class="`transition-opacity duration-300 absolute bg-black/60 inset-0 z-[90]
+      <div :class="`fixed inset-full ${props.zIndex || 'z-[99]'} `">
+         <div
+            :class="`transition-opacity duration-300 absolute inset-full bg-black/40 
                              ${isMounted ? classes.mountedLayer : classes.unMountedLayer}
                         `"
-         :onClick="close"
-      ></div>
+            :onClick="close"
+         ></div>
 
-      <div
-         v-if="$slots['children']"
-         :class="`absolute ${
-            props.zIndex || 'z-[99]'
-         }  duration-300 transition-[transform,opacity] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+         <div
+            v-if="$slots['children']"
+            :class="`absolute ${
+               props.zIndex || 'z-[99]'
+            }  duration-300 transition-[transform,opacity] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
                             ${
                                isMounted
                                   ? classes.mountedContent
                                   : classes.unMountedContent
                             }
                         `"
-      >
-         <div :class="props.className">
-            <slot name="children" />
+         >
+            <div :class="props.className">
+               <slot name="children" />
+            </div>
          </div>
       </div>
    </Teleport>

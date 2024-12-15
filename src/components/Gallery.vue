@@ -91,7 +91,7 @@ watch(
 // console.log("chekc is lsat", isLast.value);
 
 const classes = {
-   container: "w-[90vw] bg-white h-[80vh] overflow-hidden",
+   container: "w-[85vw] bg-white h-[70vh] overflow-hidden",
    imageContainer: "relative pt-[100%]",
    imageFrame:
       "absolute flex  w-full items-center justify-center bg-[#f1f1f1] inset-0 rounded-[8px] border-[2px] border-[#ccc] hover:border-[#cd1818] overflow-hidden",
@@ -99,8 +99,8 @@ const classes = {
       "h-[40px] pt-[2px] flex justify-between items-center border-b border-[#ccc] mb-[10px] pb-[10px]",
    galleryBody: "flex mx-[-10px]",
    bodyLeft:
-      "h-[calc(80vh-60px-2px)] w-2/3 no-scrollbar px-[10px] overflow-x-hidden overflow-y-auto",
-   bodyRight: "px-[10px] w-1/3 overflow-hidden border-l-[2px] space-y-[14px]",
+      "h-[calc(80vh-60px-2px)] w-full sm:w-2/3 no-scrollbar px-2 overflow-x-hidden overflow-y-auto",
+   bodyRight: "hidden px-2 sm:block w-1/3 overflow-hidden border-l-[2px] space-y-[14px]",
 };
 </script>
 
@@ -131,7 +131,7 @@ const classes = {
          <div :class="classes.bodyLeft">
             <p v-if="status === 'error'">Some thing went wrong</p>
             <template v-else>
-               <div class="flex flex-wrap mt-[-8px]">
+               <div class="flex flex-wrap -mt-2">
                   <!-- render temporary image -->
                   <template v-for="tempImage in tempImages">
                      <GalleryItem
@@ -173,7 +173,7 @@ const classes = {
                   <template v-if="status == 'loading'">
                      <div
                         v-for="_key in [...Array(18).keys()]"
-                        class="w-1/6 px-[4px] mt-[8px]"
+                        class="w-1/3 md:w-1/6 px-[4px] mt-[8px]"
                      >
                         <Skeleton className="pt-[100%]" />
                      </div>

@@ -15,7 +15,7 @@ const { callback, closeModal, desc, title, loading } = defineProps<Props>();
 
 <template>
    <div
-      :class="`min-w-[400px] max-w-[calc(90vw-40px)] 
+      :class="`w-[400px] max-w-[85vw] 
       ${loading ? 'opacity-60 pointer-events-none' : ''}`"
    >
       <ModalHeader :closeModal="closeModal" :title="title || 'Wait a minute'" />

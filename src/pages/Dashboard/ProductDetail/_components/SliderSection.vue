@@ -19,8 +19,9 @@ const { productDetail } = storeToRefs(p);
                v-if="!!productDetail.colors.length"
                v-for="(color, index) in productDetail.colors"
                :color="color"
-               :index="index"
+               :color-index="index"
                :quantity="1"
+               :key="index"
             />
 
             <p v-else class="text-center">¯\_(ツ)_/¯</p>

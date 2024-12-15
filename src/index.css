@@ -6,7 +6,15 @@ html {
    font-family: "Poppins", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
-button[disabled], .disable {
+button[disabled],
+.disable {
    pointer-events: none;
-   opacity: .6;
+   opacity: 0.6;
+}
+
+.inset-full {
+   left: 0;
+   top: 0;
+   right: 0;
+   bottom: 0;
 }

@@ -5,12 +5,12 @@ import { type ButtonHTMLAttributes, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 const classes = {
-   push: 'active:translate-y-[2px] active:before:shadow-none before:z-[-1]  before:absolute before:content-[""]  before:inset-0 ',
+   push: 'inline-flex justify-center items-center active:translate-y-[2px] active:before:shadow-none before:z-[-1]  before:absolute before:content-[""]  before:inset-0 ',
    active: "translate-y-[2px] before:shadow-none text-[#cd1818] font-[500]",
 };
 
 const ButtonVariant = cva(
-   "inline-flex justify-center items-center disabled:opacity-[.6] disabled:pointer-events-none relative  z-0",
+   "inline-flex justify-center items-center relative z-0",
    {
       variants: {
          variant: {

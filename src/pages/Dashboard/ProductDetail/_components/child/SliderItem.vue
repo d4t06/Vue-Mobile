@@ -1,39 +1,37 @@
 <script setup lang="ts">
 import Gallery from "@/components/Gallery.vue";
-import ConfirmModal from "@/components/Modal/ConfirmModal.vue";
 import Modal, { ModalRef } from "@/components/Modal/Modal.vue";
-import { Box, Button } from "@/components/ui";
+import Popup from "@/components/Popup/Popup.vue";
+import PopupContent from "@/components/Popup/PopupContent.vue";
+import PopupTrigger from "@/components/Popup/PopupTrigger.vue";
+import PopupWrapper from "@/components/Popup/PopupWrapper.vue";
+import LoadingOverlay from "@/components/ui/LoadingOverlay.vue";
+import { Box } from "@/components/ui";
 import OverlayCta from "@/components/ui/OverlayCta.vue";
-import { useProductDetailStore } from "@/stores/productDetail";
-import { useToastStore } from "@/stores/toast";
-import { sleep } from "@/utils/appHelper";
-import { privateRequest } from "@/utils/request";
 import { ArrowPathIcon, TrashIcon } from "@heroicons/vue/24/outline";
-import { storeToRefs } from "pinia";
 import { inject, ref } from "vue";
-
-const SLIDER_IMAGE_URL = "/sliders/images";
+import { overlayButtonClasses } from "@/components/ui/classes/overlayButton";
 
 type Props = {
    color: ProductColor;
-   index: number;
+   colorIndex: number;
 };
 
 type Modal = "add" | "change" | "delete";
 
-const { color, index } = defineProps<Props>();
+const { color, colorIndex } = defineProps<Props>();
 
 const classes = inject("classes") as Record<string, string>;
-const toastStore = useToastStore();
-const p = useProductDetailStore();
-const { productDetail } = storeToRefs(p);
+import useProductSliderAction from "./_hooks/useProductSliderAction";
 
 const modal = ref<Modal>("add");
-const isFetching = ref<"add" | "delete" | "update" | "">("");
-const currentIndex = ref<number | null>(null);
+const currentIndex = ref<number>();
 const currentSliderImage = ref<SliderImage>();
 
 const modalRef = ref<ModalRef>();
+
+const { actions, isFetching } = useProductSliderAction();
+
 const openModal = (m: Modal) => {
    modal.value = m;
    modalRef.value?.open();
@@ -43,83 +41,81 @@ const closeModal = () => {
    modalRef.value?.close();
 };
 
-type AddImages = {
-   variant: "add";
+type Add = {
+   action: "add";
    images: ImageType[];
 };
 
-type DeleteImages = {
-   variant: "delete";
+type Delete = {
+   action: "delete";
    sliderImage: SliderImage;
-   index: number;
 };
 
-const sliderActions = async (props: AddImages | DeleteImages) => {
-   try {
-      if (!productDetail.value) return;
+type Edit = {
+   action: "edit";
+   image: ImageType;
+};
 
-      switch (props.variant) {
-         case "add":
-            const sliderImageSchemas = props.images.map(
-               (image) =>
-                  ({
-                     image_id: image.id,
-                     slider_id: color.product_slider.slider_id,
-                     link_to: "",
-                  } as SliderImageSchema)
-            );
+const sliderActions = async (props: Add | Delete | Edit) => {
+   switch (props.action) {
+      case "add":
+         return actions({ action: "Add", color, colorIndex, images: props.images });
 
-            isFetching.value = "add";
+      case "delete": {
+         if (currentIndex.value === undefined) return;
 
-            if (import.meta.env.DEV) await sleep(1000);
-
-            const res = await privateRequest.post(
-               `${SLIDER_IMAGE_URL}`,
-               sliderImageSchemas
-            );
-            const newSliderImages = res.data.data as SliderImage[];
-
-            productDetail.value.colors[index].product_slider.slider.slider_images.push(
-               ...newSliderImages
-            );
-
-            toastStore.setSuccessToast("Add slider images successful");
-            break;
-
-         case "delete": {
-            isFetching.value = "delete";
-            currentIndex.value === props.index;
-
-            console.log("delete check index", props.index);
-
-            if (import.meta.env.DEV) await sleep(1000);
-
-            await privateRequest.delete(`${SLIDER_IMAGE_URL}/${props.sliderImage.id}`);
-
-            productDetail.value.colors[index].product_slider.slider.slider_images.splice(
-               props.index,
-               1
-            );
-
-            toastStore.setSuccessToast("Delete slider image successful");
-         }
+         return actions({
+            action: "Delete",
+            colorIndex,
+            id: props.sliderImage.id,
+            index: currentIndex.value,
+         });
       }
-   } catch (error) {
-      console.log({ message: error });
 
-      toastStore.setErrorToast("");
-   } finally {
-      isFetching.value = "";
+      case "edit": {
+         if (currentIndex.value === undefined || !currentSliderImage.value) return;
+         if (props.image.id === currentSliderImage.value.image_id) return;
+
+         const schema: SliderImageSchema = {
+            image_id: props.image.id,
+            link_to: currentSliderImage.value.link_to,
+            slider_id: currentSliderImage.value.slider_id,
+         };
+
+         return actions({
+            action: "Edit",
+            sliderImage: schema,
+            index: currentIndex.value,
+            colorIndex,
+            image: props.image,
+            id: currentSliderImage.value.id,
+         });
+      }
+   }
+};
+
+const handleChoseImage = (images: ImageType[], modal: Modal) => {
+   switch (modal) {
+      case "add":
+         return sliderActions({
+            action: "add",
+            images,
+         });
+      case "change":
+         return sliderActions({
+            action: "edit",
+            image: images[0],
+         });
    }
 };
 </script>
 <template>
-   <div :class="`${classes.flexContainer} items-center`">
-      <div class="w-2/12 text-center">{{ color.color_name }}</div>
-      <div :class="`${classes.flexContainer} flex-grow mt-[-16px]`">
+   <div :class="`${classes.flexContainer} items-start sm:items-center flex-col sm:flex-row`">
+      <div class="w-full sm:w-2/12 text-left sm:text-center">{{ color.color_name }}</div>
+      <div :class="`${classes.flexContainer} w-full sm:w-auto sm:flex-grow  mt-[-16px]`">
          <div
             v-for="(sliderImage, index) in color.product_slider.slider.slider_images"
-            :class="`${classes.flexCol} w-1/3 `"
+            :class="`${classes.flexCol} w-full sm:w-1/3 `"
          >
             <Box
                :class-name="`${
@@ -129,28 +125,59 @@ const sliderActions = async (props: AddImages | DeleteImages) => {
             >
                <template v-slot:children>
                   <img :src="sliderImage.image.image_url" alt="" />
-                  <OverlayCta>
-                     <button class="p-1" :onClick="() => {}">
-                        <ArrowPathIcon class="w-[24px]" />
-                     </button>
+
+                  <OverlayCta :child-style="false">
                      <button
-                        class="p-1"
+                        :class="`${overlayButtonClasses} p-1`"
                         :onClick="
                            () => {
-                              openModal('delete');
-
-                              currentIndex = index;
                               currentSliderImage = sliderImage;
+                              currentIndex = index;
+
+                              openModal('change');
                            }
                         "
                      >
-                        <TrashIcon class="w-[24px]" />
+                        <ArrowPathIcon class="w-6" />
                      </button>
+
+                     <Popup append-to="parent">
+                        <PopupTrigger
+                           variant="clear"
+                           size="clear"
+                           colors="clear"
+                           border="clear"
+                           :className="`${overlayButtonClasses} p-1`"
+                           :onClick="() => (currentIndex = index)"
+                        >
+                           <TrashIcon class="w-6" />
+                        </PopupTrigger>
+                        <PopupContent
+                           append-to="parent"
+                           class-name="bottom-full left-full"
+                        >
+                           <PopupWrapper>
+                              <button
+                                 @click="
+                                    () =>
+                                       sliderActions({
+                                          action: 'delete',
+                                          sliderImage,
+                                       })
+                                 "
+                              >
+                                 <TrashIcon class="w-5" />
+                                 <span>Delete</span>
+                              </button>
+                              <LoadingOverlay v-if="isFetching === 'delete'" />
+                           </PopupWrapper>
+                        </PopupContent>
+                     </Popup>
                   </OverlayCta>
                </template>
             </Box>
          </div>
-         <div :class="`${classes.flexCol} w-1/3 `">
+         <div :class="`${classes.flexCol} w-full sm:w-1/3 `">
             <Box
                :onClick="() => openModal('add')"
                :className="`${isFetching === 'add' ? 'disable' : ''}`"
@@ -170,22 +197,7 @@ const sliderActions = async (props: AddImages | DeleteImages) => {
             v-if="modal === 'add' || modal === 'change'"
             variant="multiple"
             :close="closeModal"
-            :handleChose="(images) => sliderActions({ variant: 'add', images })"
-         />
-
-         <ConfirmModal
-            v-if="modal === 'delete' && currentIndex !== null && currentSliderImage"
-            :closeModal="closeModal"
-            :callback="
-               () =>
-                  sliderActions({
-                     variant: 'delete',
-                     index: currentIndex!,
-                     sliderImage: currentSliderImage!,
-                  })
-            "
-            :loading="false"
-            :title="`Delete  :v`"
+            :handleChose="(images) => handleChoseImage(images, modal)"
          />
       </template>
    </Modal>

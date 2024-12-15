@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import { CodeBracketIcon, PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
+import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { generateId } from "@/utils/appHelper";
 import { computed, inject, ref } from "vue";
 
-import { Button, Box, OverlayCta } from "@/components/ui";
+import { Box, OverlayCta } from "@/components/ui";
 import { AddItem, ConfirmModal, Modal } from "@/components/Modal";
 import useCategory from "@/hooks/useCategory";
 import JsonInput from "@/components/Modal/JsonInput.vue";
 import useImportCategory from "@/hooks/useImportCategory";
 import { ModalRef } from "@/components/Modal/Modal.vue";
+import AddCategoryBtn from "./child/AddCategoryBtn.vue";
 
 type Modal = "close" | "edit" | "add" | "delete" | "import";
 
@@ -32,7 +33,7 @@ const closeModal = () => {
 const curCategory = computed(() =>
    curCategoryIndex.value === undefined
       ? undefined
-      : categories.value[curCategoryIndex.value]
+      : categories.value[curCategoryIndex.value],
 );
 
 const handleAddCategory = async (value: string, type: "Add" | "Edit") => {
@@ -102,20 +103,12 @@ const mainClasses = inject("classes") as Record<string, string>;
    <div class="flex justify-between">
       <h1 :class="mainClasses.label">All Category</h1>
 
-      <Button
-         :onClick="() => (modal = 'import')"
-         variant="push"
-         border="clear"
-         class="ml-auto"
-      >
-         <CodeBracketIcon class="w-6 mr-1" />
-         Import
-      </Button>
+      <AddCategoryBtn :is-fetching="isFetching" :submit="v => handleAddCategory(v, 'Add')" />
    </div>
    <div :class="`${mainClasses.group}`">
       <div :class="`${mainClasses.flexContainer} mt-[-16px]`">
          <template v-for="(category, index) in categories">
-            <div v-if="!!category.is_show" :class="`w-1/6 ${mainClasses.flexCol}`">
+            <div v-if="!!category.is_show" :class="`w-1/2 md:w-1/6 ${mainClasses.flexCol}`">
                <Box className="bg-[#f4f6f8]">
                   <template v-slot:children>
                      <span class="font-[500] text-[#1f1f1f]">
@@ -132,7 +125,7 @@ const mainClasses = inject("classes") as Record<string, string>;
                            "
                            :class="'p-1'"
                         >
-                           <PencilSquareIcon class="w-[24px]" />
+                           <PencilSquareIcon class="w-6" />
                         </button>
                         <button
                            :onClick="
@@ -144,17 +137,13 @@ const mainClasses = inject("classes") as Record<string, string>;
                            "
                            :class="'p-1'"
                         >
-                           <TrashIcon class="w-[24px]" />
+                           <TrashIcon class="w-6" />
                         </button>
                      </OverlayCta>
                   </template>
                </Box>
             </div>
          </template>
-
-         <div :class="`w-1/6 ${mainClasses.flexCol}`">
-            <Box :onClick="() => handleOpenModal({ modal: 'add' })" />
-         </div>
       </div>
    </div>
 

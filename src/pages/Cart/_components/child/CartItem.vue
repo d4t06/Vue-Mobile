@@ -113,7 +113,7 @@ const classes = {
             :loading="isFetching"
             desc="Định xóa hả gì ?"
             :label="`Xóa '${props.cartItem.item.product}' ?`"
-            :close="closeModal"
+            :closeModal="closeModal"
          >
             <img
                src="https://zalo-api.zadn.vn/api/emoticon/sticker/webpc?eid=46991&size=130"

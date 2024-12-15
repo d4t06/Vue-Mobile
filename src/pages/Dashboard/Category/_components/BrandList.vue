@@ -108,7 +108,7 @@ const classes = {
    <h1 :class="mainClasses.label">Brands</h1>
    <div v-if="!!categories.length" :class="mainClasses.group">
       <div class="mb-[15px] flex items-center">
-         <p class="mr-[10px]">Category:</p>
+         <p class="mr-[10px] hidden sm:block">Category:</p>
          <div class="bg-[#ccc] rounded-[12px]">
             <select
                :class="`${inputClasses.input} min-w-[100px]`"
@@ -134,7 +134,7 @@ const classes = {
             }`"
          >
             <template v-for="(brand, index) in brandsByCategory">
-               <div :class="`col w-2/12 ${mainClasses.flexCol}`">
+               <div :class="`col w-1/2 md:w-2/12 ${mainClasses.flexCol}`">
                   <Box className="bg-[#f4f6f8]">
                      <template v-slot:children>
                         <div class="">
@@ -174,7 +174,7 @@ const classes = {
                </div>
             </template>
 
-            <div :class="`w-2/12 ${mainClasses.flexCol}`">
+            <div :class="`w-1/2 md:w-2/12 ${mainClasses.flexCol}`">
                <Box :onClick="() => handleOpenModal({ modal: 'add' })" />
             </div>
          </div>

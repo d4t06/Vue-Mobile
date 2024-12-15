@@ -109,7 +109,10 @@ type SearchProduct = Omit<
    default_storage: DefaultStorageDetail;
 };
 
-type ProductSchema = Omit<ProductList, "id" | "storages">;
+type ProductSchema = Omit<ProductList, "id" | "default_storage" | "storages" | "brand_id" | "category_id"> & {
+   brand_id?: number;
+   category_id?: number;
+};
 
 type SliderImage = {
    id: number;

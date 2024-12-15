@@ -20,7 +20,7 @@ const currentStep = ref(0);
 const isSubmit = ref(false);
 // const username = ref("");
 const password = ref("");
-const confirmPassword = ref("");
+// const confirmPassword = ref("");
 const errorMsg = ref("");
 
 const router = useRouter();

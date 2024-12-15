@@ -45,9 +45,9 @@ const closeModal = () => {
 const foundedCombineIndex = computed(() =>
    productDetail.value
       ? productDetail.value.combines.findIndex(
-           (c) => c.color_id === color.id && c.storage_id === storage.id
+           (c) => c.color_id === color.id && c.storage_id === storage.id,
         )
-      : -1
+      : -1,
 );
 const foundedCombine = computed(() => {
    if (!productDetail.value) return null;
@@ -130,7 +130,7 @@ const findLowestProductStorage = (lowestPriceOfStorage: number) => {
       if (otherStorage) {
          if (s.default_combine.combine_id) {
             const defaultCombineOfStorage = productDetail.value!.combines.find(
-               (c) => c.id === s.default_combine.combine_id
+               (c) => c.id === s.default_combine.combine_id,
             );
 
             if (!defaultCombineOfStorage) throw new Error("");
@@ -177,7 +177,7 @@ const handleUpdateCombine = async () => {
       if (isHasNewDefaultCombine) {
          await privateRequest.put(
             `${DEFAULT_COMBINE_URL}/${storage.id}`,
-            newDefaultCombine
+            newDefaultCombine,
          );
          productDetail.value.storages[storageIndex].default_combine = newDefaultCombine;
       }
@@ -212,10 +212,16 @@ const handleUpdateCombine = async () => {
          <span class="font-[500] text-[#cd1818]"> {{ storage.storage_name }}</span>
          {{ ` / ${color.color_name} ${isDefaultCombine ? "(default)" : ""}` }}
       </td>
-      <td>{{ foundedCombine.quantity }}</td>
+      <!-- <td>{{ foundedCombine.quantity }}</td> -->
       <td>{{ moneyFormat(foundedCombine.price) }}</td>
       <td class="!text-right">
-         <Button size="clear" className="p-1" :onClick="handleOpenModal" variant="push" colors="secondary">
+         <Button
+            size="clear"
+            className="p-1"
+            :onClick="handleOpenModal"
+            variant="push"
+            colors="secondary"
+         >
             <PencilSquareIcon class="w-6" />
          </Button>
       </td>
@@ -233,9 +239,8 @@ const handleUpdateCombine = async () => {
                   <label for="">Quantity</label>
                   <MyInput
                      ref="childRef"
-                     :attrs="{ placeholder: 'Quantity...',
-                  onChange: (e) => quantity = +(e.target as HTMLInputElement).value,
-                  value: quantity || '', }"
+                     :attrs="{ placeholder: 'Quantity...' }"
+                     v-model="quantity"
                   />
                </div>
 
@@ -244,14 +249,22 @@ const handleUpdateCombine = async () => {
 
                   <MyInput
                      ref="childRef"
-                     :attrs="{ placeholder: 'Price...',
-                  onChange: (e) => price = +(e.target as HTMLInputElement).value,
-                  value: price || '', ...priceInputAttrs }"
+                     :attrs="{
+                        placeholder: 'Price...',
+                        onChange: (e) => (price = +(e.target as HTMLInputElement).value),
+                        value: price || '',
+                        ...priceInputAttrs,
+                     }"
                   />
                </div>
 
                <p class="text-right">
-                  <Button variant="push" className="leading-[24px]" :loading="isFetching" type="submit">
+                  <Button
+                     variant="push"
+                     className="leading-[24px]"
+                     :loading="isFetching"
+                     type="submit"
+                  >
                      Save
                   </Button>
                </p>

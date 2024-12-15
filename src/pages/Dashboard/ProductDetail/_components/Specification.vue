@@ -19,6 +19,7 @@ const attributeOrderArray = computed(() =>
       <h5 :class="classes.label">Specification</h5>
 
       <Table
+      class-name="[&_th]:text-left [&_td]:text-sm [&_th]:text-sm  sm:[&_td]:text-base sm:[&_th]:text-base"
          v-if="!!productDetail.category.attributes.length"
          :col-list="['Name', 'Value', '']"
       >

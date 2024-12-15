@@ -33,7 +33,7 @@ const classes = {
 </script>
 
 <template>
-   <div class="w-[500px] max-w-[90vw]">
+   <div class="w-[500px] max-w-[85vw]">
       <h1 class="text-xl mb-5">{{ props.title || "Import" }}</h1>
 
       <slot />

@@ -7,10 +7,10 @@ import useCategory from "@/hooks/useCategory";
 import AddProductBtn from "./_components/AddProductBtn.vue";
 import Modal, { ModalRef } from "@/components/Modal/Modal.vue";
 import AddProduct from "@/components/Form/AddProduct.vue";
-import { MagnifyingGlassIcon } from "@heroicons/vue/16/solid";
+import { MagnifyingGlassIcon, ArrowPathIcon, XMarkIcon } from "@heroicons/vue/16/solid";
 import useGetProductDashboard from "./_hooks/useGetProductDashboard";
 import useSearchProductDashboard from "./_hooks/useSearchProductDashboard";
-import { ArrowPathIcon, PencilSquareIcon } from "@heroicons/vue/24/outline";
+import { PencilSquareIcon } from "@heroicons/vue/24/outline";
 import DashboardProductSetting from "./_components/DashboardProductSetting.vue";
 
 type Modal = "edit" | "delete";
@@ -53,15 +53,27 @@ const classes = {
 <template>
    <div class="mb-5">
       <div :class="` flex justify-between`">
-         <div :class="`flex space-x-[10px]`">
-            <MyInput
-               :attrs="{ placeholder: 'iPhone thirteen', value: value }"
-               @input="(e) => (value = e.target.value)"
-            />
+         <div :class="`flex space-x-1 sm:space-x-[10px] mr-5`">
+            <div class="relative flex items-center">
+               <MyInput
+                  className="pr-8"
+                  :attrs="{ placeholder: 'iPhone thirteen' }"
+                  v-model="value"
+               />
+               <button
+                  v-if="!!value"
+                  @click="() => (value = '')"
+                  class="absolute right-1 p-1 text-[#808080]"
+               >
+                  <XMarkIcon class="w-6" />
+               </button>
+            </div>
             <Button
                :onclick="!isFetching && !!value ? search : ''"
                variant="push"
                border="clear"
+               size="clear"
+               class="p-1 sm:px-3"
             >
                <ArrowPathIcon class="w-6 animate-spin" v-if="isFetching" />
                <MagnifyingGlassIcon class="w-6" v-else />

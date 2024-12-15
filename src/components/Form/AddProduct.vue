@@ -4,7 +4,7 @@ import Box from "@/components/ui/Box.vue";
 import MyInput from "@/components/ui/MyInput.vue";
 import OverlayCta from "@/components/ui/OverlayCta.vue";
 import { useAppStore } from "@/stores/app";
-import { generateId, inputClasses } from "@/utils/appHelper";
+import { inputClasses } from "@/utils/appHelper";
 import { ArrowPathIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
 import { computed, reactive, ref, watch } from "vue";
@@ -32,19 +32,16 @@ type Props = {
 };
 
 const initProduct = {
-   category_id: 0,
    image_url: "",
-   product_name_ascii: "",
    product_name: "",
-   brand_id: 0,
-   installment: false,
+   product_name_ascii: "test",
 } as ProductSchema;
 
 const groupProps = defineProps<Props>();
 
 const productData = reactive<ProductSchema>(initProduct);
 const modal = ref<ProductModal>("close");
-const curCategory = ref<Category>();
+// const curCategory = ref<Category>();
 
 const isChange = ref(false);
 
@@ -53,42 +50,44 @@ const { categories } = storeToRefs(appStore);
 const { isFetching, productActions } = useProductAction();
 const modalRef = ref<ModalRef>();
 
+const curCategory = computed(() => {
+   return categories.value.find((c) => c.id === productData.category_id);
+});
+
 const brandsByCategory = computed(() =>
-   curCategory.value ? curCategory.value.brands : []
+   curCategory.value ? curCategory.value.brands : [],
 );
 
 const openModal = (m: ProductModal) => {
    modal.value = m;
    modalRef.value?.open();
-
-   console.log("open");
 };
 
 const closeModal = () => {
    modalRef.value?.close();
 };
 
-const handleInput = (field: keyof typeof productData, value: any) => {
-   // also set product_name_ascii
-   if (field === "product_name") {
-      Object.assign(productData, {
-         [field]: value,
-         product_name_ascii: generateId(value),
-      });
+// const handleInput = (field: keyof typeof productData, value: any) => {
+//    // also set product_name_ascii
+//    if (field === "product_name") {
+//       Object.assign(productData, {
+//          [field]: value,
+//          product_name_ascii: generateId(value),
+//       });
 
-      isChange.value = true;
-      return;
-   }
+//       isChange.value = true;
+//       return;
+//    }
 
-   if (field === "category_id") {
-      const founded = categories.value.find((cat) => cat.id === value);
+//    if (field === "category_id") {
+//       const founded = categories.value.find((cat) => cat.id === value);
 
-      if (!founded) return;
-      curCategory.value = founded;
-   }
-   isChange.value = true;
-   Object.assign(productData, { [field]: value });
-};
+//       if (!founded) return;
+//       curCategory.value = founded;
+//    }
+//    isChange.value = true;
+//    Object.assign(productData, { [field]: value });
+// };
 
 function resetForm() {
    const { category_id, brand_id, ...rest } = initProduct;
@@ -96,6 +95,13 @@ function resetForm() {
 }
 
 const handleSubmit = async () => {
+   if (
+      productData.brand_id === undefined ||
+      productData.category_id === undefined ||
+      !productData.product_name
+   )
+      return;
+
    switch (groupProps.props.type) {
       case "add":
          await productActions({ type: "add", product: productData });
@@ -122,35 +128,25 @@ watch(
          if (groupProps.props.type === "edit") {
             if (!groupProps.props.product) return;
 
-            const { product } = groupProps.props;
-            if (product) {
-               const category = categories.value.find(
-                  (c) => c.id === product.category_id
-               );
-
-               if (category) {
-                  curCategory.value = category;
-                  Object.assign(productData, product);
-               }
-            }
+            Object.assign(productData, groupProps.props.product);
          }
       };
 
       handleInitProduct();
    },
-   { immediate: true, flush: "post" }
+   { immediate: true, flush: "post" },
 );
 </script>
 
 <template>
-   <div class="w-[700px] max-w-[90vw]">
+   <div class="w-[700px] max-w-[85vw]">
       <ModalHeader
          :close-modal="groupProps.props.closeModal"
          :title="groupProps.props.type === 'add' ? 'Add new product' : 'Edit product'"
       />
 
-      <div class="flex -mx-2 mt-3">
-         <div class="w-1/3 px-2">
+      <div class="max-h-[50vh] overflow-auto flex flex-col sm:flex-row -mx-2 mt-3">
+         <div class="mx-auto w-2/3 sm:w-1/3 px-2">
             <template v-if="!productData.image_url">
                <Box :onClick="() => openModal('gallery')" />
             </template>
@@ -160,10 +156,7 @@ watch(
                   <template v-slot:children>
                      <img :src="productData.image_url" alt="asd" />
                      <OverlayCta>
-                        <button
-                           class="p-1"
-                           @click="() => openModal('gallery')"
-                        >
+                        <button class="p-1" @click="() => openModal('gallery')">
                            <ArrowPathIcon class="w-6" />
                         </button>
                      </OverlayCta>
@@ -172,16 +165,13 @@ watch(
             </template>
          </div>
 
-         <div class="flex-1">
+         <div class="mt-5 flex-1">
             <div class="space-y-3 px-2">
                <div class="space-y-1">
                   <label class="font-[500] text-[#1f1f1f]" htmlFor="name">
                      Product name</label
                   >
-                  <MyInput
-                     @input="(e) => handleInput('product_name', e.target.value)"
-                     :attrs="{ value: productData.product_name }"
-                  />
+                  <MyInput v-model="productData.product_name" />
                </div>
 
                <template v-if="groupProps.props.type === 'add'">
@@ -204,7 +194,7 @@ watch(
                   </div>
                </template>
 
-               <div :class="`space-y-1 ${!curCategory && 'disable'}`">
+               <div :class="`space-y-1 ${!curCategory ? 'disable' : ''}`">
                   <label class="font-[500] text-[#1f1f1f]" htmlFor="brand">Brand </label>
                   <select
                      v-model="productData.brand_id"
@@ -227,7 +217,6 @@ watch(
             border="clear"
             :onClick="handleSubmit"
             :loading="isFetching === 'add' || isFetching === 'edit'"
-            :disabled="!isChange"
          >
             {{ groupProps.props.type === "add" ? "Save" : "Save" }}
          </Button>
@@ -240,7 +229,7 @@ watch(
             v-if="modal === 'gallery'"
             :variant="'one'"
             :close="closeModal"
-            :handleChose="(value) => handleInput('image_url', value[0].image_url)"
+            :handleChose="(value) => (productData['image_url'] = value[0].image_url)"
          />
       </template>
    </Modal>

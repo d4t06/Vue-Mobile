@@ -104,7 +104,7 @@ const handleSliderActions = async (props: Add | Edit | Delete) => {
          <template
             v-for="(sliderImage, index) in category.category_slider.slider.slider_images"
          >
-            <div class="w-1/2 px-[8px] flex-shrink-0 mt-[8px]">
+            <div class="w-full sm:w-1/2 px-[8px] flex-shrink-0 mt-[8px]">
                <Box padding-top="pt-[25%]" pushAble="clear">
                   <template v-slot:children>
                      <img :src="sliderImage.image.image_url || ''" alt="asd" />
@@ -139,7 +139,7 @@ const handleSliderActions = async (props: Add | Edit | Delete) => {
             </div>
          </template>
 
-         <div class="w-1/2 px-[8px] flex-shrink-0 mt-[8px]">
+         <div class="w-full sm:w-1/2 px-[8px] flex-shrink-0 mt-[8px]">
             <Box
                padding-top="pt-[25%]"
                :onClick="

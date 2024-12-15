@@ -4,19 +4,26 @@ import PopupTrigger, { TriggerRef } from "@/components/Popup/PopupTrigger.vue";
 import PopupContent from "@/components/Popup/PopupContent.vue";
 import PopupWrapper from "@/components/Popup/PopupWrapper.vue";
 import { CodeBracketIcon, PlusIcon as PlusIconOutline } from "@heroicons/vue/24/outline";
-import { PlusIcon } from "@heroicons/vue/16/solid";
+import { PlusIcon, ArrowPathIcon } from "@heroicons/vue/16/solid";
 import Modal, { ModalRef } from "@/components/Modal/Modal.vue";
 import { ref } from "vue";
-import useImportProduct from "@/hooks/useImportProduct";
+import useImportCategory from "@/hooks/useImportCategory";
 import JsonInput from "@/components/Modal/JsonInput.vue";
-import AddProduct from "@/components/Form/AddProduct.vue";
+import AddItem from "@/components/Modal/AddItem.vue";
 
 type Modal = "add" | "import";
+
+type Props = {
+	isFetching: boolean;
+	submit: (v: string) => void;
+};
+
+const props = defineProps<Props>();
 
 const modal = ref<Modal>("add");
 const triggerRef = ref<TriggerRef>();
 
-const { currentIndex, status: importStatus, submit, jsonProducts } = useImportProduct();
+const { status, submit } = useImportCategory();
 
 const modalRef = ref<ModalRef>();
 const openModal = (m: Modal) => {
@@ -32,15 +39,21 @@ const closeModal = () => {
 
 <template>
 	<Popup>
-		<PopupTrigger ref="triggerRef" variant="push" border="clear" size="clear" class="ml-auto p-1 sm:px-3 space-x-1 font-[500]">
+		<PopupTrigger
+			ref="triggerRef"
+			variant="push"
+			border="clear"
+			size="clear"
+			class="ml-auto p-1 sm:px-3 space-x-1 font-[500]"
+		>
 			<PlusIcon class="w-6" />
-			<span class="hidden sm:block"> Add product </span>
+			<span class="hidden sm:block"> Add Category </span>
 		</PopupTrigger>
 		<PopupContent>
 			<PopupWrapper>
 				<button @click="() => openModal('add')">
 					<PlusIconOutline class="w-5" />
-					<span> Add product </span>
+					<span> Add category </span>
 				</button>
 				<button @click="() => openModal('import')">
 					<CodeBracketIcon class="w-5" />
@@ -52,29 +65,22 @@ const closeModal = () => {
 
 	<Modal ref="modalRef">
 		<template v-slot:children>
-			<AddProduct
+			<AddItem
 				v-if="modal === 'add'"
-				:props="{ type: 'add', closeModal: closeModal }"
+				:closeModal="closeModal"
+				:submit="(v) => props.submit(v)"
+				:loading="props.isFetching"
+				title="Add category"
 			/>
 			<JsonInput
 				v-if="modal === 'import'"
 				title="Import product"
 				:submit="submit"
-				:status="importStatus"
+				:status="status"
 				:close-modal="closeModal"
 			>
-				<div
-					v-if="importStatus === 'fetching' && jsonProducts.length"
-					class="text-[#333]"
-				>
-					<p class="font-[500] text-[#333]">
-						{{ currentIndex + 1 }} of {{ jsonProducts?.length }}
-					</p>
-					<div class="flex justify-between mt-1">
-						<p>{{ jsonProducts[currentIndex].name }}</p>
-						<ArrowPathIcon class="w-6 animate-spin" />
-					</div>
-				</div>
+				<ArrowPathIcon v-if="status === 'fetching'" class="w-6 animate-spin" />
+				<p v-if="status === 'finish'">Xong roi fen.</p>
 			</JsonInput>
 		</template>
 	</Modal>

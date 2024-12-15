@@ -36,17 +36,17 @@ const { priceRangeActions, categories, isFetching } = usePriceRangeActions({
 const curCategory = computed(() =>
    curCategoryIndex.value === undefined
       ? undefined
-      : categories.value[curCategoryIndex.value]
+      : categories.value[curCategoryIndex.value],
 );
 
 const priceRangesByCategory = computed(() =>
-   curCategory.value ? curCategory.value.price_ranges : []
+   curCategory.value ? curCategory.value.price_ranges : [],
 );
 
 const curPriceRange = computed(() =>
    curPriceRangeIndex.value == undefined
       ? undefined
-      : priceRangesByCategory.value[curPriceRangeIndex.value]
+      : priceRangesByCategory.value[curPriceRangeIndex.value],
 );
 
 type OpenModal = {
@@ -115,13 +115,16 @@ const classes = {
    <div v-if="!!categories.length" :class="mainClasses.group">
       <div class="mb-[15px] flex items-center justify-between">
          <div class="flex items-center">
-            <p class="mr-[10px]">Category:</p>
+            <p class="mr-[10px] hidden sm:block">Category:</p>
             <div class="bg-[#ccc] rounded-[12px]">
                <select
                   :class="`${inputClasses.input} min-w-[100px]`"
-                  :onChange="(e) => {
-                    if ((e.target as HTMLInputElement).value) curCategoryIndex = +(e.target as HTMLInputElement).value
-                   }"
+                  :onChange="
+                     (e) => {
+                        if ((e.target as HTMLInputElement).value)
+                           curCategoryIndex = +(e.target as HTMLInputElement).value;
+                     }
+                  "
                >
                   <option :value="undefined">---</option>
 
@@ -136,11 +139,12 @@ const classes = {
          <Button
             :disabled="!curCategory"
             variant="push"
+            size="clear"
+            class="space-x-1 p-1 sm:px-3"
             :onClick="() => handleOpenModal({ modal: 'add' })"
          >
-
-         <PlusIcon class="w-5 mr-1" />
-            Add price
+            <PlusIcon class="w-6" />
+            <span class="hidden sm:block"> Add price </span>
          </Button>
       </div>
 
@@ -184,7 +188,7 @@ const classes = {
       </template>
    </div>
 
-   <Modal ref="modalRef" >
+   <Modal ref="modalRef">
       <template v-slot:children>
          <AddPriceRange
             v-if="modal === 'add' && curCategory"

@@ -15,7 +15,7 @@ import UploadImagePortal from "@/components/UploadImagePortal.vue";
             <div class="bg-[#fff] relative w-full">
                <DashboardHeader />
                <div
-                  class="dash-content h-[calc(100vh-60px)] p-[30px] pb-[60px] mt-[60px] overflow-auto w-full"
+                  class="dash-content h-[calc(100vh-60px)] p-4 sm:p-[30px] pb-[60px] mt-[60px] overflow-auto w-full"
                >
                   <RouterView />
                </div>

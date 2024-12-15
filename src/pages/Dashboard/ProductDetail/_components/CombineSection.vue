@@ -15,8 +15,9 @@ const { productDetail } = storeToRefs(p);
       <h5 :class="classes.label">Price & Quantity</h5>
       <!-- <div :class="`${classes.group}`"> -->
          <Table
+         class-name="[&_th]:text-left [&_td]:text-sm [&_th]:text-sm  sm:[&_td]:text-base sm:[&_th]:text-base"
             v-if="!!productDetail.storages.length && !!productDetail.colors.length"
-            :col-list="['Name', 'Quantity', 'Price', '']"
+            :col-list="['Name', 'Price', '']"
          >
             <template v-for="(storage, index) in productDetail.storages">
                <template v-for="color in productDetail.colors">

@@ -43,7 +43,7 @@ const classes = {
 </script>
 
 <template>
-   <div class="px-[4px] relative w-1/6 mt-[8px]">
+   <div class="px-1 relative w-1/3 sm:w-1/6 mt-2">
       <div :class="classes.imageContainer">
          <div
             :onClick="imageFrameOnClick"

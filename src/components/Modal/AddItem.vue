@@ -24,17 +24,19 @@ watch(childRef, () => childRef.value?.inputRef.focus(), { once: true });
 </script>
 
 <template>
-   <div class="w-[400px] max-w-[80vw] bg-[#fff]">
+   <div class="w-[400px] max-w-[85vw] bg-[#fff]">
       <ModalHeader :closeModal="closeModal" :title="title" />
       <form @submit.prevent="handleSubmit">
-         <MyInput
-            ref="childRef"
-            :attrs="{ placeholder: 'Name...',
-             onChange: (e) => value = (e.target as HTMLInputElement).value,
-             value: value, }"
-         />
+         <MyInput ref="childRef" :attrs="{ placeholder: 'Name...' }" v-model="value" />
          <p class="text-right mt-[20px]">
-            <Button variant="push" className="leading-[24px]" :loading="loading" type="submit"> Save </Button>
+            <Button
+               variant="push"
+               className="leading-[24px]"
+               :loading="loading"
+               type="submit"
+            >
+               Save
+            </Button>
          </p>
       </form>
    </div>

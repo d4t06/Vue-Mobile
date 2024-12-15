@@ -2,22 +2,25 @@
 import { watch } from "vue";
 import { injectPopup } from "./usePopup";
 import { watchEffect } from "vue";
+import PopupContentChild from "./PopupContentChild.vue";
 
 type Props = {
    className?: string;
    animationClassName?: string;
+   // appendTo?: "parent" | "portal";
    position?: "left-bottom" | "right-bottom";
    origin?: "bottom right" | "bottom left" | "top right" | "top left";
    spacer?: number;
 };
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {});
 
 const {
    contentRef,
    animationRef,
    triggerRef,
    close,
+   appendTo,
    state: { isOpen, isMounted },
 } = injectPopup();
 
@@ -30,8 +33,6 @@ const handleClickOutside = (e: MouseEvent | TouchEvent) => {
    ) {
       return;
    }
-
-   console.log("click outside");
 
    isMounted.value = false;
 };
@@ -94,7 +95,7 @@ watch(
    [isOpen],
    () => {
       if (isOpen.value) {
-         setContentPos();
+         if (appendTo === "portal") setContentPos();
       }
    },
    {
@@ -124,11 +125,11 @@ watchEffect(
 </script>
 
 <template>
-   <Teleport to="#portal">
+   <PopupContentChild>
       <div
          v-if="isOpen"
          ref="contentRef"
-         :class="`bg-transparent fixed z-[99] ${props.className || ''}`"
+         :class="`bg-transparent ${appendTo === 'portal' ? 'fixed z-[99]' : 'absolute'} ${props.className || ''}`"
       >
          <div
             ref="animationRef"
@@ -139,5 +140,5 @@ watchEffect(
             <slot />
          </div>
       </div>
-   </Teleport>
+   </PopupContentChild>
 </template>

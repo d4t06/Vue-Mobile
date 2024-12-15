@@ -25,7 +25,7 @@ const initPriceRangeData: PriceRangeSchema = {
 
 const priceRangeData = reactive<PriceRangeSchema>(initPriceRangeData);
 const childRef = ref<{ inputRef: HTMLInputElement } | null>(null);
-const isChange = ref(false);
+// const isChange = ref(false);
 
 const isAbleToSubmit = computed(() => {
    const { from_price, to_price, label } = priceRangeData;
@@ -37,10 +37,10 @@ const isAbleToSubmit = computed(() => {
    );
 });
 
-const handleInput = (field: keyof typeof priceRangeData, value: string) => {
-   isChange.value = true;
-   Object.assign(priceRangeData, { [field]: value });
-};
+// const handleInput = (field: keyof typeof priceRangeData, value: string) => {
+//    isChange.value = true;
+//    Object.assign(priceRangeData, { [field]: value });
+// };
 
 const handleSubmit = () => {
    submit(priceRangeData);
@@ -58,7 +58,7 @@ watch(
    },
    {
       immediate: true,
-   }
+   },
 );
 </script>
 
@@ -67,29 +67,23 @@ watch(
    <div class="w-[300px] bg-[#fff]">
       <ModalHeader :closeModal="closeModal" :title="title" />
       <form @submit.prevent="handleSubmit" class="space-y-[16px]">
-         <MyInput
-            ref="childRef"
-            :attrs="{ placeholder: 'Label', value: priceRangeData.label }"
-            @input="(e) => handleInput('label',(e.target as HTMLInputElement).value)"
-         />
+         <MyInput ref="childRef" v-model="priceRangeData.label" />
          <MyInput
             :attrs="{
                placeholder: 'From',
-               value: priceRangeData.from_price,
                type: 'number',
                min: 0,
             }"
-            @input="(e) => handleInput('from_price',(e.target as HTMLInputElement).value)"
+            v-model="priceRangeData.from_price"
          />
 
          <MyInput
             :attrs="{
                placeholder: 'To',
-               value: priceRangeData.to_price,
                type: 'number',
                min: 0,
             }"
-            @input="(e) => handleInput('to_price',(e.target as HTMLInputElement).value)"
+            v-model="priceRangeData.to_price"
          />
 
          <p class="text-right mt-[20px]">

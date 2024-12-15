@@ -7,12 +7,14 @@ interface Props {
    attrs?: Partial<InputHTMLAttributes>;
 }
 
-const { className, attrs } = defineProps<Props>();
+const model = defineModel()
+
+const { className, attrs } = withDefaults(defineProps<Props>(), { className: "" });
 
 const inputRef = ref<HTMLInputElement | null>(null);
 defineExpose({ inputRef });
 </script>
 
 <template>
-   <input :class="`${inputClasses.input} ${className} `" v-bind="attrs" ref="inputRef" />
+   <input v-model="model" :class="`${inputClasses.input} ${className} `" v-bind="attrs" ref="inputRef" />
 </template>

@@ -25,7 +25,7 @@ watch(childRef, () => childRef.value?.inputRef.focus(), { once: true });
 </script>
 
 <template>
-   <div class="w-[400px] max-w-[80vw] bg-[#fff]">
+   <div class="w-[400px] max-w-[85vw] bg-[#fff]">
       <ModalHeader :closeModal="closeModal" :title="title" />
       <form @submit.prevent="handleSubmit">
          <textarea

@@ -1,9 +1,23 @@
 <script setup lang="ts">
 import PopupProvider from "./usePopup";
 
-PopupProvider();
+type Props = {
+   appendTo?: "parent" | "portal";
+};
+
+const props = withDefaults(defineProps<Props>(), {
+   appendTo: "portal",
+});
+
+PopupProvider(props);
 </script>
 
 <template>
-   <slot />
+   <div v-if="props.appendTo === 'parent'" class="relative">
+      <slot />
+   </div>
+
+   <template v-else>
+      <slot />
+   </template>
 </template>
