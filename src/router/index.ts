@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from "vue-router";
 import DefaultLayout from "@/layouts/DefaultLayout.vue";
 import Home from "@/pages/Home.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
@@ -107,7 +107,7 @@ routeList.map((r) => {
 });
 
 const router = createRouter({
-   history: createWebHistory(import.meta.env.BASE_URL),
+   history: createWebHashHistory(import.meta.env.BASE_URL),
    routes,
 });
 

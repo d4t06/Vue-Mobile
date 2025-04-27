@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import DragAbleItem from "@/components/DragAbleItem.vue";
 import { AddItem, ConfirmModal, Modal } from "@/components/Modal";
-import { Button } from "@/components/ui";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import { computed, ref } from "vue";
 import { HandleAttributeActions } from "../Attribute.vue";
@@ -91,13 +90,12 @@ const classes = {
          <template v-slot:children>
             <AddItem
                v-if="openModal === 'edit'"
-               :close="closeModal"
+               :closeModal="closeModal"
                :title="`Edit attribute '${foundedAttribute.attribute.attribute_name}'`"
                :initValue="foundedAttribute.attribute!.attribute_name"
                :submit="
                   (value) =>
-                     handleEditAttribute({id: foundedAttribute.attribute!.id, value}
-                     )
+                     handleEditAttribute({ id: foundedAttribute.attribute!.id, value })
                "
                :loading="isFetching"
             />
@@ -106,7 +104,9 @@ const classes = {
                :close-modal="closeModal"
                :loading="isFetching"
                :title="`Delete attribute '${foundedAttribute.attribute.attribute_name}'`"
-               :callback="() =>handleDeleteAttribute({id: foundedAttribute.attribute!.id})"
+               :callback="
+                  () => handleDeleteAttribute({ id: foundedAttribute.attribute!.id })
+               "
             />
          </template>
       </Modal>
